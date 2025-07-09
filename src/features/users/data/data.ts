@@ -9,11 +9,7 @@ import { UserStatus } from './schema'
 export const callTypes = new Map<UserStatus, string>([
   ['active', 'bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200'],
   ['inactive', 'bg-neutral-300/40 border-neutral-300'],
-  ['invited', 'bg-sky-200/40 text-sky-900 dark:text-sky-100 border-sky-300'],
-  [
-    'suspended',
-    'bg-destructive/10 dark:bg-destructive/50 text-destructive dark:text-primary border-destructive/10',
-  ],
+  ['pending', 'bg-sky-200/40 text-sky-900 dark:text-sky-100 border-sky-300'],
 ])
 
 export const userTypes = [
@@ -28,13 +24,28 @@ export const userTypes = [
     icon: IconUserShield,
   },
   {
+    label: 'Owner',
+    value: 'owner',
+    icon: IconUserShield,
+  },
+  {
+    label: 'Organization',
+    value: 'org',
+    icon: IconUsersGroup,
+  },
+  {
     label: 'Manager',
     value: 'manager',
     icon: IconUsersGroup,
   },
   {
-    label: 'Cashier',
-    value: 'cashier',
+    label: 'Leasing Agent',
+    value: 'leasingAgent',
+    icon: IconUsersGroup,
+  },
+  {
+    label: 'Agent',
+    value: 'agent',
     icon: IconCash,
   },
 ] as const

@@ -8,12 +8,13 @@ import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
-import { userListSchema } from './data/schema'
-import { users } from './data/users'
+import { useUsersList } from './hooks/use-users'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { IconAlertCircle } from '@tabler/icons-react'
 
 export default function Users() {
-  // Parse user list
-  const userList = userListSchema.parse(users)
+  const { data: users = [], isLoading, error } = useUsersList()
 
   return (
     <UsersProvider>
@@ -36,7 +37,21 @@ export default function Users() {
           <UsersPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <UsersTable data={userList} columns={columns} />
+          {isLoading ? (
+            <div className='space-y-3'>
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-64 w-full' />
+            </div>
+          ) : error ? (
+            <Alert variant='destructive'>
+              <IconAlertCircle className='h-4 w-4' />
+              <AlertDescription>
+                Failed to load users. Please try again later.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <UsersTable data={users} columns={columns} />
+          )}
         </div>
       </Main>
 

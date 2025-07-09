@@ -1,0 +1,319 @@
+import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
+import { useCompaniesContext } from '../context/companies-context'
+import { useUpdateCompany } from '../api'
+import { companyFormSchema, CompanyFormData } from '../types'
+
+export function EditCompanyModal() {
+  const { isEditDialogOpen, setIsEditDialogOpen, editingCompany, setEditingCompany } = useCompaniesContext()
+  const updateCompany = useUpdateCompany()
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+
+  const form = useForm<CompanyFormData>({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: {
+      name: '',
+      idImage: '',
+      units: '',
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: '',
+      },
+      phone: '',
+      email: '',
+      description: '',
+    },
+  })
+
+  useEffect(() => {
+    if (editingCompany) {
+      form.reset({
+        name: editingCompany.name || '',
+        idImage: editingCompany.idImage || '',
+        units: editingCompany.units || '',
+        address: {
+          street: editingCompany.address?.street || '',
+          city: editingCompany.address?.city || '',
+          state: editingCompany.address?.state || '',
+          postalCode: editingCompany.address?.postalCode || '',
+          country: editingCompany.address?.country || '',
+        },
+        phone: editingCompany.phone || '',
+        email: editingCompany.email || '',
+        description: editingCompany.description || '',
+      })
+      setLogoPreview(editingCompany.logoUrl || null)
+    }
+  }, [editingCompany, form])
+
+  const handleSubmit = async (data: CompanyFormData) => {
+    if (!editingCompany) return
+
+    try {
+      await updateCompany.mutateAsync({
+        _id: editingCompany._id,
+        ...data,
+      })
+      toast.success('Company updated successfully')
+      handleClose()
+    } catch (error) {
+      toast.error('Failed to update company')
+    }
+  }
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      form.setValue('logo', file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleClose = () => {
+    setIsEditDialogOpen(false)
+    setEditingCompany(null)
+    form.reset()
+    setLogoPreview(null)
+  }
+
+  return (
+    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <DialogContent className='sm:max-w-[625px]'>
+        <DialogHeader>
+          <DialogTitle>Edit Company</DialogTitle>
+          <DialogDescription>
+            Update company details. Changes will be saved immediately.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+            <div className='grid grid-cols-2 gap-4'>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem className='col-span-2'>
+                    <FormLabel>Company Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Enter company name' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type='email' placeholder='company@example.com' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='phone'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder='+1 (555) 000-0000' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='units'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Units</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Number of units' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='idImage'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ID Image</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Image ID' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='col-span-2'>
+                <FormLabel>Address</FormLabel>
+                <div className='grid grid-cols-2 gap-4 mt-2'>
+                  <FormField
+                    control={form.control}
+                    name='address.street'
+                    render={({ field }) => (
+                      <FormItem className='col-span-2'>
+                        <FormControl>
+                          <Input placeholder='Street address' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name='address.city'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder='City' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name='address.state'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder='State/Province' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name='address.postalCode'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder='Postal code' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name='address.country'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder='Country' {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem className='col-span-2'>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder='Enter company description' 
+                        className='resize-none' 
+                        rows={3}
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormItem className='col-span-2'>
+                <FormLabel>Company Logo</FormLabel>
+                <FormControl>
+                  <Input 
+                    type='file' 
+                    accept='image/*'
+                    onChange={handleLogoChange}
+                  />
+                </FormControl>
+                {logoPreview && (
+                  <img 
+                    src={logoPreview} 
+                    alt='Logo preview' 
+                    className='mt-2 h-20 w-20 rounded object-cover'
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+              <Button type='submit' disabled={updateCompany.isPending}>
+                {updateCompany.isPending && (
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                )}
+                Update Company
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}

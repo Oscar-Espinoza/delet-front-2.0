@@ -2,6 +2,9 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
+import { resetPassword } from 'aws-amplify/auth'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,20 +28,36 @@ const formSchema = z.object({
 
 export function ForgotPasswordForm({ className, ...props }: ForgotFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '' },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
+    
+    try {
+      await resetPassword({
+        username: data.email,
+      })
+      
+      toast.success('Password reset code sent to your email')
+      navigate({ to: '/reset-password', search: { email: data.email } })
+    } catch (error: any) {
+      console.error('Reset password error:', error)
+      
+      if (error.name === 'UserNotFoundException') {
+        toast.error('No account found with this email address')
+      } else if (error.name === 'InvalidParameterException') {
+        toast.error('Invalid email format')
+      } else {
+        toast.error(error.message || 'Failed to send reset code')
+      }
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -62,7 +81,7 @@ export function ForgotPasswordForm({ className, ...props }: ForgotFormProps) {
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
-          Continue
+          {isLoading ? 'Sending...' : 'Continue'}
         </Button>
       </form>
     </Form>

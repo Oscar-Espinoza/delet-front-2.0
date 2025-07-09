@@ -2,9 +2,10 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { showSubmittedData } from '@/utils/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,6 +21,7 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from '@/components/ui/input-otp'
+import { useAuthStore } from '@/stores/authStore'
 
 type OtpFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -29,7 +31,10 @@ const formSchema = z.object({
 
 export function OtpForm({ className, ...props }: OtpFormProps) {
   const navigate = useNavigate()
+  const search = useSearch({ strict: false }) as { email?: string }
   const [isLoading, setIsLoading] = useState(false)
+  const [isResending, setIsResending] = useState(false)
+  const { checkAuthStatus } = useAuthStore((state) => state.auth)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,14 +43,60 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
 
   const otp = form.watch('otp')
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    showSubmittedData(data)
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (!search.email) {
+      toast.error('Email is required for verification')
+      return
+    }
 
-    setTimeout(() => {
+    setIsLoading(true)
+    
+    try {
+      await confirmSignUp({
+        username: search.email,
+        confirmationCode: data.otp,
+      })
+      
+      await checkAuthStatus()
+      toast.success('Email verified successfully!')
+      navigate({ to: '/dashboard' })
+    } catch (error: any) {
+      console.error('OTP verification error:', error)
+      
+      if (error.name === 'CodeMismatchException') {
+        toast.error('Invalid verification code')
+      } else if (error.name === 'ExpiredCodeException') {
+        toast.error('Verification code has expired')
+      } else if (error.name === 'NotAuthorizedException') {
+        toast.error('User is already confirmed')
+      } else {
+        toast.error(error.message || 'Failed to verify code')
+      }
+    } finally {
       setIsLoading(false)
-      navigate({ to: '/' })
-    }, 1000)
+    }
+  }
+
+  async function handleResendCode() {
+    if (!search.email) {
+      toast.error('Email is required')
+      return
+    }
+
+    setIsResending(true)
+    
+    try {
+      await resendSignUpCode({
+        username: search.email,
+      })
+      
+      toast.success('Verification code resent to your email')
+    } catch (error: any) {
+      console.error('Resend code error:', error)
+      toast.error(error.message || 'Failed to resend code')
+    } finally {
+      setIsResending(false)
+    }
   }
 
   return (
@@ -88,8 +139,20 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
           )}
         />
         <Button className='mt-2' disabled={otp.length < 6 || isLoading}>
-          Verify
+          {isLoading ? 'Verifying...' : 'Verify'}
         </Button>
+        
+        <div className='mt-4 text-center'>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={handleResendCode}
+            disabled={isResending}
+            className='text-sm'
+          >
+            {isResending ? 'Resending...' : 'Resend Code'}
+          </Button>
+        </div>
       </form>
     </Form>
   )

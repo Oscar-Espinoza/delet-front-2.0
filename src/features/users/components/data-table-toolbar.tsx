@@ -19,12 +19,12 @@ export function DataTableToolbar<TData>({
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder='Filter users...'
+          placeholder='Filter by email...'
           value={
-            (table.getColumn('username')?.getFilterValue() as string) ?? ''
+            (table.getColumn('email')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('username')?.setFilterValue(event.target.value)
+            table.getColumn('email')?.setFilterValue(event.target.value)
           }
           className='h-8 w-[150px] lg:w-[250px]'
         />
@@ -36,8 +36,7 @@ export function DataTableToolbar<TData>({
               options={[
                 { label: 'Active', value: 'active' },
                 { label: 'Inactive', value: 'inactive' },
-                { label: 'Invited', value: 'invited' },
-                { label: 'Suspended', value: 'suspended' },
+                { label: 'Pending', value: 'pending' },
               ]}
             />
           )}

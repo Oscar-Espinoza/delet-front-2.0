@@ -12,9 +12,16 @@ import { useAuthStore } from '@/stores/authStore'
 import { handleServerError } from '@/utils/handle-server-error'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
+import { configureAmplify } from '@/lib/amplify-config'
 import './index.css'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
+
+// Configure AWS Amplify
+configureAmplify()
+
+// Initialize auth status
+useAuthStore.getState().auth.checkAuthStatus()
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,8 +67,18 @@ const queryClient = new QueryClient({
           router.navigate({ to: '/500' })
         }
         if (error.response?.status === 403) {
-          // router.navigate("/forbidden", { replace: true });
+          toast.error('Access denied!')
         }
+      } else if (error.name === 'NotAuthorizedException') {
+        toast.error('Authentication failed!')
+        useAuthStore.getState().auth.reset()
+        const redirect = `${router.history.location.href}`
+        router.navigate({ to: '/sign-in', search: { redirect } })
+      } else if (error.name === 'TokenExpiredException') {
+        toast.error('Session expired!')
+        useAuthStore.getState().auth.reset()
+        const redirect = `${router.history.location.href}`
+        router.navigate({ to: '/sign-in', search: { redirect } })
       }
     },
   }),

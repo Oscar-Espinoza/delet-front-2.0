@@ -2,8 +2,9 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
+import { Link, useNavigate, useSearch } from '@tanstack/react-router'
+import { signIn } from 'aws-amplify/auth'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { useAuthStore } from '@/stores/authStore'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -36,6 +38,9 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const search = useSearch({ from: '/(auth)/sign-in' }) as { redirect?: string }
+  const { checkAuthStatus } = useAuthStore((state) => state.auth)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,14 +50,34 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
+    
+    try {
+      await signIn({
+        username: data.email,
+        password: data.password,
+      })
+      
+      await checkAuthStatus()
+      toast.success('Successfully signed in!')
+      navigate({ to: search.redirect || '/' })
+    } catch (error: any) {
+      console.error('Sign in error:', error)
+      
+      if (error.name === 'UserNotConfirmedException') {
+        toast.error('Please confirm your email before signing in')
+        navigate({ to: '/otp', search: { email: data.email } })
+      } else if (error.name === 'NotAuthorizedException') {
+        toast.error('Invalid email or password')
+      } else if (error.name === 'UserNotFoundException') {
+        toast.error('User not found')
+      } else {
+        toast.error(error.message || 'Failed to sign in')
+      }
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -95,28 +120,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
-          Login
+          {isLoading ? 'Signing in...' : 'Login'}
         </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconBrandGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconBrandFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
       </form>
     </Form>
   )

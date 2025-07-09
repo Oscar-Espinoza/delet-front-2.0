@@ -2,6 +2,7 @@ import {
   IconBarrierBlock,
   IconBrowserCheck,
   IconBug,
+  IconBuilding,
   IconChecklist,
   IconError404,
   IconHelp,
@@ -14,13 +15,14 @@ import {
   IconPalette,
   IconServerOff,
   IconSettings,
+  IconShoppingCart,
   IconTool,
   IconUserCog,
   IconUserOff,
   IconUsers,
+  IconDevices,
 } from '@tabler/icons-react'
 import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -31,7 +33,7 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'Delet',
       logo: Command,
       plan: 'Vite + ShadcnUI',
     },
@@ -77,22 +79,19 @@ export const sidebarData: SidebarData = {
           icon: IconUsers,
         },
         {
-          title: 'Secured by Clerk',
-          icon: ClerkLogo,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/clerk/sign-in',
-            },
-            {
-              title: 'Sign Up',
-              url: '/clerk/sign-up',
-            },
-            {
-              title: 'User Management',
-              url: '/clerk/user-management',
-            },
-          ],
+          title: 'Orders',
+          url: '/orders',
+          icon: IconShoppingCart,
+        },
+        {
+          title: 'Companies',
+          url: '/companies',
+          icon: IconBuilding,
+        },
+        {
+          title: 'Hardware',
+          url: '/hardware',
+          icon: IconDevices,
         },
       ],
     },

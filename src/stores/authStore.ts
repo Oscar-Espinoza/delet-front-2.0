@@ -1,55 +1,94 @@
-import Cookies from 'js-cookie'
 import { create } from 'zustand'
-
-const ACCESS_TOKEN = 'thisisjustarandomstring'
+import { getCurrentUser, signOut, fetchAuthSession } from 'aws-amplify/auth'
 
 interface AuthUser {
-  accountNo: string
+  userId: string
   email: string
-  role: string[]
-  exp: number
+  attributes: Record<string, string>
+  groups?: string[]
 }
 
 interface AuthState {
   auth: {
     user: AuthUser | null
+    isLoading: boolean
+    isAuthenticated: boolean
     setUser: (user: AuthUser | null) => void
-    accessToken: string
-    setAccessToken: (accessToken: string) => void
-    resetAccessToken: () => void
+    setLoading: (loading: boolean) => void
+    checkAuthStatus: () => Promise<void>
+    logout: () => Promise<void>
     reset: () => void
   }
 }
 
-export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = Cookies.get(ACCESS_TOKEN)
-  const initToken = cookieState ? JSON.parse(cookieState) : ''
-  return {
-    auth: {
-      user: null,
-      setUser: (user) =>
-        set((state) => ({ ...state, auth: { ...state.auth, user } })),
-      accessToken: initToken,
-      setAccessToken: (accessToken) =>
-        set((state) => {
-          Cookies.set(ACCESS_TOKEN, JSON.stringify(accessToken))
-          return { ...state, auth: { ...state.auth, accessToken } }
-        }),
-      resetAccessToken: () =>
-        set((state) => {
-          Cookies.remove(ACCESS_TOKEN)
-          return { ...state, auth: { ...state.auth, accessToken: '' } }
-        }),
-      reset: () =>
-        set((state) => {
-          Cookies.remove(ACCESS_TOKEN)
-          return {
-            ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  auth: {
+    user: null,
+    isLoading: true,
+    isAuthenticated: false,
+    setUser: (user) =>
+      set((state) => ({ 
+        ...state, 
+        auth: { 
+          ...state.auth, 
+          user, 
+          isAuthenticated: !!user 
+        } 
+      })),
+    setLoading: (loading) =>
+      set((state) => ({ 
+        ...state, 
+        auth: { 
+          ...state.auth, 
+          isLoading: loading 
+        } 
+      })),
+    checkAuthStatus: async () => {
+      try {
+        set((state) => ({ ...state, auth: { ...state.auth, isLoading: true } }))
+        
+        const user = await getCurrentUser()
+        const session = await fetchAuthSession()
+        
+        if (user && session.tokens?.accessToken) {
+          const cognitoUser: AuthUser = {
+            userId: user.userId,
+            email: user.signInDetails?.loginId || '',
+            attributes: user.attributes || {},
+            groups: session.tokens.accessToken.payload['cognito:groups'] as string[] || []
           }
-        }),
+          
+          get().auth.setUser(cognitoUser)
+        } else {
+          get().auth.setUser(null)
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        get().auth.setUser(null)
+      } finally {
+        set((state) => ({ ...state, auth: { ...state.auth, isLoading: false } }))
+      }
     },
-  }
-})
+    logout: async () => {
+      try {
+        await signOut()
+        get().auth.reset()
+      } catch (error) {
+        console.error('Logout failed:', error)
+        get().auth.reset()
+      }
+    },
+    reset: () =>
+      set((state) => ({
+        ...state,
+        auth: { 
+          ...state.auth, 
+          user: null, 
+          isAuthenticated: false,
+          isLoading: false
+        },
+      })),
+  },
+}))
 
 // export const useAuth = () => useAuthStore((state) => state.auth)

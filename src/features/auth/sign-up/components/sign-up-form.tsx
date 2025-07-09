@@ -2,7 +2,9 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
+import { useNavigate } from '@tanstack/react-router'
+import { signUp } from 'aws-amplify/auth'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,6 +43,7 @@ const formSchema = z
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,14 +54,37 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
+    
+    try {
+      await signUp({
+        username: data.email,
+        password: data.password,
+        options: {
+          userAttributes: {
+            email: data.email,
+          },
+        },
+      })
+      
+      toast.success('Account created! Please check your email for verification code.')
+      navigate({ to: '/otp', search: { email: data.email } })
+    } catch (error: any) {
+      console.error('Sign up error:', error)
+      
+      if (error.name === 'UsernameExistsException') {
+        toast.error('An account with this email already exists')
+      } else if (error.name === 'InvalidPasswordException') {
+        toast.error('Password does not meet requirements')
+      } else if (error.name === 'InvalidParameterException') {
+        toast.error('Invalid email format')
+      } else {
+        toast.error(error.message || 'Failed to create account')
+      }
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -108,38 +134,8 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
-          Create Account
+          {isLoading ? 'Creating Account...' : 'Create Account'}
         </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button
-            variant='outline'
-            className='w-full'
-            type='button'
-            disabled={isLoading}
-          >
-            <IconBrandGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button
-            variant='outline'
-            className='w-full'
-            type='button'
-            disabled={isLoading}
-          >
-            <IconBrandFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
       </form>
     </Form>
   )

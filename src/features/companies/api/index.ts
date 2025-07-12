@@ -116,3 +116,6 @@ export const useUpdateCompany = () => {
     },
   });
 };
+
+export { companiesApi };
+export { useAllCompanies } from '../hooks/use-all-companies';

@@ -3,6 +3,7 @@ import {
   IconBrowserCheck,
   IconBug,
   IconBuilding,
+  IconBuildingSkyscraper,
   IconChecklist,
   IconError404,
   IconHelp,
@@ -21,6 +22,7 @@ import {
   IconUserOff,
   IconUsers,
   IconDevices,
+  IconPackage,
 } from '@tabler/icons-react'
 import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -92,6 +94,16 @@ export const sidebarData: SidebarData = {
           title: 'Hardware',
           url: '/hardware',
           icon: IconDevices,
+        },
+        {
+          title: 'Structures',
+          url: '/structures',
+          icon: IconBuildingSkyscraper,
+        },
+        {
+          title: 'Kits',
+          url: '/kits',
+          icon: IconPackage,
         },
       ],
     },

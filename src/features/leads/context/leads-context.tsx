@@ -29,15 +29,8 @@ interface LeadsContextType {
   setSelectedLeads: (leads: Lead[]) => void
 }
 
-const LeadsContext = createContext<LeadsContextType | undefined>(undefined)
+export const LeadsContext = createContext<LeadsContextType | undefined>(undefined)
 
-export const useLeadsContext = () => {
-  const context = useContext(LeadsContext)
-  if (!context) {
-    throw new Error('useLeadsContext must be used within a LeadsProvider')
-  }
-  return context
-}
 
 interface LeadsProviderProps {
   children: ReactNode

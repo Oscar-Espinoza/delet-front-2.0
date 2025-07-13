@@ -83,7 +83,14 @@ export const ordersApi = {
   },
 
   exportOrders: async (params: GetOrdersParams = {}, format = 'csv'): Promise<Blob> => {
-    const queryParams = new URLSearchParams(params as any)
+    const queryParams = new URLSearchParams()
+    
+    // Add only defined params to query string
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        queryParams.append(key, String(value))
+      }
+    })
     queryParams.append('format', format)
     
     const response = await apiClient.get<Blob>(

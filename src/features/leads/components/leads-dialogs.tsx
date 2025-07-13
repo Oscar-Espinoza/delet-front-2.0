@@ -2,7 +2,7 @@ import { CreateLeadModal } from './create-lead-modal'
 import { EditLeadModal } from './edit-lead-modal'
 import { ViewLeadModal } from './view-lead-modal'
 import { DeleteLeadDialog } from './delete-lead-dialog'
-import { useLeadsContext } from '../context/leads-context'
+import { useLeadsContext } from '../context/use-leads-context'
 
 export function LeadsDialogs() {
   const {

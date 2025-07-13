@@ -50,7 +50,7 @@ export function DataTableRowActions<TData>({
     cancelOrder.mutate({ id: order._id })
   }
 
-  const statusOptions: { value: OrderStatus; label: string; icon: any }[] = [
+  const statusOptions: { value: OrderStatus; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { 
       value: 'waiting for payment information', 
       label: 'Waiting for Payment',

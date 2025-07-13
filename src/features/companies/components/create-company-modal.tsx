@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { useCompaniesContext } from '../context/companies-context'
+import { useCompaniesContext } from '../context/use-companies-context'
 import { useCreateCompany } from '../api'
 import { companyFormSchema, CompanyFormData } from '../types'
 
@@ -57,7 +57,7 @@ export function CreateCompanyModal() {
       form.reset()
       setLogoPreview(null)
       setIsCreateDialogOpen(false)
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to create company')
     }
   }

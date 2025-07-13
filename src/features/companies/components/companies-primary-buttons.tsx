@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useCompaniesContext } from '../context/companies-context'
+import { useCompaniesContext } from '../context/use-companies-context'
 
 export function CompaniesPrimaryButtons() {
   const { setIsCreateDialogOpen } = useCompaniesContext()

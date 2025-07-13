@@ -108,7 +108,7 @@ export const columns: ColumnDef<Company>[] = [
       const parts = [address.city, address.state, address.country].filter(Boolean)
       return <LongText className='max-w-48'>{parts.join(', ')}</LongText>
     },
-    filterFn: (row, id, value) => {
+    filterFn: (row, _id, value) => {
       const { address } = row.original
       if (!address) return false
       

@@ -62,18 +62,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       await checkAuthStatus()
       toast.success('Successfully signed in!')
       navigate({ to: search.redirect || '/' })
-    } catch (error: any) {
-      console.error('Sign in error:', error)
+    } catch (error) {
       
-      if (error.name === 'UserNotConfirmedException') {
+      const authError = error as { name?: string; message?: string }
+      
+      if (authError.name === 'UserNotConfirmedException') {
         toast.error('Please confirm your email before signing in')
         navigate({ to: '/otp', search: { email: data.email } })
-      } else if (error.name === 'NotAuthorizedException') {
+      } else if (authError.name === 'NotAuthorizedException') {
         toast.error('Invalid email or password')
-      } else if (error.name === 'UserNotFoundException') {
+      } else if (authError.name === 'UserNotFoundException') {
         toast.error('User not found')
       } else {
-        toast.error(error.message || 'Failed to sign in')
+        toast.error(authError.message || 'Failed to sign in')
       }
     } finally {
       setIsLoading(false)

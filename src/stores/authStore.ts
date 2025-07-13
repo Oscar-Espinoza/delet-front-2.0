@@ -62,8 +62,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         } else {
           get().auth.setUser(null)
         }
-      } catch (error) {
-        console.error('Auth check failed:', error)
+      } catch (_error) {
+        // Auth check failed - user not authenticated
         get().auth.setUser(null)
       } finally {
         set((state) => ({ ...state, auth: { ...state.auth, isLoading: false } }))
@@ -73,8 +73,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       try {
         await signOut()
         get().auth.reset()
-      } catch (error) {
-        console.error('Logout failed:', error)
+      } catch (_error) {
+        // Logout failed - reset state anyway
         get().auth.reset()
       }
     },

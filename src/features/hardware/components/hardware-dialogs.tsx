@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useDeleteHardware } from '../hooks/use-hardware'
-import { useHardwareContext } from '../contexts/hardware-context'
+import { useHardwareContext } from '../contexts/use-hardware-context'
 import { showSubmittedData } from '@/utils/show-submitted-data'
 
 export function HardwareDialogs() {
@@ -20,7 +20,7 @@ export function HardwareDialogs() {
     setDeletingHardware,
   } = useHardwareContext()
 
-  const deleteHardwareMutation = useDeleteHardware()
+  const _deleteHardwareMutation = useDeleteHardware()
 
   const handleDelete = () => {
     if (deletingHardware) {

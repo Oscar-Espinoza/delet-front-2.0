@@ -15,6 +15,7 @@ import { Route as AuthenticatedStructuresRouteImport } from './routes/_authentic
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedKitsRouteImport } from './routes/_authenticated/kits'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
+import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
@@ -66,6 +67,11 @@ const AuthenticatedKitsRoute = AuthenticatedKitsRouteImport.update({
 const AuthenticatedCompaniesRoute = AuthenticatedCompaniesRouteImport.update({
   id: '/companies',
   path: '/companies',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const errors503Route = errors503RouteImport.update({
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/bookings': typeof AuthenticatedBookingsRoute
   '/companies': typeof AuthenticatedCompaniesRoute
   '/kits': typeof AuthenticatedKitsRoute
   '/leads': typeof AuthenticatedLeadsRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/bookings': typeof AuthenticatedBookingsRoute
   '/companies': typeof AuthenticatedCompaniesRoute
   '/kits': typeof AuthenticatedKitsRoute
   '/leads': typeof AuthenticatedLeadsRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/_authenticated/bookings': typeof AuthenticatedBookingsRoute
   '/_authenticated/companies': typeof AuthenticatedCompaniesRoute
   '/_authenticated/kits': typeof AuthenticatedKitsRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/bookings'
     | '/companies'
     | '/kits'
     | '/leads'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/bookings'
     | '/companies'
     | '/kits'
     | '/leads'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/_authenticated/bookings'
     | '/_authenticated/companies'
     | '/_authenticated/kits'
     | '/_authenticated/leads'
@@ -433,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/companies'
       fullPath: '/companies'
       preLoaderRoute: typeof AuthenticatedCompaniesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bookings': {
+      id: '/_authenticated/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/(errors)/503': {
@@ -624,6 +643,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
+  AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRoute
   AuthenticatedCompaniesRoute: typeof AuthenticatedCompaniesRoute
   AuthenticatedKitsRoute: typeof AuthenticatedKitsRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
@@ -640,6 +660,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
+  AuthenticatedBookingsRoute: AuthenticatedBookingsRoute,
   AuthenticatedCompaniesRoute: AuthenticatedCompaniesRoute,
   AuthenticatedKitsRoute: AuthenticatedKitsRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,

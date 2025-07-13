@@ -70,17 +70,18 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       
       toast.success('Account created! Please check your email for verification code.')
       navigate({ to: '/otp', search: { email: data.email } })
-    } catch (error: any) {
-      console.error('Sign up error:', error)
+    } catch (error) {
       
-      if (error.name === 'UsernameExistsException') {
+      const authError = error as { name?: string; message?: string }
+      
+      if (authError.name === 'UsernameExistsException') {
         toast.error('An account with this email already exists')
-      } else if (error.name === 'InvalidPasswordException') {
+      } else if (authError.name === 'InvalidPasswordException') {
         toast.error('Password does not meet requirements')
-      } else if (error.name === 'InvalidParameterException') {
+      } else if (authError.name === 'InvalidParameterException') {
         toast.error('Invalid email format')
       } else {
-        toast.error(error.message || 'Failed to create account')
+        toast.error(authError.message || 'Failed to create account')
       }
     } finally {
       setIsLoading(false)

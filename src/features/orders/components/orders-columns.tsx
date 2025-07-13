@@ -12,6 +12,7 @@ import {
 } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
+import type { OrderStatus, OrderType } from '../types'
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -89,7 +90,7 @@ export const columns: ColumnDef<Order>[] = [
       const type = row.getValue('type') as string
       return (
         <Badge variant='outline' className='capitalize'>
-          {getOrderTypeLabel(type as any)}
+          {getOrderTypeLabel(type as OrderType)}
         </Badge>
       )
     },
@@ -116,9 +117,9 @@ export const columns: ColumnDef<Order>[] = [
       return (
         <Badge 
           variant='outline' 
-          className={cn('capitalize', getOrderStatusColor(status as any))}
+          className={cn('capitalize', getOrderStatusColor(status as OrderStatus))}
         >
-          {getOrderStatusLabel(status as any)}
+          {getOrderStatusLabel(status as OrderStatus)}
         </Badge>
       )
     },

@@ -24,8 +24,8 @@ class ApiClient {
           if (token) {
             config.headers.Authorization = `Bearer ${token}`
           }
-        } catch (error) {
-          console.error('Error getting auth token:', error)
+        } catch (_error) {
+          // Continue without auth token
         }
 
         return config
@@ -55,7 +55,7 @@ class ApiClient {
 
   async post<T>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<T> {
     const response = await this.client.post<T>(url, data, config)
@@ -64,7 +64,7 @@ class ApiClient {
 
   async put<T>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<T> {
     const response = await this.client.put<T>(url, data, config)
@@ -73,7 +73,7 @@ class ApiClient {
 
   async patch<T>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<T> {
     const response = await this.client.patch<T>(url, data, config)

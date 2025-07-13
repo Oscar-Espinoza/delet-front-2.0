@@ -284,10 +284,13 @@ export const prepareContactsParams = (params: ContactsParams & {
   }
   
   // Remove the date fields
-  delete (apiParams as any).startTimeStartDate
-  delete (apiParams as any).startTimeEndDate
-  delete (apiParams as any).createdAtStartDate
-  delete (apiParams as any).createdAtEndDate
+  const result = { ...apiParams }
+  const dateFields = ['startTimeStartDate', 'startTimeEndDate', 'createdAtStartDate', 'createdAtEndDate']
+  dateFields.forEach(field => {
+    if (field in result) {
+      delete (result as Record<string, unknown>)[field]
+    }
+  })
   
-  return apiParams
+  return result as ContactsParams
 }

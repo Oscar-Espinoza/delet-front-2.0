@@ -1,7 +1,6 @@
 import {
   CircleIcon,
   CrossCircledIcon,
-  StopwatchIcon,
 } from '@radix-ui/react-icons'
 import { Package, CreditCard, CheckCircle } from 'lucide-react'
 

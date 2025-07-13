@@ -91,7 +91,7 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
         _id: lead.contact._id, // Use contact ID for update
       })
       onClose()
-    } catch (error) {
+    } catch (_error) {
       // Error is handled by the mutation
     }
   }
@@ -99,7 +99,7 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
   const handleFileChange = (field: keyof typeof documentPreviews) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      form.setValue(field as any, file)
+      form.setValue(field as keyof UpdateLeadFormData, file as never)
       const reader = new FileReader()
       reader.onloadend = () => {
         setDocumentPreviews(prev => ({

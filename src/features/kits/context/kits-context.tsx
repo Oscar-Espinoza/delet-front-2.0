@@ -14,7 +14,7 @@ interface KitsContextType {
   setIsDeleteDialogOpen: (open: boolean) => void
 }
 
-const KitsContext = React.createContext<KitsContextType | undefined>(undefined)
+export const KitsContext = React.createContext<KitsContextType | undefined>(undefined)
 
 export function KitsProvider({ children }: { children: React.ReactNode }) {
   const [selectedKit, setSelectedKit] = React.useState<Kit | null>(null)
@@ -43,10 +43,3 @@ export function KitsProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useKitsContext() {
-  const context = React.useContext(KitsContext)
-  if (context === undefined) {
-    throw new Error('useKitsContext must be used within a KitsProvider')
-  }
-  return context
-}

@@ -60,17 +60,16 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
       await checkAuthStatus()
       toast.success('Email verified successfully!')
       navigate({ to: '/dashboard' })
-    } catch (error: any) {
-      console.error('OTP verification error:', error)
+    } catch (error) {
       
-      if (error.name === 'CodeMismatchException') {
+      if (error instanceof Error && error.name === 'CodeMismatchException') {
         toast.error('Invalid verification code')
-      } else if (error.name === 'ExpiredCodeException') {
+      } else if (error instanceof Error && error.name === 'ExpiredCodeException') {
         toast.error('Verification code has expired')
-      } else if (error.name === 'NotAuthorizedException') {
+      } else if (error instanceof Error && error.name === 'NotAuthorizedException') {
         toast.error('User is already confirmed')
       } else {
-        toast.error(error.message || 'Failed to verify code')
+        toast.error(error instanceof Error ? error.message : 'Failed to verify code')
       }
     } finally {
       setIsLoading(false)
@@ -91,9 +90,8 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
       })
       
       toast.success('Verification code resent to your email')
-    } catch (error: any) {
-      console.error('Resend code error:', error)
-      toast.error(error.message || 'Failed to resend code')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to resend code')
     } finally {
       setIsResending(false)
     }

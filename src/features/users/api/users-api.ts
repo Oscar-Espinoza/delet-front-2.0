@@ -33,7 +33,7 @@ export const getUsersList = async ({
       adminPanelRole: user.adminPanelRole || '',
     }))
   } catch (error) {
-    console.error('Error fetching users list:', error)
+    // Re-throw error for React Query to handle
     throw error
   }
 }

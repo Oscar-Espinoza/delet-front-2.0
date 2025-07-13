@@ -12,7 +12,7 @@ import CompaniesProvider from './context/companies-context'
 import { useCompanies } from './api'
 
 export default function Companies() {
-  const [page, setPage] = useState(1)
+  const [page, _setPage] = useState(1)
   const [limit] = useState(10)
   
   // Fetch companies data with pagination
@@ -23,7 +23,7 @@ export default function Companies() {
   })
 
   const companies = data?.companies || []
-  const totalCount = data?.totalCount || 0
+  const _totalCount = data?.totalCount || 0
 
   if (error) {
     return (

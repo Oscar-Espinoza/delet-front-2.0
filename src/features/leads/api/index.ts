@@ -3,7 +3,6 @@ import { toast } from 'sonner'
 import { 
   contactsApi, 
   ContactsParams, 
-  ContactsResponse,
   ContactData,
   CreateContactData,
   UpdateContactData,
@@ -12,7 +11,7 @@ import {
 import { Lead, LeadsResponse, LeadFilters, LeadSort } from '../types'
 
 // Convert ContactData to Lead type (they're the same, just aliased for clarity)
-type LeadData = ContactData
+type _LeadData = ContactData
 type CreateLeadData = CreateContactData
 type UpdateLeadData = UpdateContactData
 

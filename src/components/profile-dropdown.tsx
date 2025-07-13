@@ -21,8 +21,8 @@ export function ProfileDropdown() {
     try {
       await logout()
       navigate({ to: '/sign-in' })
-    } catch (error) {
-      console.error('Logout failed:', error)
+    } catch (_error) {
+      // Handle logout error silently
     }
   }
   

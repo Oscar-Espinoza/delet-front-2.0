@@ -56,8 +56,8 @@ export function PlaceOrderDialog({ open, onOpenChange }: PlaceOrderDialogProps) 
       await placeOrder.mutateAsync({ data })
       form.reset()
       onOpenChange(false)
-    } catch (error) {
-      console.error('Failed to place order:', error)
+    } catch (_error) {
+      // Handle error silently - mutation handles toast
     } finally {
       setIsSubmitting(false)
     }

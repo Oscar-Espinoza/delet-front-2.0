@@ -16,7 +16,7 @@ interface HardwareContextType {
   setDeletingHardware: (hardware: Hardware | null) => void
 }
 
-const HardwareContext = createContext<HardwareContextType | undefined>(undefined)
+export const HardwareContext = createContext<HardwareContextType | undefined>(undefined)
 
 export function HardwareProvider({ children }: { children: ReactNode }) {
   const [selectedHardware, setSelectedHardware] = useState<Hardware[]>([])
@@ -48,10 +48,3 @@ export function HardwareProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useHardwareContext() {
-  const context = useContext(HardwareContext)
-  if (!context) {
-    throw new Error('useHardwareContext must be used within a HardwareProvider')
-  }
-  return context
-}

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import LongText from '@/components/long-text'
 import { callTypes, userTypes } from '../data/data'
-import { User, getUserStatus } from '../data/schema'
+import { User, getUserStatus, UserStatus } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
 
@@ -95,7 +95,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue('status') as string
-      const badgeColor = callTypes.get(status as any)
+      const badgeColor = callTypes.get(status as UserStatus)
       return (
         <div className='flex space-x-2'>
           <Badge variant='outline' className={cn('capitalize', badgeColor)}>

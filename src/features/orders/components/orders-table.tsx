@@ -99,7 +99,7 @@ export function OrdersTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const meta = header.column.columnDef.meta as any
+                  const meta = header.column.columnDef.meta as { className?: string }
                   return (
                     <TableHead
                       key={header.id}
@@ -127,7 +127,7 @@ export function OrdersTable<TData, TValue>({
                   className='group/row'
                 >
                   {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as any
+                    const meta = cell.column.columnDef.meta as { className?: string }
                     return (
                       <TableCell key={cell.id} className={cn(meta?.className)}>
                         {flexRender(

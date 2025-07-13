@@ -59,7 +59,7 @@ export function useUpdateHardware() {
 
       return { previousHardware }
     },
-    onError: (error, variables, context) => {
+    onError: (_error, variables, context) => {
       if (context?.previousHardware) {
         queryClient.setQueryData(
           [HARDWARE_QUERY_KEY, variables.id],

@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Lead } from '../types'
-import { useLeadsContext } from '../context/leads-context'
+import { useLeadsContext } from '../context/use-leads-context'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

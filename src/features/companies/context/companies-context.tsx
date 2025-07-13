@@ -10,7 +10,7 @@ interface CompaniesContextType {
   setEditingCompany: (company: Company | null) => void
 }
 
-const CompaniesContext = createContext<CompaniesContextType | undefined>(undefined)
+export const CompaniesContext = createContext<CompaniesContextType | undefined>(undefined)
 
 export function CompaniesProvider({ children }: { children: ReactNode }) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -33,12 +33,5 @@ export function CompaniesProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useCompaniesContext() {
-  const context = useContext(CompaniesContext)
-  if (!context) {
-    throw new Error('useCompaniesContext must be used within a CompaniesProvider')
-  }
-  return context
-}
 
 export default CompaniesProvider

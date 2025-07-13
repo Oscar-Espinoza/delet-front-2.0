@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { ordersApi } from '../api/orders-api'
 import type { GetOrdersParams } from '../types'
-import type { OrderPlacedFormValues } from '../data/schema'
+import type { OrderPlacedFormValues, Order } from '../data/schema'
 
 export const ORDERS_QUERY_KEY = 'orders'
 
@@ -31,8 +31,9 @@ export const usePlaceOrder = () => {
       queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
       toast.success('Order placed successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to place order')
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to place order')
     },
   })
 }
@@ -55,8 +56,9 @@ export const useUpdateOrderStatus = () => {
       queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY, variables.id] })
       toast.success('Order status updated')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update order status')
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to update order status')
     },
   })
 }
@@ -71,7 +73,7 @@ export const useUpdateOrder = () => {
       isAdmin,
     }: {
       id: string
-      data: any
+      data: Partial<Order>
       isAdmin?: boolean
     }) => ordersApi.updateOrder(id, data, isAdmin),
     onSuccess: (_, variables) => {
@@ -79,8 +81,9 @@ export const useUpdateOrder = () => {
       queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY, variables.id] })
       toast.success('Order updated successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update order')
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to update order')
     },
   })
 }
@@ -96,8 +99,9 @@ export const useCancelOrder = () => {
       queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY, variables.id] })
       toast.success('Order cancelled')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to cancel order')
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to cancel order')
     },
   })
 }
@@ -112,8 +116,9 @@ export const useDeleteOrder = () => {
       queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
       toast.success('Order deleted')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete order')
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to delete order')
     },
   })
 }
@@ -133,8 +138,9 @@ export const useExportOrders = () => {
       document.body.removeChild(a)
       toast.success('Orders exported successfully')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to export orders')
+    onError: (error) => {
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to export orders')
     },
   })
 }

@@ -7,7 +7,7 @@ import LongText from '@/components/long-text'
 import { Lead, getStatusColor, getStatusLabel } from '../types'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
-import { CheckCircle2, XCircle, Calendar, User, Building, MapPin } from 'lucide-react'
+import { CheckCircle2, XCircle, Calendar, User, MapPin } from 'lucide-react'
 
 export const columns: ColumnDef<Lead>[] = [
   {

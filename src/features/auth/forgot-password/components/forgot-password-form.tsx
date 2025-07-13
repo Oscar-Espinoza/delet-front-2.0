@@ -45,15 +45,14 @@ export function ForgotPasswordForm({ className, ...props }: ForgotFormProps) {
       
       toast.success('Password reset code sent to your email')
       navigate({ to: '/reset-password', search: { email: data.email } })
-    } catch (error: any) {
-      console.error('Reset password error:', error)
+    } catch (error) {
       
-      if (error.name === 'UserNotFoundException') {
+      if (error instanceof Error && error.name === 'UserNotFoundException') {
         toast.error('No account found with this email address')
-      } else if (error.name === 'InvalidParameterException') {
+      } else if (error instanceof Error && error.name === 'InvalidParameterException') {
         toast.error('Invalid email format')
       } else {
-        toast.error(error.message || 'Failed to send reset code')
+        toast.error(error instanceof Error ? error.message : 'Failed to send reset code')
       }
     } finally {
       setIsLoading(false)

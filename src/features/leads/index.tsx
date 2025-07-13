@@ -21,12 +21,12 @@ export default function LeadsPage() {
   const [limit, setLimit] = useState(10)
 
   // Filters state
-  const [filters, setFilters] = useState<LeadFilters>({
+  const [filters, _setFilters] = useState<LeadFilters>({
     tabValue: 'leads',
   })
   
   // Sort state
-  const [sort, setSort] = useState<LeadSort>({
+  const [sort, _setSort] = useState<LeadSort>({
     field: 'createdAt',
     order: 'desc',
   })

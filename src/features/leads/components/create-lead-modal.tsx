@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Upload } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -66,7 +66,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
       form.reset()
       setDocumentPreviews({})
       onClose()
-    } catch (error) {
+    } catch (_error) {
       // Error is handled by the mutation
     }
   }
@@ -74,7 +74,7 @@ export function CreateLeadModal({ open, onClose }: CreateLeadModalProps) {
   const handleFileChange = (field: keyof typeof documentPreviews) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      form.setValue(field as any, file)
+      form.setValue(field as keyof CreateLeadFormData, file as never)
       const reader = new FileReader()
       reader.onloadend = () => {
         setDocumentPreviews(prev => ({

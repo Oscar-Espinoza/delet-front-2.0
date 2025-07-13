@@ -12,7 +12,7 @@ interface StructuresContextType {
   setIsViewDialogOpen: (open: boolean) => void
 }
 
-const StructuresContext = createContext<StructuresContextType | undefined>(undefined)
+export const StructuresContext = createContext<StructuresContextType | undefined>(undefined)
 
 export function StructuresProvider({ children }: { children: React.ReactNode }) {
   const [selectedStructure, setSelectedStructure] = useState<Structure | null>(null)
@@ -38,10 +38,3 @@ export function StructuresProvider({ children }: { children: React.ReactNode }) 
   )
 }
 
-export function useStructuresContext() {
-  const context = useContext(StructuresContext)
-  if (context === undefined) {
-    throw new Error('useStructuresContext must be used within a StructuresProvider')
-  }
-  return context
-}

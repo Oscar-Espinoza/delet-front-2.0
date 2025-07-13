@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Row } from '@tanstack/react-table'
 import { MoreHorizontal, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -9,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Company } from '../types'
-import { useCompaniesContext } from '../context/companies-context'
+import { useCompaniesContext } from '../context/use-companies-context'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

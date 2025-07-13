@@ -60,6 +60,35 @@ src/
 - Accessibility via RadixUI primitives
 - Consistent prop interfaces across UI components
 
+#### Feature Page Structure
+Every feature page should follow this structure:
+```tsx
+<FeatureProvider>
+  <Header fixed>
+    <Search />
+    <div className='ml-auto flex items-center space-x-4'>
+      <ThemeSwitch />
+      <ProfileDropdown />
+    </div>
+  </Header>
+  
+  <Main>
+    <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
+      <div>
+        <h2 className='text-2xl font-bold tracking-tight'>Feature Title</h2>
+        <p className='text-muted-foreground'>Feature description</p>
+      </div>
+      <PrimaryButtons />
+    </div>
+    <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
+      {/* Main content */}
+    </div>
+  </Main>
+  
+  <Dialogs />
+</FeatureProvider>
+```
+
 #### Authentication
 - Auth store in `src/stores/authStore.ts` manages JWT tokens
 - Protected route wrapper checks auth state
@@ -84,6 +113,21 @@ When adapting this template for your admin panel:
    - Include: components, hooks, types, and API calls
    - Follow existing patterns from users/tasks features
 
+### Implementation Planning
+
+When implementing new features:
+1. **Create a TASK.md file** with clear milestones before starting implementation
+2. **Use the TodoWrite tool** to track progress throughout development
+3. **Update milestones** as you complete each phase
+4. Structure milestones as:
+   - API Integration Setup
+   - Data Types & Interfaces
+   - Feature Module Structure
+   - UI Components
+   - Routing
+   - State Management
+   - Testing & Polish
+
 4. **Data Tables**
    - Use the existing DataTable component pattern
    - Define columns with proper TypeScript types
@@ -102,6 +146,45 @@ When adapting this template for your admin panel:
 - **API Calls**: Wrap in TanStack Query hooks for caching
 - **Error Handling**: Use error boundaries and toast notifications
 - **Loading States**: Leverage React Suspense with route-based code splitting
+
+### Common Import Patterns
+
+When implementing features, be aware of these import patterns:
+
+1. **Toast Notifications**: Use `import { toast } from 'sonner'`
+   - Use `toast.success('message')` for success messages
+   - Use `toast.error('message')` for error messages
+   - DO NOT import from `@/hooks/use-toast` (doesn't exist)
+
+2. **Routing**: 
+   - DO NOT use `useSearchParams` from TanStack Router
+   - Use `useState` for pagination state management
+   - Follow the pattern in existing features (companies, users)
+
+3. **Layout Components**: All feature pages should use:
+   ```tsx
+   import { Header } from '@/components/layout/header'
+   import { Main } from '@/components/layout/main'
+   import { ProfileDropdown } from '@/components/profile-dropdown'
+   import { Search } from '@/components/search'
+   import { ThemeSwitch } from '@/components/theme-switch'
+   ```
+
+4. **Check Existing Patterns**: Before importing, always check how similar functionality is imported in existing features to maintain consistency
+
+### Troubleshooting Common Issues
+
+#### Import Errors
+When encountering import errors:
+1. **Check if the component exists** - Some components might be referenced but not created (e.g., PageHeader)
+2. **Verify import paths** - Use existing features as reference
+3. **Check library exports** - Not all functions are exported from all libraries
+4. **Follow established patterns** - Don't introduce new patterns without checking existing code
+
+#### Pattern Consistency
+- Always examine 2-3 similar features before implementing
+- Copy the structure from existing features and adapt
+- Don't assume common patterns from other projects apply here
 
 ### Current Features to Adapt
 

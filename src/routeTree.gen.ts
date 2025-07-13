@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedStructuresRouteImport } from './routes/_authenticated/structures'
+import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedKitsRouteImport } from './routes/_authenticated/kits'
 import { Route as AuthenticatedCompaniesRouteImport } from './routes/_authenticated/companies'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
@@ -50,6 +51,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedStructuresRoute = AuthenticatedStructuresRouteImport.update({
   id: '/structures',
   path: '/structures',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedKitsRoute = AuthenticatedKitsRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/503': typeof errors503Route
   '/companies': typeof AuthenticatedCompaniesRoute
   '/kits': typeof AuthenticatedKitsRoute
+  '/leads': typeof AuthenticatedLeadsRoute
   '/structures': typeof AuthenticatedStructuresRoute
   '/': typeof AuthenticatedIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/503': typeof errors503Route
   '/companies': typeof AuthenticatedCompaniesRoute
   '/kits': typeof AuthenticatedKitsRoute
+  '/leads': typeof AuthenticatedLeadsRoute
   '/structures': typeof AuthenticatedStructuresRoute
   '/': typeof AuthenticatedIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/(errors)/503': typeof errors503Route
   '/_authenticated/companies': typeof AuthenticatedCompaniesRoute
   '/_authenticated/kits': typeof AuthenticatedKitsRoute
+  '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/structures': typeof AuthenticatedStructuresRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/companies'
     | '/kits'
+    | '/leads'
     | '/structures'
     | '/'
     | '/settings/account'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/503'
     | '/companies'
     | '/kits'
+    | '/leads'
     | '/structures'
     | '/'
     | '/settings/account'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/(errors)/503'
     | '/_authenticated/companies'
     | '/_authenticated/kits'
+    | '/_authenticated/leads'
     | '/_authenticated/structures'
     | '/_authenticated/'
     | '/_authenticated/settings/account'
@@ -400,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/structures'
       fullPath: '/structures'
       preLoaderRoute: typeof AuthenticatedStructuresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/leads': {
+      id: '/_authenticated/leads'
+      path: '/leads'
+      fullPath: '/leads'
+      preLoaderRoute: typeof AuthenticatedLeadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/kits': {
@@ -607,6 +626,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedCompaniesRoute: typeof AuthenticatedCompaniesRoute
   AuthenticatedKitsRoute: typeof AuthenticatedKitsRoute
+  AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedStructuresRoute: typeof AuthenticatedStructuresRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
@@ -622,6 +642,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedCompaniesRoute: AuthenticatedCompaniesRoute,
   AuthenticatedKitsRoute: AuthenticatedKitsRoute,
+  AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedStructuresRoute: AuthenticatedStructuresRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,

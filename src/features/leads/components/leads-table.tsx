@@ -1,34 +1,12 @@
-import { useState } from 'react'
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  RowData,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { ColumnDef, RowData, PaginationState } from '@tanstack/react-table'
+import { DataTable, useDataTable, DataTableViewOptions } from '@/components/data-table'
 import { Lead } from '../types'
-import { DataTablePagination } from './data-table-pagination'
-import { DataTableToolbar } from './data-table-toolbar'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { X } from 'lucide-react'
 
 declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   interface ColumnMeta<TData extends RowData, TValue> {
     className: string
   }
@@ -44,6 +22,10 @@ interface DataTableProps {
     pageIndex: number
     pageSize: number
   }
+  searchValue?: string
+  onSearchChange?: (value: string) => void
+  onSearchSubmit?: () => void
+  onSearchClear?: () => void
 }
 
 export function LeadsTable({ 
@@ -52,114 +34,66 @@ export function LeadsTable({
   isLoading,
   pageCount,
   onPaginationChange,
-  pagination 
+  searchValue,
+  onSearchChange,
+  onSearchSubmit,
+  onSearchClear,
 }: DataTableProps) {
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
-
-  const table = useReactTable({
+  const { table } = useDataTable({
     data,
     columns,
     pageCount,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-      pagination,
-    },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     manualPagination: true,
+    onPaginationChange: onPaginationChange as ((pagination: PaginationState) => void) | undefined,
   })
 
-  return (
-    <div className='space-y-4'>
-      <DataTableToolbar table={table} />
-      <div className='rounded-md border'>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className='group/row'>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={header.column.columnDef.meta?.className ?? ''}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  <div className='flex flex-col items-center justify-center space-y-2'>
-                    <Skeleton className='h-4 w-[250px]' />
-                    <Skeleton className='h-4 w-[200px]' />
-                    <Skeleton className='h-4 w-[220px]' />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className='group/row'
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cell.column.columnDef.meta?.className ?? ''}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  No leads found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+  // Custom toolbar with search
+  const customToolbar = (
+    <div className='flex items-center justify-between'>
+      <div className='flex flex-1 items-center space-x-2'>
+        <Input
+          placeholder='Filter leads...'
+          value={searchValue ?? ''}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSearchSubmit?.()
+            }
+          }}
+          className='h-8 w-[150px] lg:w-[250px]'
+        />
+        {searchValue && (
+          <Button
+            variant='ghost'
+            onClick={onSearchClear}
+            className='h-8 px-2 lg:px-3'
+          >
+            Clear
+            <X className='ml-2 h-4 w-4' />
+          </Button>
+        )}
       </div>
-      <DataTablePagination table={table} />
+      <DataTableViewOptions table={table} />
     </div>
+  )
+
+  return (
+    <DataTable
+      table={table}
+      columns={columns}
+      isLoading={isLoading}
+      toolbar={customToolbar}
+      showToolbar={true}
+      emptyState={
+        <tr>
+          <td
+            colSpan={columns.length}
+            className='h-24 text-center'
+          >
+            No leads found.
+          </td>
+        </tr>
+      }
+    />
   )
 }

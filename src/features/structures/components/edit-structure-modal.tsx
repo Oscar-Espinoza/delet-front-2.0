@@ -351,7 +351,7 @@ export function EditStructureModal() {
                             value: p._id
                           }))}
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={field.value ?? []}
                           placeholder='Select properties'
                         />
                       </FormControl>
@@ -369,11 +369,11 @@ export function EditStructureModal() {
                       <FormControl>
                         <MultiSelect
                           options={hardware.map(h => ({
-                            label: h.name,
+                            label: h.name ?? 'Unnamed Hardware',
                             value: h._id
                           }))}
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={field.value ?? []}
                           placeholder='Select hardware'
                         />
                       </FormControl>

@@ -48,17 +48,67 @@ src/
 - Protected routes in `_authenticated/` directory
 - Route components lazy-loaded for code splitting
 - Error boundaries at route level
+- Add route metadata (title, breadcrumb, description) for better navigation
+- Configure preloading for frequently accessed routes
 
 #### State Management
 - **Server State**: TanStack Query with caching strategies
 - **Client State**: Zustand stores in `src/stores/`
 - **UI State**: Context API for theme, font, search
 
+#### TanStack Query Patterns
+- **Query Keys**: Use centralized query key factory from `@/lib/query-keys`
+- **Optimistic Updates**: Implement for better UX on mutations
+- **Pattern Example**:
+  ```tsx
+  import { queryKeys } from '@/lib/query-keys'
+  
+  // Use factory pattern for query keys
+  useQuery({
+    queryKey: queryKeys.companies.list(params),
+    queryFn: () => companiesApi.getCompanies(params),
+  })
+  
+  // Implement optimistic updates
+  useMutation({
+    mutationFn: updateCompany,
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.companies.all })
+      const previous = queryClient.getQueryData(queryKeys.companies.detail(id))
+      queryClient.setQueryData(queryKeys.companies.detail(id), newData)
+      return { previous }
+    },
+    onError: (err, newData, context) => {
+      queryClient.setQueryData(queryKeys.companies.detail(id), context.previous)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.companies.all })
+    }
+  })
+  ```
+
 #### Component Architecture
 - Compound components pattern (e.g., DataTable)
 - Controlled components with React Hook Form
 - Accessibility via RadixUI primitives
 - Consistent prop interfaces across UI components
+
+#### Data Tables
+- Use shared DataTable components from `@/components/data-table/`
+- Leverage reusable hooks: `useDataTable`, `usePagination`, `useFilters`
+- Example implementation:
+  ```tsx
+  import { DataTable } from '@/components/data-table/data-table'
+  import { columns } from './columns'
+  
+  <DataTable
+    columns={columns}
+    data={data}
+    loading={isLoading}
+    manualPagination
+    pageCount={pageCount}
+  />
+  ```
 
 #### Feature Page Structure
 Every feature page should follow this structure:

@@ -54,7 +54,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           const cognitoUser: AuthUser = {
             userId: user.userId,
             email: user.signInDetails?.loginId || '',
-            attributes: user.attributes || {},
+            attributes: {},
             groups: session.tokens.accessToken.payload['cognito:groups'] as string[] || []
           }
           

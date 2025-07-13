@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { StructuresContext } from './structures-context'
+import { StructuresContext } from './context'
 
 export function useStructuresContext() {
   const context = useContext(StructuresContext)

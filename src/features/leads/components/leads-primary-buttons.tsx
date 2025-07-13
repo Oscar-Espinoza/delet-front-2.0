@@ -1,22 +1,14 @@
-import { Plus, Download } from 'lucide-react'
+import { Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useLeadsContext } from '../context/use-leads-context'
 import { useExportLeads } from '../api'
+import { LeadFilters } from '../types'
 
 interface LeadsPrimaryButtonsProps {
-  filters?: {
-    search?: string
-    propertyIds?: string[]
-    companiesIds?: string[]
-    tabValue?: string
-    startTimeRange?: { start?: Date; end?: Date }
-    createdAtRange?: { start?: Date; end?: Date }
-  }
+  filters?: LeadFilters
   isAdmin?: boolean
 }
 
 export function LeadsPrimaryButtons({ filters, isAdmin }: LeadsPrimaryButtonsProps) {
-  const { setIsCreateDialogOpen } = useLeadsContext()
   const exportLeads = useExportLeads()
 
   const handleExport = () => {
@@ -38,13 +30,6 @@ export function LeadsPrimaryButtons({ filters, isAdmin }: LeadsPrimaryButtonsPro
       >
         <Download className='mr-2 h-4 w-4' />
         Export CSV
-      </Button>
-      <Button
-        size='sm'
-        onClick={() => setIsCreateDialogOpen(true)}
-      >
-        <Plus className='mr-2 h-4 w-4' />
-        Add Lead
       </Button>
     </div>
   )

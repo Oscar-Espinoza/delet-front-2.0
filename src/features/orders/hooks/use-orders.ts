@@ -3,19 +3,18 @@ import { toast } from 'sonner'
 import { ordersApi } from '../api/orders-api'
 import type { GetOrdersParams } from '../types'
 import type { OrderPlacedFormValues, Order } from '../data/schema'
-
-export const ORDERS_QUERY_KEY = 'orders'
+import { queryKeys } from '@/lib/query-keys'
 
 export const useOrders = (params: GetOrdersParams = {}) => {
   return useQuery({
-    queryKey: [ORDERS_QUERY_KEY, params],
+    queryKey: queryKeys.orders.list(params),
     queryFn: () => ordersApi.getOrders(params),
   })
 }
 
 export const useOrder = (id: string, isAdmin = false) => {
   return useQuery({
-    queryKey: [ORDERS_QUERY_KEY, id, isAdmin],
+    queryKey: [...queryKeys.orders.detail(id), { isAdmin }],
     queryFn: () => ordersApi.getOrder(id, isAdmin),
     enabled: !!id,
   })
@@ -28,7 +27,7 @@ export const usePlaceOrder = () => {
     mutationFn: ({ data, isAdmin }: { data: OrderPlacedFormValues; isAdmin?: boolean }) =>
       ordersApi.placeOrder(data, isAdmin),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
       toast.success('Order placed successfully')
     },
     onError: (error) => {
@@ -52,8 +51,8 @@ export const useUpdateOrderStatus = () => {
       isAdmin?: boolean
     }) => ordersApi.updateOrderStatus(id, status, isAdmin),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY, variables.id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(variables.id) })
       toast.success('Order status updated')
     },
     onError: (error) => {
@@ -77,8 +76,8 @@ export const useUpdateOrder = () => {
       isAdmin?: boolean
     }) => ordersApi.updateOrder(id, data, isAdmin),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY, variables.id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(variables.id) })
       toast.success('Order updated successfully')
     },
     onError: (error) => {
@@ -95,8 +94,8 @@ export const useCancelOrder = () => {
     mutationFn: ({ id, isAdmin }: { id: string; isAdmin?: boolean }) =>
       ordersApi.cancelOrder(id, isAdmin),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY, variables.id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(variables.id) })
       toast.success('Order cancelled')
     },
     onError: (error) => {
@@ -113,7 +112,7 @@ export const useDeleteOrder = () => {
     mutationFn: ({ id, isAdmin }: { id: string; isAdmin?: boolean }) =>
       ordersApi.deleteOrder(id, isAdmin),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
       toast.success('Order deleted')
     },
     onError: (error) => {

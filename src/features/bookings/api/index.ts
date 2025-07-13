@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api-client'
+import { queryKeys } from '@/lib/query-keys'
 import type {
   Booking,
   BookingFilters,
@@ -68,14 +69,14 @@ export const deleteBooking = async (id: string): Promise<void> => {
 // React Query hooks
 export const useBookings = (filters: BookingFilters) => {
   return useQuery({
-    queryKey: ['bookings', filters],
+    queryKey: queryKeys.bookings.list(filters),
     queryFn: () => getBookings(filters),
   })
 }
 
 export const useBooking = (id: string) => {
   return useQuery({
-    queryKey: ['booking', id],
+    queryKey: queryKeys.bookings.detail(id),
     queryFn: () => getBooking(id),
     enabled: !!id,
   })
@@ -87,7 +88,7 @@ export const useCreateBooking = () => {
   return useMutation({
     mutationFn: createBooking,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.bookings.all })
     },
   })
 }
@@ -103,8 +104,9 @@ export const useUpdateBooking = () => {
       id: string
       data: Partial<BookingFormData>
     }) => updateBooking(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lists() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(id) })
     },
   })
 }
@@ -114,8 +116,9 @@ export const useDeleteBooking = () => {
 
   return useMutation({
     mutationFn: deleteBooking,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] })
+    onSuccess: (_, deletedId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lists() })
+      queryClient.removeQueries({ queryKey: queryKeys.bookings.detail(deletedId) })
     },
   })
 }

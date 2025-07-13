@@ -1,12 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getUsersList, getUser, updateUser, deleteUser, inviteUser } from '../api/users-api'
+import { queryKeys } from '@/lib/query-keys'
 import type { User, GetUsersListParams } from '../types'
-
-export const USERS_QUERY_KEY = 'users'
 
 export const useUsersList = (params: GetUsersListParams = {}) => {
   return useQuery({
-    queryKey: [USERS_QUERY_KEY, 'list', params],
+    queryKey: queryKeys.users.list(params),
     queryFn: () => getUsersList(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -14,7 +13,7 @@ export const useUsersList = (params: GetUsersListParams = {}) => {
 
 export const useUser = (userId: string) => {
   return useQuery({
-    queryKey: [USERS_QUERY_KEY, userId],
+    queryKey: queryKeys.users.detail(userId),
     queryFn: () => getUser(userId),
     enabled: !!userId,
   })
@@ -26,19 +25,50 @@ export const useUpdateUser = () => {
   return useMutation({
     mutationFn: ({ userId, data }: { userId: string; data: Partial<User> }) => 
       updateUser(userId, data),
-    onSuccess: (updatedUser) => {
-      // Update the user in the list cache
-      queryClient.setQueryData(
-        [USERS_QUERY_KEY],
-        (oldData: User[] | undefined) => {
-          if (!oldData) return oldData
-          return oldData.map(user => 
-            user._id === updatedUser._id ? updatedUser : user
-          )
-        }
-      )
-      // Update the individual user cache
-      queryClient.setQueryData([USERS_QUERY_KEY, updatedUser._id], updatedUser)
+    onMutate: async ({ userId, data }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.detail(userId) })
+      await queryClient.cancelQueries({ queryKey: queryKeys.users.lists() })
+
+      // Snapshot the previous values
+      const previousUser = queryClient.getQueryData(queryKeys.users.detail(userId))
+      const previousLists = queryClient.getQueriesData({ queryKey: queryKeys.users.lists() })
+
+      // Optimistically update the user detail
+      queryClient.setQueryData(queryKeys.users.detail(userId), (old: User | undefined) => {
+        if (!old) return old
+        return { ...old, ...data }
+      })
+
+      // Optimistically update all user lists
+      queryClient.setQueriesData({ queryKey: queryKeys.users.lists() }, (old: User[] | undefined) => {
+        if (!old) return old
+        return old.map(user => 
+          user._id === userId ? { ...user, ...data } : user
+        )
+      })
+
+      // Return context for rollback
+      return { previousUser, previousLists }
+    },
+    onError: (_err, { userId }, context) => {
+      // Rollback on error
+      if (context?.previousUser) {
+        queryClient.setQueryData(
+          queryKeys.users.detail(userId),
+          context.previousUser
+        )
+      }
+      if (context?.previousLists) {
+        context.previousLists.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data)
+        })
+      }
+    },
+    onSettled: (_data, _error, { userId }) => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(userId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
     },
   })
 }
@@ -49,16 +79,9 @@ export const useDeleteUser = () => {
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: (_, userId) => {
-      // Remove user from the list cache
-      queryClient.setQueryData(
-        [USERS_QUERY_KEY],
-        (oldData: User[] | undefined) => {
-          if (!oldData) return oldData
-          return oldData.filter(user => user._id !== userId)
-        }
-      )
-      // Invalidate the users list query
-      queryClient.invalidateQueries({ queryKey: [USERS_QUERY_KEY, 'list'] })
+      // Invalidate queries to refetch
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
+      queryClient.removeQueries({ queryKey: queryKeys.users.detail(userId) })
     },
   })
 }
@@ -70,7 +93,7 @@ export const useInviteUser = () => {
     mutationFn: inviteUser,
     onSuccess: () => {
       // Invalidate the users list to refetch with the new user
-      queryClient.invalidateQueries({ queryKey: [USERS_QUERY_KEY, 'list'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
     },
   })
 }

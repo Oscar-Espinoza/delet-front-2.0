@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { DataTableColumnHeader } from '@/components/data-table'
 import { cn } from '@/lib/utils'
 import type { Hardware } from '../types/hardware'
 import { HardwareTableRowActions } from './hardware-table-row-actions'
@@ -52,7 +53,9 @@ export const hardwareColumns: ColumnDef<Hardware>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Name' />
+    ),
     cell: ({ row }) => {
       const category = row.original.category
       const Icon = category ? categoryIcons[category] : null
@@ -67,7 +70,9 @@ export const hardwareColumns: ColumnDef<Hardware>[] = [
   },
   {
     accessorKey: 'category',
-    header: 'Category',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Category' />
+    ),
     cell: ({ row }) => {
       const category = row.getValue('category') as string | undefined
       if (!category) return '-'
@@ -84,22 +89,30 @@ export const hardwareColumns: ColumnDef<Hardware>[] = [
   },
   {
     accessorKey: 'inventoryId',
-    header: 'Inventory ID',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Inventory ID' />
+    ),
     cell: ({ row }) => row.getValue('inventoryId') || '-',
   },
   {
     accessorKey: 'model',
-    header: 'Model',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Model' />
+    ),
     cell: ({ row }) => row.getValue('model') || '-',
   },
   {
     accessorKey: 'serial',
-    header: 'Serial',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Serial' />
+    ),
     cell: ({ row }) => row.getValue('serial') || '-',
   },
   {
     accessorKey: 'property',
-    header: 'Property',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Property' />
+    ),
     cell: ({ row }) => {
       const property = row.original.property
       return property?.name || '-'
@@ -107,7 +120,9 @@ export const hardwareColumns: ColumnDef<Hardware>[] = [
   },
   {
     accessorKey: 'user',
-    header: 'Assigned To',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Assigned To' />
+    ),
     cell: ({ row }) => {
       const user = row.original.user
       return user?.name || user?.email || '-'
@@ -115,7 +130,9 @@ export const hardwareColumns: ColumnDef<Hardware>[] = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Status' />
+    ),
     cell: ({ row }) => {
       const status = row.getValue('status') as string
       return (
@@ -133,7 +150,9 @@ export const hardwareColumns: ColumnDef<Hardware>[] = [
   },
   {
     accessorKey: 'operationalStatus',
-    header: 'Operational Status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Operational Status' />
+    ),
     cell: ({ row }) => {
       const status = row.getValue('operationalStatus') as string
       const battery = row.original.battery

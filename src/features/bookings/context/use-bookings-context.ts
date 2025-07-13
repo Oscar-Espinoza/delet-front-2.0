@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { BookingsContext } from './bookings-context'
+import { BookingsContext } from './context'
 
 export function useBookingsContext() {
   const context = useContext(BookingsContext)

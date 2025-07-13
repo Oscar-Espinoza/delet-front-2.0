@@ -2,6 +2,7 @@ import { apiClient } from '@/lib/api-client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Kit, CreateKitData, UpdateKitData, KitFilters } from '../types'
+import { queryKeys } from '@/lib/query-keys'
 
 // API functions
 export const kitsApi = {
@@ -44,14 +45,14 @@ export const kitsApi = {
 // React Query hooks
 export const useKits = (filters?: KitFilters) => {
   return useQuery({
-    queryKey: ['kits', filters],
+    queryKey: queryKeys.kits.list(filters),
     queryFn: () => kitsApi.getKits(filters),
   })
 }
 
 export const useKit = (id: string) => {
   return useQuery({
-    queryKey: ['kits', id],
+    queryKey: queryKeys.kits.detail(id),
     queryFn: () => kitsApi.getKit(id),
     enabled: !!id,
   })
@@ -63,7 +64,7 @@ export const useCreateKit = () => {
   return useMutation({
     mutationFn: kitsApi.createKit,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['kits'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kits.all })
       toast.success('Kit created successfully')
     },
     onError: (error: Error) => {
@@ -78,8 +79,8 @@ export const useUpdateKit = () => {
   return useMutation({
     mutationFn: kitsApi.updateKit,
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['kits'] })
-      queryClient.invalidateQueries({ queryKey: ['kits', variables._id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kits.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kits.detail(variables._id) })
       toast.success('Kit updated successfully')
     },
     onError: (error: Error) => {
@@ -94,7 +95,7 @@ export const useDeleteKit = () => {
   return useMutation({
     mutationFn: kitsApi.deleteKit,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['kits'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kits.all })
       toast.success('Kit deleted successfully')
     },
     onError: (error: Error) => {
@@ -109,7 +110,7 @@ export const useUnassignKit = () => {
   return useMutation({
     mutationFn: kitsApi.unassignKit,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['kits'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.kits.all })
       toast.success('Kit unassigned successfully')
     },
     onError: (error: Error) => {

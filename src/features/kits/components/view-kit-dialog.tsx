@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { useKitsContext } from '../context/kits-context'
-import { getKitStateColor, formatShippingAddress } from '../types'
+import { getKitStateColor, formatShippingAddress, type KitHardware } from '../types'
 
 export function ViewKitDialog() {
   const { isViewDialogOpen, setIsViewDialogOpen, selectedKit } = useKitsContext()
@@ -55,7 +55,7 @@ export function ViewKitDialog() {
             <div>
               <h4 className='text-sm font-medium text-muted-foreground mb-2'>Tags</h4>
               <div className='flex flex-wrap gap-2'>
-                {selectedKit.tags.map((tag, index) => (
+                {selectedKit.tags.map((tag: string, index: number) => (
                   <Badge key={index} variant='secondary'>
                     {tag}
                   </Badge>
@@ -109,7 +109,7 @@ export function ViewKitDialog() {
             <div>
               <h4 className='text-sm font-medium text-muted-foreground mb-2'>Hardware ({selectedKit.hardware.length})</h4>
               <div className='space-y-1'>
-                {selectedKit.hardware.map((hw) => (
+                {selectedKit.hardware.map((hw: KitHardware) => (
                   <div key={hw._id} className='text-sm'>
                     {hw.name} {hw.category && <span className='text-muted-foreground'>({hw.category})</span>}
                   </div>

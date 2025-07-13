@@ -108,13 +108,13 @@ export const kitFormSchema = z.object({
   name: z.string().min(1, "Kit name is required"),
   description: z.string().optional(),
   notes: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  state: z.nativeEnum(KitState).default(KitState.CHECKING_STOCK),
+  tags: z.array(z.string()).optional(),
+  state: z.nativeEnum(KitState).optional(),
   shippingAddress: shippingAddressSchema.optional(),
   company: z.string().optional().nullable(),
   user: z.string().optional().nullable(),
   property: z.string().optional().nullable(),
-  hardware: z.array(z.string()).default([]),
+  hardware: z.array(z.string()).optional(),
 });
 
 export type KitFormData = z.infer<typeof kitFormSchema>;

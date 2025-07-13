@@ -100,7 +100,11 @@ declare module '@tanstack/react-router' {
 }
 
 // Render the app
-const rootElement = document.getElementById('root')!
+const rootElement = document.getElementById('root')
+if (!rootElement) {
+  throw new Error('Failed to find the root element. Make sure there is a <div id="root"></div> in your index.html.')
+}
+
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(

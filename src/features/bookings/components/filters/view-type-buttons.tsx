@@ -4,7 +4,7 @@ import { useBookingsContext } from '../../context/use-bookings-context'
 import { type CalendarView } from '../../types'
 
 export function ViewTypeButtons() {
-  const { calendarView, setCalendarView, setSelectedDate, setFilters } = useBookingsContext()
+  const { calendarView, setCalendarView, setSelectedDate, filters, setFilters } = useBookingsContext()
   
   const handleViewChange = (view: CalendarView | 'today') => {
     if (view === 'today') {
@@ -19,11 +19,11 @@ export function ViewTypeButtons() {
       const end = new Date(today)
       end.setHours(23, 59, 59, 999)
       
-      setFilters(prev => ({
-        ...prev,
+      setFilters({
+        ...filters,
         startTime: Math.floor(start.getTime() / 1000),
         endTime: Math.floor(end.getTime() / 1000),
-      }))
+      })
     } else {
       setCalendarView(view)
       
@@ -66,7 +66,7 @@ export function ViewTypeButtons() {
         }
       }
       
-      setFilters(prev => ({ ...prev, startTime, endTime }))
+      setFilters({ ...filters, startTime, endTime })
     }
   }
   

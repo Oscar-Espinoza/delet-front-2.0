@@ -2,9 +2,9 @@ import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { DataTableColumnHeader } from '@/components/data-table'
 import LongText from '@/components/long-text'
-import { Structure, formatAddress, getStructureTypeColor } from '../types'
-import { DataTableColumnHeader } from './data-table-column-header'
+import { Structure, StructureType, formatAddress, getStructureTypeColor } from '../types'
 import { DataTableRowActions } from './data-table-row-actions'
 
 export const columns: ColumnDef<Structure>[] = [

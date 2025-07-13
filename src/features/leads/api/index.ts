@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { queryKeys } from '@/lib/query-keys'
 import { 
   contactsApi, 
   ContactsParams, 
-  ContactData,
   CreateContactData,
   UpdateContactData,
   prepareContactsParams
@@ -11,7 +11,6 @@ import {
 import { Lead, LeadsResponse, LeadFilters, LeadSort } from '../types'
 
 // Convert ContactData to Lead type (they're the same, just aliased for clarity)
-type _LeadData = ContactData
 type CreateLeadData = CreateContactData
 type UpdateLeadData = UpdateContactData
 
@@ -118,7 +117,7 @@ const leadsApi = {
 // React Query hooks
 export const useLeads = (params: GetLeadsParams) => {
   return useQuery({
-    queryKey: ['leads', params],
+    queryKey: queryKeys.leads.list(params),
     queryFn: () => leadsApi.getLeads(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -126,7 +125,7 @@ export const useLeads = (params: GetLeadsParams) => {
 
 export const useLead = (leadId: string) => {
   return useQuery({
-    queryKey: ['lead', leadId],
+    queryKey: queryKeys.leads.detail(leadId),
     queryFn: () => leadsApi.getLead(leadId),
     enabled: !!leadId,
     staleTime: 5 * 60 * 1000,
@@ -139,7 +138,7 @@ export const useCreateLead = () => {
   return useMutation({
     mutationFn: leadsApi.createLead,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.leads.all })
       toast.success('Lead created successfully')
     },
     onError: (error: Error) => {
@@ -153,13 +152,64 @@ export const useUpdateLead = () => {
 
   return useMutation({
     mutationFn: leadsApi.updateLead,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] })
-      queryClient.invalidateQueries({ queryKey: ['lead', data._id] })
+    onMutate: async (updatedLead) => {
+      // Early return if no _id
+      if (!updatedLead._id) {
+        throw new Error('Lead ID is required for update')
+      }
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.leads.detail(updatedLead._id) })
+      await queryClient.cancelQueries({ queryKey: queryKeys.leads.lists() })
+
+      // Snapshot the previous values
+      const previousLead = queryClient.getQueryData(queryKeys.leads.detail(updatedLead._id))
+      const previousLists = queryClient.getQueriesData({ queryKey: queryKeys.leads.lists() })
+
+      // Optimistically update the lead detail
+      queryClient.setQueryData(queryKeys.leads.detail(updatedLead._id), (old: Lead | undefined) => {
+        if (!old) return old
+        return { ...old, ...updatedLead }
+      })
+
+      // Optimistically update all lead lists
+      queryClient.setQueriesData({ queryKey: queryKeys.leads.lists() }, (old: { leads?: Lead[] } | undefined) => {
+        if (!old?.leads) return old
+        return {
+          ...old,
+          leads: old.leads.map((lead: Lead) =>
+            lead._id === updatedLead._id ? { ...lead, ...updatedLead } : lead
+          ),
+        }
+      })
+
+      // Return context for rollback
+      return { previousLead, previousLists, leadId: updatedLead._id }
+    },
+    onError: (error: Error, _updatedLead, context) => {
+      // Rollback on error
+      if (context?.previousLead && context.leadId) {
+        queryClient.setQueryData(
+          queryKeys.leads.detail(context.leadId),
+          context.previousLead
+        )
+      }
+      if (context?.previousLists) {
+        context.previousLists.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data)
+        })
+      }
+      toast.error(error.message || 'Failed to update lead')
+    },
+    onSuccess: (_data) => {
       toast.success('Lead updated successfully')
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update lead')
+    onSettled: (data) => {
+      // Always refetch after error or success
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.leads.detail(data._id) })
+      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.leads.lists() })
     },
   })
 }
@@ -170,8 +220,8 @@ export const useUpdateLeadStatus = () => {
   return useMutation({
     mutationFn: leadsApi.updateLeadStatus,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] })
-      queryClient.invalidateQueries({ queryKey: ['lead', data._id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.leads.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.leads.detail(data._id) })
       toast.success('Lead status updated successfully')
     },
     onError: (error: Error) => {
@@ -185,8 +235,9 @@ export const useDeleteLead = () => {
 
   return useMutation({
     mutationFn: leadsApi.deleteLead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] })
+    onSuccess: (_, deletedId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.leads.lists() })
+      queryClient.removeQueries({ queryKey: queryKeys.leads.detail(deletedId) })
       toast.success('Lead deleted successfully')
     },
     onError: (error: Error) => {

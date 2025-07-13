@@ -1,17 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
+import Bookings from '@/features/bookings'
 
 export const Route = createFileRoute('/_authenticated/bookings')({
-  component: () => <BookingsLazy />,
+  component: Bookings,
+  staticData: {
+    title: 'Bookings',
+    breadcrumb: 'Bookings',
+    description: 'Manage bookings and reservations'
+  },
+  preload: true,
+  preloadStaleTime: 1000 * 60 * 3 // 3 minutes - bookings data changes more frequently
 })
-
-import { lazy, Suspense } from 'react'
-
-const Bookings = lazy(() => import('@/features/bookings'))
-
-function BookingsLazy() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Bookings />
-    </Suspense>
-  )
-}

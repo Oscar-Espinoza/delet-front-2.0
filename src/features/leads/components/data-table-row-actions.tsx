@@ -1,5 +1,5 @@
 import { Row } from '@tanstack/react-table'
-import { MoreHorizontal, Pencil, Trash, Eye, PhoneCall, Mail } from 'lucide-react'
+import { MoreHorizontal, Pencil, Eye, PhoneCall, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

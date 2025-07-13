@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api-client'
+import { queryKeys } from '@/lib/query-keys'
 import {
   Structure,
   StructureFilters,
@@ -63,14 +64,14 @@ export const structuresApi = {
       filters: {},
       select: ['_id', 'shortAddress', 'unit', 'city', 'state', 'zipCode']
     })
-    return response.properties || []
+    return (response as { properties?: Property[] }).properties || []
   },
 }
 
 // React Query hooks
 export const useStructures = (params?: GetStructuresParams) => {
   return useQuery({
-    queryKey: ['structures', params],
+    queryKey: queryKeys.structures.list(params),
     queryFn: () => structuresApi.getStructures(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -78,7 +79,7 @@ export const useStructures = (params?: GetStructuresParams) => {
 
 export const useStructure = (structureId: string) => {
   return useQuery({
-    queryKey: ['structure', structureId],
+    queryKey: queryKeys.structures.detail(structureId),
     queryFn: () => structuresApi.getStructure(structureId),
     enabled: !!structureId,
     staleTime: 5 * 60 * 1000,
@@ -87,7 +88,7 @@ export const useStructure = (structureId: string) => {
 
 export const useUserStructures = (userId: string) => {
   return useQuery({
-    queryKey: ['userStructures', userId],
+    queryKey: [...queryKeys.structures.all, 'user', userId],
     queryFn: () => structuresApi.getUserStructures(userId),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
@@ -100,8 +101,7 @@ export const useCreateStructure = () => {
   return useMutation({
     mutationFn: structuresApi.createStructure,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['structures'] })
-      queryClient.invalidateQueries({ queryKey: ['userStructures'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.structures.all })
     },
   })
 }
@@ -112,9 +112,8 @@ export const useUpdateStructure = () => {
   return useMutation({
     mutationFn: structuresApi.updateStructure,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['structures'] })
-      queryClient.invalidateQueries({ queryKey: ['structure', variables._id] })
-      queryClient.invalidateQueries({ queryKey: ['userStructures'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.structures.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.structures.detail(variables._id) })
     },
   })
 }

@@ -2,12 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { hardwareApi } from '../api/hardware-api'
 import type { Hardware, HardwareFilters } from '../types/hardware'
 import { toast } from 'sonner'
-
-const HARDWARE_QUERY_KEY = 'hardware'
+import { queryKeys } from '@/lib/query-keys'
 
 export function useHardwareList(filters?: HardwareFilters) {
   return useQuery({
-    queryKey: [HARDWARE_QUERY_KEY, 'list', filters],
+    queryKey: queryKeys.hardware.list(filters),
     queryFn: () => hardwareApi.list(filters),
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
@@ -15,7 +14,7 @@ export function useHardwareList(filters?: HardwareFilters) {
 
 export function useHardware(id: string) {
   return useQuery({
-    queryKey: [HARDWARE_QUERY_KEY, id],
+    queryKey: queryKeys.hardware.detail(id),
     queryFn: () => hardwareApi.get(id),
     enabled: !!id,
   })
@@ -27,7 +26,7 @@ export function useCreateHardware() {
   return useMutation({
     mutationFn: (data: Partial<Hardware>) => hardwareApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HARDWARE_QUERY_KEY, 'list'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.hardware.all })
       toast.success('Hardware created successfully')
     },
     onError: () => {
@@ -43,15 +42,14 @@ export function useUpdateHardware() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Hardware> }) =>
       hardwareApi.update(id, data),
     onMutate: async ({ id, data }) => {
-      await queryClient.cancelQueries({ queryKey: [HARDWARE_QUERY_KEY, id] })
+      await queryClient.cancelQueries({ queryKey: queryKeys.hardware.detail(id) })
       
-      const previousHardware = queryClient.getQueryData<Hardware>([
-        HARDWARE_QUERY_KEY,
-        id,
-      ])
+      const previousHardware = queryClient.getQueryData<Hardware>(
+        queryKeys.hardware.detail(id)
+      )
 
       if (previousHardware) {
-        queryClient.setQueryData<Hardware>([HARDWARE_QUERY_KEY, id], {
+        queryClient.setQueryData<Hardware>(queryKeys.hardware.detail(id), {
           ...previousHardware,
           ...data,
         })
@@ -62,14 +60,14 @@ export function useUpdateHardware() {
     onError: (_error, variables, context) => {
       if (context?.previousHardware) {
         queryClient.setQueryData(
-          [HARDWARE_QUERY_KEY, variables.id],
+          queryKeys.hardware.detail(variables.id),
           context.previousHardware
         )
       }
       toast.error('Failed to update hardware')
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HARDWARE_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.hardware.all })
       toast.success('Hardware updated successfully')
     },
   })
@@ -81,7 +79,7 @@ export function useDeleteHardware() {
   return useMutation({
     mutationFn: (id: string) => hardwareApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HARDWARE_QUERY_KEY, 'list'] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.hardware.all })
       toast.success('Hardware deleted successfully')
     },
     onError: () => {

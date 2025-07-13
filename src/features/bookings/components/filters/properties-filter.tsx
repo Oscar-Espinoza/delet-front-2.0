@@ -66,25 +66,25 @@ export function PropertiesFilter() {
       newSelection = [...selectedProperties, propertyId]
     }
     
-    setFilters(prev => ({
-      ...prev,
+    setFilters({
+      ...filters,
       properties: newSelection.join(','),
-    }))
+    })
   }
   
   const handleSelectAll = () => {
     if (selectedProperties.length === properties.length) {
-      setFilters(prev => ({ ...prev, properties: '' }))
+      setFilters({ ...filters, properties: '' })
     } else {
-      setFilters(prev => ({
-        ...prev,
+      setFilters({
+        ...filters,
         properties: properties.map(p => p._id).join(','),
-      }))
+      })
     }
   }
   
   const handleClear = () => {
-    setFilters(prev => ({ ...prev, properties: '' }))
+    setFilters({ ...filters, properties: '' })
   }
   
   const filteredProperties = properties.filter(property =>

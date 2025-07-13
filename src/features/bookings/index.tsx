@@ -9,12 +9,18 @@ import { PropertiesFilter } from './components/filters/properties-filter'
 import { AgentsFilter } from './components/filters/agents-filter'
 import { ViewTypeButtons } from './components/filters/view-type-buttons'
 import { BookingsCalendar } from './components/bookings-calendar'
+import { CreateBookingModal } from './components/create-booking-modal'
+import { EditBookingModal } from './components/edit-booking-modal'
+import { BookingDetailsModal } from './components/booking-details-modal'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import { useBookingsContext } from './context/use-bookings-context'
 
-export default function BookingsPage() {
+function BookingsContent() {
+  const { setShowCreateModal } = useBookingsContext()
+
   return (
-    <BookingsProvider>
+    <>
       <Header fixed>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
@@ -31,7 +37,7 @@ export default function BookingsPage() {
               View and manage all property showings and appointments
             </p>
           </div>
-          <Button>
+          <Button onClick={() => setShowCreateModal(true)}>
             <Plus className='mr-2 h-4 w-4' />
             New Booking
           </Button>
@@ -50,6 +56,19 @@ export default function BookingsPage() {
           <BookingsCalendar />
         </div>
       </Main>
+      
+      {/* Modals */}
+      <CreateBookingModal />
+      <EditBookingModal />
+      <BookingDetailsModal />
+    </>
+  )
+}
+
+export default function BookingsPage() {
+  return (
+    <BookingsProvider>
+      <BookingsContent />
     </BookingsProvider>
   )
 }

@@ -4,9 +4,8 @@ import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import LongText from '@/components/long-text'
+import { DataTableColumnHeader } from '@/components/data-table'
 import { Lead, getStatusColor, getStatusLabel } from '../types'
-import { DataTableColumnHeader } from './data-table-column-header'
-import { DataTableRowActions } from './data-table-row-actions'
 import { CheckCircle2, XCircle, Calendar, User, MapPin } from 'lucide-react'
 
 export const columns: ColumnDef<Lead>[] = [
@@ -50,7 +49,7 @@ export const columns: ColumnDef<Lead>[] = [
       const firstName = row.original.contact.firstName
       const lastName = row.original.contact.lastName
       const fullName = `${firstName} ${lastName}`.trim()
-      
+
       return (
         <div className='flex items-center space-x-2'>
           <div className='flex flex-col'>
@@ -117,8 +116,8 @@ export const columns: ColumnDef<Lead>[] = [
     cell: ({ row }) => {
       const status = row.original.contact.status
       return (
-        <Badge 
-          variant='secondary' 
+        <Badge
+          variant='secondary'
           className={cn('text-xs', getStatusColor(status))}
         >
           {getStatusLabel(status)}
@@ -221,9 +220,5 @@ export const columns: ColumnDef<Lead>[] = [
         </span>
       )
     },
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ]

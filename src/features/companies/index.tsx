@@ -8,7 +8,7 @@ import { columns } from './components/companies-columns'
 import { CompaniesDialogs } from './components/companies-dialogs'
 import { CompaniesPrimaryButtons } from './components/companies-primary-buttons'
 import { CompaniesTable } from './components/companies-table'
-import CompaniesProvider from './context/companies-context'
+import { CompaniesProvider } from './context/companies-context'
 import { useCompanies } from './api'
 
 export default function Companies() {
@@ -23,7 +23,6 @@ export default function Companies() {
   })
 
   const companies = data?.companies || []
-  const _totalCount = data?.totalCount || 0
 
   if (error) {
     return (

@@ -4,7 +4,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { LeadsProvider } from './context/leads-context'
+import { LeadsProvider } from './context/leads-provider'
 import { LeadsTable } from './components/leads-table'
 import { LeadsPrimaryButtons } from './components/leads-primary-buttons'
 import { LeadsDialogs } from './components/leads-dialogs'
@@ -19,10 +19,14 @@ export default function LeadsPage() {
   // Pagination state
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+  
+  // Search state
+  const [search, setSearch] = useState('')
 
   // Filters state
-  const [filters, _setFilters] = useState<LeadFilters>({
+  const [filters, setFilters] = useState<LeadFilters>({
     tabValue: 'leads',
+    search: '',
   })
   
   // Sort state
@@ -44,6 +48,19 @@ export default function LeadsPage() {
   const handlePaginationChange = (pagination: { pageIndex: number; pageSize: number }) => {
     setPage(pagination.pageIndex + 1)
     setLimit(pagination.pageSize)
+  }
+  
+  // Handle search submit (on Enter key)
+  const handleSearchSubmit = () => {
+    setFilters(prev => ({ ...prev, search }))
+    setPage(1) // Reset to first page when searching
+  }
+  
+  // Handle search clear
+  const handleSearchClear = () => {
+    setSearch('')
+    setFilters(prev => ({ ...prev, search: '' }))
+    setPage(1)
   }
 
   return (
@@ -77,6 +94,10 @@ export default function LeadsPage() {
               pageSize: limit,
             }}
             onPaginationChange={handlePaginationChange}
+            searchValue={search}
+            onSearchChange={setSearch}
+            onSearchSubmit={handleSearchSubmit}
+            onSearchClear={handleSearchClear}
           />
         </div>
       </Main>

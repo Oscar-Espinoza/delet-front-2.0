@@ -59,7 +59,7 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
       
       await checkAuthStatus()
       toast.success('Email verified successfully!')
-      navigate({ to: '/dashboard' })
+      navigate({ to: '/' })
     } catch (error) {
       
       if (error instanceof Error && error.name === 'CodeMismatchException') {

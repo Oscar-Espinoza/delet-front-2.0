@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { CompaniesContext } from './companies-context'
+import { CompaniesContext } from './context'
 
 export function useCompaniesContext() {
   const context = useContext(CompaniesContext)

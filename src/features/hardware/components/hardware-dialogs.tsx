@@ -8,9 +8,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { useDeleteHardware } from '../hooks/use-hardware'
 import { useHardwareContext } from '../contexts/use-hardware-context'
 import { showSubmittedData } from '@/utils/show-submitted-data'
+import { CreateHardwareModal } from './create-hardware-modal'
+import { EditHardwareModal } from './edit-hardware-modal'
 
 export function HardwareDialogs() {
   const {
@@ -19,8 +20,6 @@ export function HardwareDialogs() {
     deletingHardware,
     setDeletingHardware,
   } = useHardwareContext()
-
-  const _deleteHardwareMutation = useDeleteHardware()
 
   const handleDelete = () => {
     if (deletingHardware) {
@@ -41,6 +40,8 @@ export function HardwareDialogs() {
 
   return (
     <>
+      <CreateHardwareModal />
+      <EditHardwareModal />
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

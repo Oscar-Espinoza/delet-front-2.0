@@ -83,6 +83,30 @@ export interface BookingFormData {
   notes?: string
 }
 
+// Zod schema for form validation
+import { z } from 'zod'
+
+export const bookingFormSchema = z.object({
+  propertyId: z.string().min(1, 'Property is required'),
+  contactId: z.string().min(1, 'Contact is required'),
+  startTime: z.date({
+    required_error: 'Start time is required',
+  }),
+  status: z.enum([
+    'active',
+    'archived',
+    'attended',
+    'cancelled',
+    'incomplete',
+    'missed',
+    'pending',
+    'rescheduled',
+    'scheduled',
+    'show',
+  ] as const),
+  notes: z.string().optional(),
+})
+
 export type CalendarView = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
 
 export interface CalendarEvent {

@@ -33,7 +33,7 @@ interface Agent {
 
 export function AgentsFilter() {
   const { filters, setFilters } = useBookingsContext()
-  const { user } = useAuthStore()
+  const { auth } = useAuthStore()
   const [open, setOpen] = useState(false)
   const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(false)
@@ -71,25 +71,25 @@ export function AgentsFilter() {
       newSelection = [...selectedAgents, agentId]
     }
     
-    setFilters(prev => ({
-      ...prev,
+    setFilters({
+      ...filters,
       agents: newSelection.join(','),
-    }))
+    })
   }
   
   const handleSelectAll = () => {
     if (selectedAgents.length === agents.length) {
-      setFilters(prev => ({ ...prev, agents: '' }))
+      setFilters({ ...filters, agents: '' })
     } else {
-      setFilters(prev => ({
-        ...prev,
+      setFilters({
+        ...filters,
         agents: agents.map(a => a._id).join(','),
-      }))
+      })
     }
   }
   
   const handleClear = () => {
-    setFilters(prev => ({ ...prev, agents: '' }))
+    setFilters({ ...filters, agents: '' })
   }
   
   const filteredAgents = agents.filter(agent =>
@@ -159,7 +159,7 @@ export function AgentsFilter() {
                         <div className='flex flex-col'>
                           <span className='text-sm'>
                             {agent.firstName} {agent.lastName}
-                            {agent._id === user?.id && (
+                            {agent._id === auth.user?.userId && (
                               <span className='ml-2 text-xs text-muted-foreground'>(You)</span>
                             )}
                           </span>

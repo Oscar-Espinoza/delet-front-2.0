@@ -44,7 +44,7 @@ export function ForgotPasswordForm({ className, ...props }: ForgotFormProps) {
       })
       
       toast.success('Password reset code sent to your email')
-      navigate({ to: '/reset-password', search: { email: data.email } })
+      navigate({ to: '/otp', search: { email: data.email } })
     } catch (error) {
       
       if (error instanceof Error && error.name === 'UserNotFoundException') {

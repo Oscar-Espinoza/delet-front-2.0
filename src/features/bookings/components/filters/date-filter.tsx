@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 import { useBookingsContext } from '../../context/use-bookings-context'
 
 export function DateFilter() {
-  const { selectedDate, setSelectedDate, setFilters, calendarView } = useBookingsContext()
+  const { selectedDate, setSelectedDate, filters, setFilters, calendarView } = useBookingsContext()
   
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return
@@ -58,7 +58,7 @@ export function DateFilter() {
         return
     }
     
-    setFilters(prev => ({ ...prev, startTime, endTime }))
+    setFilters({ ...filters, startTime, endTime })
   }
   
   return (

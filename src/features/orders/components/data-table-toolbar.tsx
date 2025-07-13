@@ -8,12 +8,10 @@ import { DataTableViewOptions } from './data-table-view-options'
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
-  onPlaceOrder?: () => void
 }
 
 export function DataTableToolbar<TData>({
   table,
-  onPlaceOrder,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -57,17 +55,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <div className='flex items-center space-x-2'>
-        {onPlaceOrder && (
-          <Button
-            size='sm'
-            onClick={onPlaceOrder}
-          >
-            Place Order
-          </Button>
-        )}
-        <DataTableViewOptions table={table} />
-      </div>
+      <DataTableViewOptions table={table} />
     </div>
   )
 }

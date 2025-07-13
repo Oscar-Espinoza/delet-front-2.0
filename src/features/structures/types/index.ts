@@ -84,8 +84,8 @@ export const structureFormSchema = z.object({
   }).optional(),
   user: z.string().min(1, "User is required"),
   parentStructure: z.string().optional().nullable(),
-  properties: z.array(z.string()).default([]),
-  hardware: z.array(z.string()).default([]),
+  properties: z.array(z.string()).optional(),
+  hardware: z.array(z.string()).optional(),
 });
 
 export type StructureFormData = z.infer<typeof structureFormSchema>;

@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { KitsContext } from './kits-context'
+import { KitsContext } from './context'
 
 export function useKitsContext() {
   const context = useContext(KitsContext)

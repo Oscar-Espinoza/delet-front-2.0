@@ -25,7 +25,7 @@ export function DeleteLeadDialog({ open, onClose, lead }: DeleteLeadDialogProps)
     try {
       await deleteLead.mutateAsync(lead._id)
       onClose()
-    } catch (error) {
+    } catch (_error) {
       // Error is handled by the mutation
     }
   }

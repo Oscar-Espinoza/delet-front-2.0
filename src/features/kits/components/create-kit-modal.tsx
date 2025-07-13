@@ -115,7 +115,7 @@ export function CreateKitModal() {
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && tagInput.trim()) {
       e.preventDefault()
-      const currentTags = form.getValues('tags')
+      const currentTags = form.getValues('tags') ?? []
       if (!currentTags.includes(tagInput.trim())) {
         form.setValue('tags', [...currentTags, tagInput.trim()])
       }
@@ -124,7 +124,7 @@ export function CreateKitModal() {
   }
 
   const handleRemoveTag = (tagToRemove: string) => {
-    const currentTags = form.getValues('tags')
+    const currentTags = form.getValues('tags') ?? []
     form.setValue('tags', currentTags.filter(tag => tag !== tagToRemove))
   }
 
@@ -235,7 +235,7 @@ export function CreateKitModal() {
                             onKeyDown={handleAddTag}
                           />
                           <div className='flex flex-wrap gap-2'>
-                            {field.value.map((tag) => (
+                            {(field.value ?? []).map((tag: string) => (
                               <Badge key={tag} variant='secondary'>
                                 {tag}
                                 <Button
@@ -406,7 +406,7 @@ export function CreateKitModal() {
                             value: h._id
                           }))}
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={field.value ?? []}
                           placeholder='Select hardware'
                         />
                       </FormControl>

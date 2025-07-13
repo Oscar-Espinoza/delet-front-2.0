@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { HardwareContext } from './hardware-context'
+import { HardwareContext } from './context'
 
 export function useHardwareContext() {
   const context = useContext(HardwareContext)

@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearch } from '@tanstack/react-router'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { LeadsProvider } from './context/leads-provider'
 import { LeadsTable } from './components/leads-table'
 import { LeadsPrimaryButtons } from './components/leads-primary-buttons'
@@ -16,6 +18,9 @@ export default function LeadsPage() {
   // Get auth state to determine if admin
   const isAdmin = true // TODO: Get from auth context
   
+  // Get company from URL search params
+  const urlSearch = useSearch({ strict: false }) as { company?: string }
+  
   // Pagination state
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -27,6 +32,7 @@ export default function LeadsPage() {
   const [filters, setFilters] = useState<LeadFilters>({
     tabValue: 'leads',
     search: '',
+    companiesIds: urlSearch.company ? [urlSearch.company] : undefined,
   })
   
   // Sort state
@@ -34,6 +40,9 @@ export default function LeadsPage() {
     field: 'createdAt',
     order: 'desc',
   })
+
+  // Store last known page count to avoid showing "Page X of 1" during loading
+  const [lastPageCount, setLastPageCount] = useState(1)
 
   // Fetch leads data
   const { data, isLoading } = useLeads({
@@ -43,6 +52,22 @@ export default function LeadsPage() {
     sort,
     isAdmin,
   })
+
+  // Update last known page count when data loads
+  useEffect(() => {
+    if (data?.pages) {
+      setLastPageCount(data.pages)
+    }
+  }, [data?.pages])
+
+  // Update filters when URL company changes
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      companiesIds: urlSearch.company ? [urlSearch.company] : undefined,
+    }))
+    setPage(1) // Reset to first page when company changes
+  }, [urlSearch.company])
 
   // Handle pagination change
   const handlePaginationChange = (pagination: { pageIndex: number; pageSize: number }) => {
@@ -68,6 +93,7 @@ export default function LeadsPage() {
       <Header fixed>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
+          <HeaderCompanyDropdown />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -88,7 +114,7 @@ export default function LeadsPage() {
             columns={columns}
             data={data?.data || []}
             isLoading={isLoading}
-            pageCount={data?.pages}
+            pageCount={data?.pages || lastPageCount}
             pagination={{
               pageIndex: page - 1,
               pageSize: limit,

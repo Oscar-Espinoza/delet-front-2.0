@@ -4,6 +4,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { columns } from './components/companies-columns'
 import { CompaniesDialogs } from './components/companies-dialogs'
 import { CompaniesPrimaryButtons } from './components/companies-primary-buttons'
@@ -40,6 +41,7 @@ export default function Companies() {
       <Header fixed>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
+          <HeaderCompanyDropdown />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>

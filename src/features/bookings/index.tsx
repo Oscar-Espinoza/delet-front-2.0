@@ -4,6 +4,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { DateFilter } from './components/filters/date-filter'
 import { PropertiesFilter } from './components/filters/properties-filter'
 import { AgentsFilter } from './components/filters/agents-filter'
@@ -24,6 +25,7 @@ function BookingsContent() {
       <Header fixed>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
+          <HeaderCompanyDropdown />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>

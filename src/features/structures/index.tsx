@@ -1,50 +1,33 @@
+import { useSearch } from '@tanstack/react-router'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { StructuresProvider } from './context/structures-context'
 import { StructuresTable } from './components/structures-table'
 import { StructuresDialogs } from './components/structures-dialogs'
 import { StructuresPrimaryButtons } from './components/structures-primary-buttons'
 import { useStructures } from './api'
-import { Loader2 } from 'lucide-react'
-
-function StructuresContent() {
-  const { data: structures, isLoading, error } = useStructures()
-
-  if (isLoading) {
-    return (
-      <div className='flex h-[50vh] items-center justify-center'>
-        <Loader2 className='h-8 w-8 animate-spin' />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className='flex h-[50vh] items-center justify-center'>
-        <p className='text-sm text-muted-foreground'>
-          Failed to load structures. Please try again later.
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <>
-      <StructuresTable data={structures || []} />
-      <StructuresDialogs />
-    </>
-  )
-}
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { IconAlertCircle } from '@tabler/icons-react'
 
 export default function StructuresPage() {
+  const search = useSearch({ strict: false }) as { company?: string }
+  const { data: structures = [], isLoading, error } = useStructures()
+  
+  // Filter structures by company on the client side since backend doesn't support it yet
+  const filteredStructures = search.company 
+    ? structures.filter(structure => structure.user?.company?._id === search.company)
+    : structures
+    
   return (
     <StructuresProvider>
       <Header fixed>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
+          <HeaderCompanyDropdown />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -61,7 +44,16 @@ export default function StructuresPage() {
           <StructuresPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <StructuresContent />
+          {error ? (
+            <Alert variant='destructive'>
+              <IconAlertCircle className='h-4 w-4' />
+              <AlertDescription>
+                Failed to load structures. Please try again later.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <StructuresTable data={filteredStructures} isLoading={isLoading} />
+          )}
         </div>
       </Main>
 

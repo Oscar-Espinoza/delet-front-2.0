@@ -13,15 +13,13 @@ import { handleServerError } from '@/utils/handle-server-error'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
 import { configureAmplify } from '@/lib/amplify-config'
+import { AuthWrapper } from '@/components/auth-wrapper'
 import './index.css'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 
 // Configure AWS Amplify
 configureAmplify()
-
-// Initialize auth status
-useAuthStore.getState().auth.checkAuthStatus()
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -112,7 +110,9 @@ if (!rootElement.innerHTML) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
           <FontProvider>
-            <RouterProvider router={router} />
+            <AuthWrapper>
+              <RouterProvider router={router} />
+            </AuthWrapper>
           </FontProvider>
         </ThemeProvider>
       </QueryClientProvider>

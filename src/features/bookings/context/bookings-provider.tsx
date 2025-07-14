@@ -1,8 +1,12 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
+import { useSearch } from '@tanstack/react-router'
 import { type CalendarView, type BookingFilters, type Booking } from '../types'
 import { BookingsContext } from './context'
 
 export function BookingsProvider({ children }: { children: ReactNode }) {
+  // Get company from URL search params
+  const urlSearch = useSearch({ strict: false }) as { company?: string }
+  
   const [view, setView] = useState<'table' | 'calendar'>('calendar')
   const [calendarView, setCalendarView] = useState<CalendarView>('dayGridMonth')
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -19,7 +23,16 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
   const [filters, setFilters] = useState<BookingFilters>({
     startTime: Math.floor(startOfMonth.getTime() / 1000),
     endTime: Math.floor(endOfMonth.getTime() / 1000),
+    companies: urlSearch.company || undefined,
   })
+  
+  // Update filters when URL company changes
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      companies: urlSearch.company || undefined,
+    }))
+  }, [urlSearch.company])
   
   return (
     <BookingsContext.Provider

@@ -50,27 +50,31 @@ export function DataTable<TData, TValue>({
   loadingState,
 }: DataTableProps<TData, TValue>) {
   const defaultLoadingState = (
-    <TableRow>
-      <TableCell
-        colSpan={columns.length}
-        className='h-24 text-center'
-      >
-        <div className='flex flex-col items-center justify-center space-y-2'>
-          <Skeleton className='h-4 w-[250px]' />
-          <Skeleton className='h-4 w-[200px]' />
-          <Skeleton className='h-4 w-[220px]' />
-        </div>
-      </TableCell>
-    </TableRow>
+    <>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <TableRow key={`skeleton-${index}`}>
+          {columns.map((column, colIndex) => (
+            <TableCell
+              key={`skeleton-${index}-${colIndex}`}
+              className={column.meta?.className ?? ''}
+            >
+              <Skeleton className='h-4 w-full' />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
   )
 
   const defaultEmptyState = (
     <TableRow>
       <TableCell
         colSpan={columns.length}
-        className='h-24 text-center'
+        className='h-[400px] text-center align-middle'
       >
-        No results.
+        <div className='flex flex-col items-center justify-center'>
+          <p className='text-muted-foreground'>No results found</p>
+        </div>
       </TableCell>
     </TableRow>
   )
@@ -88,7 +92,7 @@ export function DataTable<TData, TValue>({
           </DataTableToolbar>
         )
       )}
-      <div className='rounded-md border'>
+      <div className='rounded-md border min-h-[500px]'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

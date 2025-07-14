@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useSearch } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 import {
   Collapsible,
@@ -31,6 +31,7 @@ import { NavCollapsible, NavItem, NavLink, type NavGroup } from './types'
 export function NavGroup({ title, items }: NavGroup) {
   const { state, isMobile } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
+  const search = useSearch({ strict: false })
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
@@ -39,14 +40,14 @@ export function NavGroup({ title, items }: NavGroup) {
           const key = `${item.title}-${item.url}`
 
           if (!item.items)
-            return <SidebarMenuLink key={key} item={item} href={href} />
+            return <SidebarMenuLink key={key} item={item} href={href} search={search} />
 
           if (state === 'collapsed' && !isMobile)
             return (
-              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
+              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} search={search} />
             )
 
-          return <SidebarMenuCollapsible key={key} item={item} href={href} />
+          return <SidebarMenuCollapsible key={key} item={item} href={href} search={search} />
         })}
       </SidebarMenu>
     </SidebarGroup>
@@ -57,7 +58,8 @@ const NavBadge = ({ children }: { children: ReactNode }) => (
   <Badge className='rounded-full px-1 py-0 text-xs'>{children}</Badge>
 )
 
-const SidebarMenuLink = ({ item, href }: { item: NavLink; href: string }) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SidebarMenuLink = ({ item, href, search }: { item: NavLink; href: string; search?: any }) => {
   const { setOpenMobile } = useSidebar()
   return (
     <SidebarMenuItem>
@@ -66,7 +68,7 @@ const SidebarMenuLink = ({ item, href }: { item: NavLink; href: string }) => {
         isActive={checkIsActive(href, item)}
         tooltip={item.title}
       >
-        <Link to={item.url} onClick={() => setOpenMobile(false)}>
+        <Link to={item.url} search={search} onClick={() => setOpenMobile(false)}>
           {item.icon && <item.icon />}
           <span>{item.title}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
@@ -79,9 +81,12 @@ const SidebarMenuLink = ({ item, href }: { item: NavLink; href: string }) => {
 const SidebarMenuCollapsible = ({
   item,
   href,
+  search,
 }: {
   item: NavCollapsible
   href: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  search?: any
 }) => {
   const { setOpenMobile } = useSidebar()
   return (
@@ -107,7 +112,7 @@ const SidebarMenuCollapsible = ({
                   asChild
                   isActive={checkIsActive(href, subItem)}
                 >
-                  <Link to={subItem.url} onClick={() => setOpenMobile(false)}>
+                  <Link to={subItem.url} search={search} onClick={() => setOpenMobile(false)}>
                     {subItem.icon && <subItem.icon />}
                     <span>{subItem.title}</span>
                     {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
@@ -125,9 +130,12 @@ const SidebarMenuCollapsible = ({
 const SidebarMenuCollapsedDropdown = ({
   item,
   href,
+  search,
 }: {
   item: NavCollapsible
   href: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  search?: any
 }) => {
   return (
     <SidebarMenuItem>
@@ -152,6 +160,7 @@ const SidebarMenuCollapsedDropdown = ({
             <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
               <Link
                 to={sub.url}
+                search={search}
                 className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
               >
                 {sub.icon && <sub.icon />}

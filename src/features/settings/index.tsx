@@ -12,6 +12,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import SidebarNav from './components/sidebar-nav'
 
 export default function Settings() {
@@ -21,6 +22,7 @@ export default function Settings() {
       <Header>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
+          <HeaderCompanyDropdown />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>

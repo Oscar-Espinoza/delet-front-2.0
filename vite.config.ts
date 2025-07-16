@@ -6,6 +6,7 @@ import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/delet-front-2.0/',
   plugins: [
     TanStackRouterVite({
       target: 'react',

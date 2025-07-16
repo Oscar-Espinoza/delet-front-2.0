@@ -88,6 +88,7 @@ const router = createRouter({
   context: { queryClient },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
+  basepath: '/delet-front-2.0',
 })
 
 // Register the router instance for type safety

@@ -3,7 +3,8 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,21 +25,25 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
+import { CompanySelect } from '@/components/form/company-select'
 import { userTypes } from '../data/data'
 import { User } from '../data/schema'
+import { useUpdateUser } from '../api/users-api'
 
 const formSchema = z
   .object({
     firstName: z.string().min(1, { message: 'First Name is required.' }),
     lastName: z.string().min(1, { message: 'Last Name is required.' }),
     username: z.string().min(1, { message: 'Username is required.' }),
-    phoneNumber: z.string().min(1, { message: 'Phone number is required.' }),
+    phoneNumber: z.string().optional(),
     email: z
       .string()
       .min(1, { message: 'Email is required.' })
       .email({ message: 'Email is invalid.' }),
     password: z.string().transform((pwd) => pwd.trim()),
     role: z.string().min(1, { message: 'Role is required.' }),
+    adminPanelRole: z.string().optional(),
+    company: z.string().nullable().optional(),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
   })
@@ -95,11 +100,14 @@ interface Props {
 
 export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow
+  const updateUser = useUpdateUser()
+  
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
           ...currentRow,
+          company: typeof currentRow.company === 'object' ? currentRow.company._id : currentRow.company,
           password: '',
           confirmPassword: '',
           isEdit,
@@ -110,6 +118,8 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           username: '',
           email: '',
           role: '',
+          adminPanelRole: '',
+          company: null,
           phoneNumber: '',
           password: '',
           confirmPassword: '',
@@ -117,10 +127,42 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
         },
   })
 
-  const onSubmit = (values: UserForm) => {
-    form.reset()
-    showSubmittedData(values)
-    onOpenChange(false)
+  const onSubmit = async (values: UserForm) => {
+    try {
+      if (isEdit && currentRow) {
+        // Prepare update data
+        const updateData: Partial<User> & { password?: string } = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          phone: values.phoneNumber || '',
+          role: values.role as User['role'],
+          adminPanelRole: values.adminPanelRole as User['adminPanelRole'],
+          company: values.company,
+          active: currentRow.active, // Preserve existing active state
+        }
+
+        // Only include password if it was changed
+        if (values.password && values.password.trim() !== '') {
+          updateData.password = values.password
+        }
+
+        await updateUser.mutateAsync({
+          userId: currentRow._id,
+          data: updateData,
+        })
+        
+        toast.success('User updated successfully')
+      } else {
+        // Create user logic would go here
+        toast.error('User creation not yet implemented')
+      }
+      
+      form.reset()
+      onOpenChange(false)
+    } catch (_error) {
+      toast.error(isEdit ? 'Failed to update user' : 'Failed to create user')
+    }
   }
 
   const isPasswordTouched = !!form.formState.dirtyFields.password
@@ -258,11 +300,54 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                       onValueChange={field.onChange}
                       placeholder='Select a role'
                       className='col-span-4'
-                      items={userTypes.map(({ label, value }) => ({
-                        label,
-                        value,
-                      }))}
+                      items={[
+                        { label: 'Owner', value: 'owner' },
+                        { label: 'Manager', value: 'manager' },
+                        { label: 'Agent', value: 'agent' },
+                      ]}
                     />
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='adminPanelRole'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-right'>
+                      Admin Panel Role
+                    </FormLabel>
+                    <SelectDropdown
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder='Select admin role'
+                      className='col-span-4'
+                      items={[
+                        { label: 'Superadmin', value: 'superadmin' },
+                        { label: 'Admin', value: 'admin' },
+                        { label: 'Leasing Agent', value: 'leasingAgent' },
+                      ]}
+                    />
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='company'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-right'>
+                      Company
+                    </FormLabel>
+                    <div className='col-span-4'>
+                      <CompanySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Company...'
+                      />
+                    </div>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}
@@ -310,7 +395,14 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           </Form>
         </div>
         <DialogFooter>
-          <Button type='submit' form='user-form'>
+          <Button 
+            type='submit' 
+            form='user-form' 
+            disabled={updateUser.isPending}
+          >
+            {updateUser.isPending && (
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+            )}
             Save changes
           </Button>
         </DialogFooter>

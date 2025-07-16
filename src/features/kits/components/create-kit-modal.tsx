@@ -161,6 +161,44 @@ export function CreateKitModal() {
 
                 <FormField
                   control={form.control}
+                  name='company'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Company</FormLabel>
+                      <CompanySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Select company'
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='hardware'
+                  render={({ field }) => (
+                    <FormItem className='col-span-2'>
+                      <FormLabel>Hardware</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          options={hardware.map(h => ({
+                            label: `${h.name} (${h.category})`,
+                            value: h._id
+                          }))}
+                          onValueChange={field.onChange}
+                          value={field.value ?? []}
+                          placeholder='Select hardware'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name='state'
                   render={({ field }) => (
                     <FormItem>
@@ -175,6 +213,37 @@ export function CreateKitModal() {
                           {Object.values(KitState).map((state) => (
                             <SelectItem key={state} value={state}>
                               {state}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='property'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Property</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                        value={field.value || 'none'}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder='Select property' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value='none'>None</SelectItem>
+                          {properties.map((property) => (
+                            <SelectItem key={property._id} value={property._id}>
+                              {property.shortAddress}
+                              {property.unit && ` Unit ${property.unit}`}
+                              {property.city && property.state && ` - ${property.city}, ${property.state}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -252,53 +321,6 @@ export function CreateKitModal() {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='company'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company</FormLabel>
-                      <CompanySelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder='Select company'
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='property'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Property</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
-                        value={field.value || 'none'}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select property' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value='none'>None</SelectItem>
-                          {properties.map((property) => (
-                            <SelectItem key={property._id} value={property._id}>
-                              {property.shortAddress}
-                              {property.unit && ` Unit ${property.unit}`}
-                              {property.city && property.state && ` - ${property.city}, ${property.state}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -392,28 +414,6 @@ export function CreateKitModal() {
                     />
                   </div>
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name='hardware'
-                  render={({ field }) => (
-                    <FormItem className='col-span-2'>
-                      <FormLabel>Hardware</FormLabel>
-                      <FormControl>
-                        <MultiSelect
-                          options={hardware.map(h => ({
-                            label: `${h.name} (${h.category})`,
-                            value: h._id
-                          }))}
-                          onValueChange={field.onChange}
-                          value={field.value ?? []}
-                          placeholder='Select hardware'
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <DialogFooter>

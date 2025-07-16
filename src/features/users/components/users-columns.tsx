@@ -139,6 +139,20 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: 'adminPanelRole',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Admin Panel Role' />
+    ),
+    cell: ({ row }) => {
+      const adminRole = row.getValue('adminPanelRole') as string
+      if (!adminRole || adminRole === '') {
+        return <span className='text-muted-foreground'>N/A</span>
+      }
+      return <span className='text-sm capitalize'>{adminRole}</span>
+    },
+    enableSorting: false,
+  },
+  {
     id: 'actions',
     cell: DataTableRowActions,
   },

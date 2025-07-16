@@ -66,7 +66,7 @@ export const updateUser = async (
     adminPanelRole: data.adminPanelRole || '',
     active: String(data.active !== false), // Convert boolean to string
     role: data.role || '',
-    company: data.company || undefined,
+    company: typeof data.company === 'object' ? data.company._id : data.company || undefined,
   }
 
   // Only include password if it's provided and not empty

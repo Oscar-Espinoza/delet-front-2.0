@@ -26,7 +26,6 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { CompanySelect } from '@/components/form/company-select'
-import { userTypes } from '../data/data'
 import { User } from '../data/schema'
 import { useUpdateUser } from '../api/users-api'
 
@@ -42,7 +41,7 @@ const formSchema = z
       .email({ message: 'Email is invalid.' }),
     password: z.string().transform((pwd) => pwd.trim()),
     role: z.string().min(1, { message: 'Role is required.' }),
-    adminPanelRole: z.string().optional(),
+    adminPanelRole: z.union([z.string(), z.null()]).optional(),
     company: z.string().nullable().optional(),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
@@ -137,8 +136,8 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           email: values.email,
           phone: values.phoneNumber || '',
           role: values.role as User['role'],
-          adminPanelRole: values.adminPanelRole as User['adminPanelRole'],
-          company: values.company,
+          adminPanelRole: (values.adminPanelRole || '') as User['adminPanelRole'],
+          company: values.company || undefined,
           active: currentRow.active, // Preserve existing active state
         }
 
@@ -319,7 +318,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                       Admin Panel Role
                     </FormLabel>
                     <SelectDropdown
-                      defaultValue={field.value}
+                      defaultValue={field.value || undefined}
                       onValueChange={field.onChange}
                       placeholder='Select admin role'
                       className='col-span-4'

@@ -13,7 +13,9 @@
     "knip": "knip",
     "typecheck": "tsc -b --noEmit",
     "check": "pnpm run typecheck && pnpm run lint",
-    "check:fix": "pnpm run format && pnpm run lint --fix"
+    "check:fix": "pnpm run format && pnpm run lint --fix",
+    "predeploy": "pnpm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.11.2",
@@ -78,6 +80,7 @@
     "eslint": "^9.29.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "gh-pages": "^6.3.0",
     "globals": "^16.2.0",
     "knip": "^5.61.2",
     "prettier": "^3.6.0",

@@ -1,4 +1,3 @@
-import { FormControl } from '@/components/ui/form'
 import {
   Select,
   SelectContent,
@@ -39,13 +38,11 @@ export function CompanySelect({
       onValueChange={(val) => onValueChange(val === 'none' ? null : val)}
       disabled={disabled || isLoading}
     >
-      <FormControl>
-        <SelectTrigger className={className}>
-          <SelectValue
-            placeholder={isLoading ? 'Loading companies...' : placeholder}
-          />
-        </SelectTrigger>
-      </FormControl>
+      <SelectTrigger className={className}>
+        <SelectValue
+          placeholder={isLoading ? 'Loading companies...' : placeholder}
+        />
+      </SelectTrigger>
       <SelectContent>
         {includeNone && <SelectItem value='none'>None</SelectItem>}
         {companies.map((company) => (

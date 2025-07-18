@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { apiClient } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
+import { extractErrorMessage } from '@/lib/error-utils'
 import {
   Company,
   CompaniesResponse,
@@ -114,6 +116,11 @@ export const useCreateCompany = () => {
     mutationFn: companiesApi.createCompany,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.companies.all })
+      toast.success('Company created successfully')
+    },
+    onError: (error) => {
+      const errorMessage = extractErrorMessage(error)
+      toast.error(errorMessage)
     },
   })
 }
@@ -166,7 +173,7 @@ export const useUpdateCompany = () => {
       // Return context for rollback
       return { previousCompany, previousLists }
     },
-    onError: (_err, updatedCompany, context) => {
+    onError: (error, updatedCompany, context) => {
       // Rollback on error
       if (context?.previousCompany) {
         queryClient.setQueryData(
@@ -179,6 +186,10 @@ export const useUpdateCompany = () => {
           queryClient.setQueryData(queryKey, data)
         })
       }
+      
+      // Show error message
+      const errorMessage = extractErrorMessage(error)
+      toast.error(errorMessage)
     },
     onSettled: (data) => {
       // Always refetch after error or success
@@ -188,6 +199,9 @@ export const useUpdateCompany = () => {
         })
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.companies.lists() })
+    },
+    onSuccess: () => {
+      toast.success('Company updated successfully')
     },
   })
 }

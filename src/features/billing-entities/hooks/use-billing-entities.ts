@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { queryKeys } from '@/lib/query-keys'
+import { extractErrorMessage } from '@/lib/error-utils'
 import {
   getBillingEntitiesByCompany,
   getBillingEntities,
@@ -14,56 +15,9 @@ import type {
   CreateBillingEntityRequest,
   UpdateBillingEntityRequest,
   GetBillingEntitiesParams,
+  BillingEntityListResponse,
 } from '../types'
 
-/**
- * Helper function to extract error messages from API response
- */
-const extractErrorMessage = (error: unknown): string => {
-  // Type guard to check if error has the expected structure
-  if (
-    error &&
-    typeof error === 'object' &&
-    'response' in error &&
-    error.response &&
-    typeof error.response === 'object' &&
-    'data' in error.response &&
-    error.response.data &&
-    typeof error.response.data === 'object'
-  ) {
-    const data = error.response.data as Record<string, unknown>
-
-    // Check for structured error response with errors array
-    if (data.errors && Array.isArray(data.errors)) {
-      const firstError = data.errors[0]
-      if (
-        firstError &&
-        typeof firstError === 'object' &&
-        'message' in firstError
-      ) {
-        return String(firstError.message)
-      }
-    }
-
-    // Check for simple message field
-    if (data.message && typeof data.message === 'string') {
-      return data.message
-    }
-  }
-
-  // Fallback to axios error message
-  if (
-    error &&
-    typeof error === 'object' &&
-    'message' in error &&
-    typeof error.message === 'string'
-  ) {
-    return error.message
-  }
-
-  // Final fallback
-  return 'An unexpected error occurred'
-}
 
 /**
  * Hook to fetch billing entities for a specific company
@@ -178,11 +132,15 @@ export const useUpdateBillingEntity = () => {
             )
             queryClient.setQueryData(queryKey, updatedEntities)
           } else if (
-            cachedData.billingEntities &&
-            Array.isArray(cachedData.billingEntities)
+            cachedData &&
+            typeof cachedData === 'object' &&
+            'billingEntities' in cachedData &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            Array.isArray((cachedData as any).billingEntities)
           ) {
             // Response object format (from getBillingEntities)
-            const updatedEntities = cachedData.billingEntities.map((entity) =>
+            const responseData = cachedData as BillingEntityListResponse
+            const updatedEntities = responseData.billingEntities.map((entity: BillingEntity) =>
               entity._id === _id ? { ...entity, ...data } : entity
             )
             queryClient.setQueryData(queryKey, {

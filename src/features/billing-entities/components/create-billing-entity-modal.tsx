@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSearch } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -30,6 +29,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { AddressAutocomplete } from '@/components/AddressAutocomplete'
+import { CompanySelect } from '@/components/form/company-select'
 import { useBillingEntitiesContext } from '../context/use-billing-entities-context'
 import { billingEntityFormSchema, BillingEntityFormData } from '../data/schema'
 import { useCreateBillingEntity } from '../hooks/use-billing-entities'
@@ -38,7 +38,6 @@ export function CreateBillingEntityModal() {
   const { isCreateDialogOpen, setIsCreateDialogOpen } =
     useBillingEntitiesContext()
   const createBillingEntity = useCreateBillingEntity()
-  const search = useSearch({ strict: false }) as { company?: string }
 
   const form = useForm<BillingEntityFormData>({
     resolver: zodResolver(billingEntityFormSchema),
@@ -54,27 +53,23 @@ export function CreateBillingEntityModal() {
         zipCode: '',
         country: '',
       },
-      taxId: '',
+      company: '',
       notes: '',
     },
   })
 
   const handleSubmit = async (data: BillingEntityFormData) => {
-    if (!search.company) {
-      toast.error('Please select a company first')
+    if (!data.company) {
+      toast.error('Please select a company')
       return
     }
 
     try {
-      await createBillingEntity.mutateAsync({
-        ...data,
-        company: search.company,
-      })
-      toast.success('Billing entity created successfully')
+      await createBillingEntity.mutateAsync(data)
       form.reset()
       setIsCreateDialogOpen(false)
     } catch (_error) {
-      toast.error('Failed to create billing entity')
+      // Error handling is done in the hook, no need to show duplicate error
     }
   }
 
@@ -132,13 +127,16 @@ export function CreateBillingEntityModal() {
 
               <FormField
                 control={form.control}
-                name='taxId'
+                name='company'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tax ID</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter tax ID' {...field} />
-                    </FormControl>
+                    <FormLabel>Company *</FormLabel>
+                    <CompanySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder='Select company'
+                      includeNone={false}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

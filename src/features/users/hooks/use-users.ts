@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { queryKeys } from '@/lib/query-keys'
+import { extractErrorMessage } from '@/lib/error-utils'
 import {
   getUsersList,
   getUser,
@@ -69,7 +71,7 @@ export const useUpdateUser = () => {
       // Return context for rollback
       return { previousUser, previousLists }
     },
-    onError: (_err, { userId }, context) => {
+    onError: (error, { userId }, context) => {
       // Rollback on error
       if (context?.previousUser) {
         queryClient.setQueryData(
@@ -82,6 +84,10 @@ export const useUpdateUser = () => {
           queryClient.setQueryData(queryKey, data)
         })
       }
+      
+      // Show error message
+      const errorMessage = extractErrorMessage(error)
+      toast.error(errorMessage)
     },
     onSettled: (_data, _error, { userId }) => {
       // Always refetch after error or success
@@ -89,6 +95,9 @@ export const useUpdateUser = () => {
         queryKey: queryKeys.users.detail(userId),
       })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
+    },
+    onSuccess: () => {
+      toast.success('User updated successfully')
     },
   })
 }
@@ -102,6 +111,11 @@ export const useDeleteUser = () => {
       // Invalidate queries to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
       queryClient.removeQueries({ queryKey: queryKeys.users.detail(userId) })
+      toast.success('User deleted successfully')
+    },
+    onError: (error) => {
+      const errorMessage = extractErrorMessage(error)
+      toast.error(errorMessage)
     },
   })
 }
@@ -114,6 +128,11 @@ export const useInviteUser = () => {
     onSuccess: () => {
       // Invalidate the users list to refetch with the new user
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
+      toast.success('User invited successfully')
+    },
+    onError: (error) => {
+      const errorMessage = extractErrorMessage(error)
+      toast.error(errorMessage)
     },
   })
 }

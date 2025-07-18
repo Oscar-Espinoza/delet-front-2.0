@@ -15,6 +15,7 @@ import {
   getOrderStatusColor,
   getOrderTypeLabel,
 } from '../data/schema'
+import type { Address } from '@/types/common'
 
 export function ViewOrderDialog() {
   const { isViewDialogOpen, setIsViewDialogOpen, viewingOrder, setViewingOrder } =
@@ -27,7 +28,7 @@ export function ViewOrderDialog() {
     setViewingOrder(null)
   }
 
-  const formatAddress = (address: any) => {
+  const formatAddress = (address: Address | null | undefined) => {
     if (!address) return 'No address provided'
 
     const parts = [

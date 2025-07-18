@@ -38,7 +38,7 @@ export const updateBillingEntitySchema = billingEntitySchema.partial().extend({
 
 // Form schema for create/edit dialogs
 export const billingEntityFormSchema = billingEntitySchema.omit({
-  company: true,
+  taxId: true,
 })
 
 // Type exports

@@ -77,7 +77,6 @@ const NavBadge = ({ children }: { children: ReactNode }) => (
   <Badge className='rounded-full px-1 py-0 text-xs'>{children}</Badge>
 )
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SidebarMenuLink = ({
   item,
   href,
@@ -85,6 +84,7 @@ const SidebarMenuLink = ({
 }: {
   item: NavLink
   href: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   search?: any
 }) => {
   const { setOpenMobile } = useSidebar()

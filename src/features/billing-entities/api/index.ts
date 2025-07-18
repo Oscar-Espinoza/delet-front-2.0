@@ -53,7 +53,10 @@ export const getBillingEntity = async (id: string): Promise<BillingEntity> => {
 export const createBillingEntity = async (
   data: CreateBillingEntityRequest
 ): Promise<BillingEntity> => {
-  return await apiClient.post<BillingEntity>('/api/billing-entities', data)
+  return await apiClient.post<BillingEntity>(
+    '/api/billing-entities/admin/create',
+    data
+  )
 }
 
 /**

@@ -118,6 +118,6 @@ export const ordersApi = {
 
 // Convenience function for getting order by ID (following requested pattern)
 export const getOrderById = async (id: string): Promise<Order> => {
-  const response = await apiClient.get(`/api/order/${id}`)
-  return response.data
+  const response = await apiClient.get<Order>(`/api/order/${id}`)
+  return response
 }

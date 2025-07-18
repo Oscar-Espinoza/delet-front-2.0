@@ -27,7 +27,6 @@ export default function TasksProvider({ children }: Props) {
   )
 }
 
- 
 export const useTasks = () => {
   const tasksContext = React.useContext(TasksContext)
 

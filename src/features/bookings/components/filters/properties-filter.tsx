@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Check, ChevronsUpDown, Building } from 'lucide-react'
+import { apiClient } from '@/lib/api-client'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -14,11 +17,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { useBookingsContext } from '../../context/use-bookings-context'
-import { apiClient } from '@/lib/api-client'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { useBookingsContext } from '../../context/use-bookings-context'
 
 interface Property {
   _id: string
@@ -33,20 +33,24 @@ export function PropertiesFilter() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
-  
-  const selectedProperties = filters.properties?.split(',').filter(Boolean) || []
-  
+
+  const selectedProperties =
+    filters.properties?.split(',').filter(Boolean) || []
+
   useEffect(() => {
     fetchProperties()
   }, [])
-  
+
   const fetchProperties = async () => {
     setLoading(true)
     try {
-      const response = await apiClient.post<{ properties: Property[]; total: number }>('/api/property/admin/search', {
+      const response = await apiClient.post<{
+        properties: Property[]
+        total: number
+      }>('/api/property/admin/search', {
         page: 1,
         limit: 100,
-        searchTerm: ''
+        searchTerm: '',
       })
       setProperties(response.properties || [])
     } catch (_error) {
@@ -55,43 +59,44 @@ export function PropertiesFilter() {
       setLoading(false)
     }
   }
-  
+
   const handleSelect = (propertyId: string) => {
     const isSelected = selectedProperties.includes(propertyId)
     let newSelection: string[]
-    
+
     if (isSelected) {
-      newSelection = selectedProperties.filter(id => id !== propertyId)
+      newSelection = selectedProperties.filter((id) => id !== propertyId)
     } else {
       newSelection = [...selectedProperties, propertyId]
     }
-    
+
     setFilters({
       ...filters,
       properties: newSelection.join(','),
     })
   }
-  
+
   const handleSelectAll = () => {
     if (selectedProperties.length === properties.length) {
       setFilters({ ...filters, properties: '' })
     } else {
       setFilters({
         ...filters,
-        properties: properties.map(p => p._id).join(','),
+        properties: properties.map((p) => p._id).join(','),
       })
     }
   }
-  
+
   const handleClear = () => {
     setFilters({ ...filters, properties: '' })
   }
-  
-  const filteredProperties = properties.filter(property =>
-    property.address.toLowerCase().includes(search.toLowerCase()) ||
-    property.city?.toLowerCase().includes(search.toLowerCase())
+
+  const filteredProperties = properties.filter(
+    (property) =>
+      property.address.toLowerCase().includes(search.toLowerCase()) ||
+      property.city?.toLowerCase().includes(search.toLowerCase())
   )
-  
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -145,7 +150,7 @@ export function PropertiesFilter() {
                 </CommandGroup>
                 <CommandGroup heading='Properties'>
                   <ScrollArea className='h-[200px]'>
-                    {filteredProperties.map(property => (
+                    {filteredProperties.map((property) => (
                       <CommandItem
                         key={property._id}
                         onSelect={() => handleSelect(property._id)}
@@ -154,7 +159,7 @@ export function PropertiesFilter() {
                         <div className='flex flex-col'>
                           <span className='text-sm'>{property.address}</span>
                           {property.city && (
-                            <span className='text-xs text-muted-foreground'>
+                            <span className='text-muted-foreground text-xs'>
                               {property.city}, {property.state}
                             </span>
                           )}

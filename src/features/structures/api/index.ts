@@ -27,7 +27,9 @@ interface GetStructuresParams {
 
 // API functions
 export const structuresApi = {
-  getStructures: async (_params?: GetStructuresParams): Promise<Structure[]> => {
+  getStructures: async (
+    _params?: GetStructuresParams
+  ): Promise<Structure[]> => {
     // The backend returns array directly, not paginated response
     return apiClient.get('/api/structure/admin')
   },
@@ -62,7 +64,7 @@ export const structuresApi = {
       page: 0,
       limit: 1000, // Get all properties
       filters: {},
-      select: ['_id', 'shortAddress', 'unit', 'city', 'state', 'zipCode']
+      select: ['_id', 'shortAddress', 'unit', 'city', 'state', 'zipCode'],
     })
     return (response as { properties?: Property[] }).properties || []
   },
@@ -113,7 +115,9 @@ export const useUpdateStructure = () => {
     mutationFn: structuresApi.updateStructure,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.structures.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.structures.detail(variables._id) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.structures.detail(variables._id),
+      })
     },
   })
 }

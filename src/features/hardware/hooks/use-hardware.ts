@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { hardwareApi } from '../api/hardware-api'
-import type { Hardware, HardwareFilters } from '../types/hardware'
 import { toast } from 'sonner'
 import { queryKeys } from '@/lib/query-keys'
+import { hardwareApi } from '../api/hardware-api'
+import type { Hardware, HardwareFilters } from '../types/hardware'
 
 export function useHardwareList(filters?: HardwareFilters) {
   return useQuery({
@@ -42,8 +42,10 @@ export function useUpdateHardware() {
     mutationFn: ({ id, data }: { id: string; data: Partial<Hardware> }) =>
       hardwareApi.update(id, data),
     onMutate: async ({ id, data }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.hardware.detail(id) })
-      
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.hardware.detail(id),
+      })
+
       const previousHardware = queryClient.getQueryData<Hardware>(
         queryKeys.hardware.detail(id)
       )
@@ -85,5 +87,23 @@ export function useDeleteHardware() {
     onError: () => {
       toast.error('Failed to delete hardware')
     },
+  })
+}
+
+export function useAugustLocks() {
+  return useQuery({
+    queryKey: ['august-locks'],
+    queryFn: () => hardwareApi.getLocksList(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: false, // Only fetch when explicitly enabled
+  })
+}
+
+export function useAugustSerialNumbers() {
+  return useQuery({
+    queryKey: ['august-serial-numbers'],
+    queryFn: () => hardwareApi.getSNList(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: false, // Only fetch when explicitly enabled
   })
 }

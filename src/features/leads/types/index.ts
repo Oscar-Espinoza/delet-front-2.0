@@ -8,10 +8,10 @@ export const LEAD_STATUS = {
   APPLICATION_SENT: 'application sent',
   APPLIED: 'applied',
   NEVER_ARRIVED: 'never arrived',
-  NONE: ''
+  NONE: '',
 } as const
 
-export type LeadStatus = typeof LEAD_STATUS[keyof typeof LEAD_STATUS]
+export type LeadStatus = (typeof LEAD_STATUS)[keyof typeof LEAD_STATUS]
 
 // Main Lead interface (matches API response)
 export interface Lead {
@@ -104,23 +104,25 @@ export const createLeadSchema = z.object({
   notes: z.string().optional(),
   tags: z.array(z.string()).optional(),
   propertyIds: z.array(z.string()).optional(),
-  status: z.enum([
-    LEAD_STATUS.INTERESTED,
-    LEAD_STATUS.NOT_INTERESTED,
-    LEAD_STATUS.RESCHEDULED,
-    LEAD_STATUS.APPLICATION_SENT,
-    LEAD_STATUS.APPLIED,
-    LEAD_STATUS.NEVER_ARRIVED,
-    LEAD_STATUS.NONE
-  ]).optional(),
+  status: z
+    .enum([
+      LEAD_STATUS.INTERESTED,
+      LEAD_STATUS.NOT_INTERESTED,
+      LEAD_STATUS.RESCHEDULED,
+      LEAD_STATUS.APPLICATION_SENT,
+      LEAD_STATUS.APPLIED,
+      LEAD_STATUS.NEVER_ARRIVED,
+      LEAD_STATUS.NONE,
+    ])
+    .optional(),
   idImage: z.instanceof(File).optional(),
   document: z.instanceof(File).optional(),
   documentBack: z.instanceof(File).optional(),
-  face: z.instanceof(File).optional()
+  face: z.instanceof(File).optional(),
 })
 
 export const updateLeadSchema = createLeadSchema.partial().extend({
-  _id: z.string()
+  _id: z.string(),
 })
 
 // Type inference from schemas

@@ -1,8 +1,8 @@
-import { apiClient } from '@/lib/api-client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Kit, CreateKitData, UpdateKitData, KitFilters } from '../types'
+import { apiClient } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
+import { Kit, CreateKitData, UpdateKitData, KitFilters } from '../types'
 
 // API functions
 export const kitsApi = {
@@ -80,7 +80,9 @@ export const useUpdateKit = () => {
     mutationFn: kitsApi.updateKit,
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.kits.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.kits.detail(variables._id) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.kits.detail(variables._id),
+      })
       toast.success('Kit updated successfully')
     },
     onError: (error: Error) => {

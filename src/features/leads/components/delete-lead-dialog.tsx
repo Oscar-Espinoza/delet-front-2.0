@@ -18,7 +18,11 @@ interface DeleteLeadDialogProps {
   lead: Lead
 }
 
-export function DeleteLeadDialog({ open, onClose, lead }: DeleteLeadDialogProps) {
+export function DeleteLeadDialog({
+  open,
+  onClose,
+  lead,
+}: DeleteLeadDialogProps) {
   const deleteLead = useDeleteLead()
 
   const handleDelete = async () => {
@@ -37,8 +41,11 @@ export function DeleteLeadDialog({ open, onClose, lead }: DeleteLeadDialogProps)
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the lead
-            <span className='font-semibold'> {lead.contact.firstName} {lead.contact.lastName}</span> 
-            {' '}and all associated bookings from the system.
+            <span className='font-semibold'>
+              {' '}
+              {lead.contact.firstName} {lead.contact.lastName}
+            </span>{' '}
+            and all associated bookings from the system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

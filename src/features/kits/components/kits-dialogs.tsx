@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,12 +9,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { useKitsContext } from '../context/kits-context'
 import { useDeleteKit } from '../api'
-import { toast } from 'sonner'
+import { useKitsContext } from '../context/kits-context'
 
 export function DeleteKitDialog() {
-  const { isDeleteDialogOpen, setIsDeleteDialogOpen, selectedKit } = useKitsContext()
+  const { isDeleteDialogOpen, setIsDeleteDialogOpen, selectedKit } =
+    useKitsContext()
   const deleteKit = useDeleteKit()
 
   const handleDelete = async () => {
@@ -34,7 +35,8 @@ export function DeleteKitDialog() {
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the kit
-            {selectedKit?.name && ` "${selectedKit.name}"`} and remove it from our servers.
+            {selectedKit?.name && ` "${selectedKit.name}"`} and remove it from
+            our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

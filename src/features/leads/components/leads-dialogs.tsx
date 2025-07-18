@@ -1,8 +1,8 @@
+import { useLeadsContext } from '../context/use-leads-context'
 import { CreateLeadModal } from './create-lead-modal'
+import { DeleteLeadDialog } from './delete-lead-dialog'
 import { EditLeadModal } from './edit-lead-modal'
 import { ViewLeadModal } from './view-lead-modal'
-import { DeleteLeadDialog } from './delete-lead-dialog'
-import { useLeadsContext } from '../context/use-leads-context'
 
 export function LeadsDialogs() {
   const {
@@ -25,7 +25,7 @@ export function LeadsDialogs() {
         open={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
       />
-      
+
       {editingLead && (
         <EditLeadModal
           open={isEditDialogOpen}
@@ -33,7 +33,7 @@ export function LeadsDialogs() {
           lead={editingLead}
         />
       )}
-      
+
       {viewingLead && (
         <ViewLeadModal
           open={isViewDialogOpen}
@@ -41,7 +41,7 @@ export function LeadsDialogs() {
           lead={viewingLead}
         />
       )}
-      
+
       {deletingLead && (
         <DeleteLeadDialog
           open={isDeleteDialogOpen}

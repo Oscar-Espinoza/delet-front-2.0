@@ -28,7 +28,6 @@ export default function UsersProvider({ children }: Props) {
   )
 }
 
- 
 export const useUsers = () => {
   const usersContext = React.useContext(UsersContext)
 

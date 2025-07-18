@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { signIn } from 'aws-amplify/auth'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,7 +18,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
-import { useAuthStore } from '@/stores/authStore'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -52,20 +52,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    
+
     try {
       await signIn({
         username: data.email,
         password: data.password,
       })
-      
+
       await checkAuthStatus()
       toast.success('Successfully signed in!')
       navigate({ to: search.redirect || '/' })
     } catch (error) {
-      
       const authError = error as { name?: string; message?: string }
-      
+
       if (authError.name === 'UserNotConfirmedException') {
         toast.error('Please confirm your email before signing in')
         navigate({ to: '/otp', search: { email: data.email } })

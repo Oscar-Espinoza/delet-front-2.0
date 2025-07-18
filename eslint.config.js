@@ -30,14 +30,14 @@ export default tseslint.config(
       // React Fast Refresh - off for context files since we need to export hooks
       'react-refresh/only-export-components': 'off',
       'no-console': 'error',
-      
+
       // Disable ESLint's unused vars check - let TypeScript handle it
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
-      
+
       // These are handled by TypeScript's noUnusedLocals and noUnusedParameters
       '@typescript-eslint/no-unused-expressions': 'off',
-      
+
       // Additional TypeScript rules that might conflict
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-module-boundary-types': 'off',

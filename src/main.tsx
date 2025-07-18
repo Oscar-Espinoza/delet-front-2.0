@@ -9,11 +9,11 @@ import {
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/authStore'
+import { configureAmplify } from '@/lib/amplify-config'
 import { handleServerError } from '@/utils/handle-server-error'
+import { AuthWrapper } from '@/components/auth-wrapper'
 import { FontProvider } from './context/font-context'
 import { ThemeProvider } from './context/theme-context'
-import { configureAmplify } from '@/lib/amplify-config'
-import { AuthWrapper } from '@/components/auth-wrapper'
 import './index.css'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
@@ -101,7 +101,9 @@ declare module '@tanstack/react-router' {
 // Render the app
 const rootElement = document.getElementById('root')
 if (!rootElement) {
-  throw new Error('Failed to find the root element. Make sure there is a <div id="root"></div> in your index.html.')
+  throw new Error(
+    'Failed to find the root element. Make sure there is a <div id="root"></div> in your index.html.'
+  )
 }
 
 if (!rootElement.innerHTML) {

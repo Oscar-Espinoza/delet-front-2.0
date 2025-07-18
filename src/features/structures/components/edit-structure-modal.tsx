@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { MultiSelect } from '@/components/ui/multi-select'
 import {
   Select,
   SelectContent,
@@ -27,30 +29,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
-import { useStructuresContext } from '../context/structures-context'
-import { useUpdateStructure, useStructures, useStructure, structuresApi } from '../api'
-import { structureFormSchema, StructureFormData, StructureType } from '../types'
-import { getUsersList } from '@/features/users/api/users-api'
-import { User } from '@/features/users/types'
+import { CompanySelect } from '@/components/form/company-select'
 import { hardwareApi } from '@/features/hardware/api/hardware-api'
 import { Hardware } from '@/features/hardware/types/hardware'
-import { MultiSelect } from '@/components/ui/multi-select'
+import {
+  useUpdateStructure,
+  useStructures,
+  useStructure,
+  structuresApi,
+} from '../api'
+import { useStructuresContext } from '../context/structures-context'
+import { structureFormSchema, StructureFormData, StructureType } from '../types'
 
 interface Property {
-  _id: string;
-  shortAddress: string;
-  unit?: string;
-  city?: string;
-  state?: string;
+  _id: string
+  shortAddress: string
+  unit?: string
+  city?: string
+  state?: string
+  zipCode?: string
 }
 
 export function EditStructureModal() {
-  const { isEditDialogOpen, setIsEditDialogOpen, selectedStructure } = useStructuresContext()
+  const { isEditDialogOpen, setIsEditDialogOpen, selectedStructure } =
+    useStructuresContext()
   const updateStructure = useUpdateStructure()
   const { data: structures = [] } = useStructures()
-  const { data: structureDetails, isLoading: loadingStructure } = useStructure(selectedStructure?._id || '')
-  const [users, setUsers] = useState<User[]>([])
+  const { data: structureDetails, isLoading: loadingStructure } = useStructure(
+    selectedStructure?._id || ''
+  )
   const [hardware, setHardware] = useState<Hardware[]>([])
   const [properties, setProperties] = useState<Property[]>([])
   const [loadingData, setLoadingData] = useState(false)
@@ -68,7 +75,7 @@ export function EditStructureModal() {
         state: '',
         zipCode: '',
       },
-      user: '',
+      company: null,
       parentStructure: null,
       properties: [],
       hardware: [],
@@ -78,8 +85,8 @@ export function EditStructureModal() {
   useEffect(() => {
     if (isEditDialogOpen && structureDetails) {
       loadFormData()
-      const propertyIds = structureDetails.properties?.map(p => p._id) || []
-      const hardwareIds = structureDetails.hardware?.map(h => h._id) || []
+      const propertyIds = structureDetails.properties?.map((p) => p._id) || []
+      const hardwareIds = structureDetails.hardware?.map((h) => h._id) || []
 
       setOriginalProperties(propertyIds)
       setOriginalHardware(hardwareIds)
@@ -93,7 +100,7 @@ export function EditStructureModal() {
           state: structureDetails.address?.state || '',
           zipCode: structureDetails.address?.zipCode || '',
         },
-        user: structureDetails.user._id,
+        company: structureDetails.company?._id || null,
         parentStructure: structureDetails.parentStructure?._id || null,
         properties: propertyIds,
         hardware: hardwareIds,
@@ -101,16 +108,35 @@ export function EditStructureModal() {
     }
   }, [isEditDialogOpen, structureDetails, form])
 
+  // Watch for property selection changes and auto-populate address
+  const selectedProperties = form.watch('properties')
+  useEffect(() => {
+    if (selectedProperties && selectedProperties.length > 0) {
+      const firstPropertyId = selectedProperties[0]
+      const firstProperty = properties.find((p) => p._id === firstPropertyId)
+      if (firstProperty) {
+        form.setValue('address', {
+          street: firstProperty.shortAddress || '',
+          city: firstProperty.city || '',
+          state: firstProperty.state || '',
+          zipCode: firstProperty.zipCode || '',
+        })
+      }
+    }
+  }, [selectedProperties, properties, form])
+
   const loadFormData = async () => {
     setLoadingData(true)
     try {
-      const [usersData, hardwareData, propertiesData] = await Promise.all([
-        getUsersList(),
+      const [hardwareData, propertiesData] = await Promise.all([
         hardwareApi.list(),
-        structuresApi.getProperties()
+        structuresApi.getProperties(),
       ])
-      setUsers(usersData)
-      setHardware(hardwareData)
+      // Filter hardware to only include lockboxes
+      const lockboxes = hardwareData.filter(
+        (hardware) => hardware.category === 'lockbox'
+      )
+      setHardware(lockboxes)
       setProperties(propertiesData)
     } catch (_error) {
       toast.error('Failed to load form data')
@@ -126,8 +152,12 @@ export function EditStructureModal() {
       const currentProperties = data.properties || []
       const currentHardware = data.hardware || []
 
-      const removedProperties = originalProperties.filter(id => !currentProperties.includes(id))
-      const removedHardware = originalHardware.filter(id => !currentHardware.includes(id))
+      const removedProperties = originalProperties.filter(
+        (id) => !currentProperties.includes(id)
+      )
+      const removedHardware = originalHardware.filter(
+        (id) => !currentHardware.includes(id)
+      )
 
       await updateStructure.mutateAsync({
         _id: selectedStructure._id,
@@ -146,22 +176,31 @@ export function EditStructureModal() {
   const selectedType = form.watch('type')
 
   const getParentStructureOptions = () => {
-    const filteredStructures = structures.filter(s => s._id !== selectedStructure?._id)
+    const filteredStructures = structures.filter(
+      (s) => s._id !== selectedStructure?._id
+    )
 
-    if (selectedType === StructureType.BUILDING || selectedType === StructureType.COMPLEX) {
-      return filteredStructures.filter(s => s.type === StructureType.COMPLEX)
+    if (
+      selectedType === StructureType.BUILDING ||
+      selectedType === StructureType.COMPLEX
+    ) {
+      return filteredStructures.filter((s) => s.type === StructureType.COMPLEX)
     }
     if (selectedType === StructureType.FLOOR) {
-      return filteredStructures.filter(s => s.type === StructureType.BUILDING)
+      return filteredStructures.filter((s) => s.type === StructureType.BUILDING)
     }
     if (selectedType === StructureType.ROOM) {
-      return filteredStructures.filter(s => s.type === StructureType.FLOOR || s.type === StructureType.BUILDING)
+      return filteredStructures.filter(
+        (s) =>
+          s.type === StructureType.FLOOR || s.type === StructureType.BUILDING
+      )
     }
     if (selectedType === StructureType.AREA) {
-      return filteredStructures.filter(s =>
-        s.type === StructureType.COMPLEX ||
-        s.type === StructureType.BUILDING ||
-        s.type === StructureType.FLOOR
+      return filteredStructures.filter(
+        (s) =>
+          s.type === StructureType.COMPLEX ||
+          s.type === StructureType.BUILDING ||
+          s.type === StructureType.FLOOR
       )
     }
     return []
@@ -169,7 +208,7 @@ export function EditStructureModal() {
 
   return (
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogContent className='sm:max-w-[725px] max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-[725px]'>
         <DialogHeader>
           <DialogTitle>Edit Structure</DialogTitle>
           <DialogDescription>
@@ -182,7 +221,10 @@ export function EditStructureModal() {
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className='space-y-4'
+            >
               <div className='grid grid-cols-2 gap-4'>
                 <FormField
                   control={form.control}
@@ -204,18 +246,31 @@ export function EditStructureModal() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Type *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Select type' />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={StructureType.BUILDING}>Building</SelectItem>
-                          <SelectItem value={StructureType.FLOOR}>Floor</SelectItem>
-                          <SelectItem value={StructureType.ROOM}>Room</SelectItem>
-                          <SelectItem value={StructureType.COMPLEX}>Complex</SelectItem>
-                          <SelectItem value={StructureType.AREA}>Area</SelectItem>
+                          <SelectItem value={StructureType.BUILDING}>
+                            Building
+                          </SelectItem>
+                          <SelectItem value={StructureType.FLOOR}>
+                            Floor
+                          </SelectItem>
+                          <SelectItem value={StructureType.ROOM}>
+                            Room
+                          </SelectItem>
+                          <SelectItem value={StructureType.COMPLEX}>
+                            Complex
+                          </SelectItem>
+                          <SelectItem value={StructureType.AREA}>
+                            Area
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -225,24 +280,15 @@ export function EditStructureModal() {
 
                 <FormField
                   control={form.control}
-                  name='user'
+                  name='company'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>User *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select user' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {users.map((user) => (
-                            <SelectItem key={user._id} value={user._id}>
-                              {user.email} {user.company && typeof user.company === 'object' && `(${user.company.name})`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Company</FormLabel>
+                      <CompanySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Select company'
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -255,7 +301,9 @@ export function EditStructureModal() {
                     <FormItem>
                       <FormLabel>Parent Structure</FormLabel>
                       <Select
-                        onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                        onValueChange={(value) =>
+                          field.onChange(value === 'none' ? null : value)
+                        }
                         value={field.value || 'none'}
                       >
                         <FormControl>
@@ -266,7 +314,10 @@ export function EditStructureModal() {
                         <SelectContent>
                           <SelectItem value='none'>None</SelectItem>
                           {getParentStructureOptions().map((structure) => (
-                            <SelectItem key={structure._id} value={structure._id}>
+                            <SelectItem
+                              key={structure._id}
+                              value={structure._id}
+                            >
                               {structure.name || 'Unnamed'} ({structure.type})
                             </SelectItem>
                           ))}
@@ -278,7 +329,7 @@ export function EditStructureModal() {
                 />
 
                 <div className='col-span-2'>
-                  <h3 className='text-sm font-medium mb-2'>Address</h3>
+                  <h3 className='mb-2 text-sm font-medium'>Address</h3>
                   <div className='grid grid-cols-2 gap-4'>
                     <FormField
                       control={form.control}
@@ -346,9 +397,9 @@ export function EditStructureModal() {
                       <FormLabel>Properties</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={properties.map(p => ({
+                          options={properties.map((p) => ({
                             label: `${p.shortAddress || 'Unknown'}${p.unit ? ` Unit ${p.unit}` : ''} - ${p.city || 'Unknown'}, ${p.state || 'Unknown'}`,
-                            value: p._id
+                            value: p._id,
                           }))}
                           onValueChange={field.onChange}
                           value={field.value ?? []}
@@ -365,16 +416,16 @@ export function EditStructureModal() {
                   name='hardware'
                   render={({ field }) => (
                     <FormItem className='col-span-2'>
-                      <FormLabel>Hardware</FormLabel>
+                      <FormLabel>Lockboxes</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={hardware.map(h => ({
-                            label: h.name ?? 'Unnamed Hardware',
-                            value: h._id
+                          options={hardware.map((h) => ({
+                            label: h.name ?? 'Unnamed Lockbox',
+                            value: h._id,
                           }))}
                           onValueChange={field.onChange}
                           value={field.value ?? []}
-                          placeholder='Select hardware'
+                          placeholder='Select lockboxes'
                         />
                       </FormControl>
                       <FormMessage />

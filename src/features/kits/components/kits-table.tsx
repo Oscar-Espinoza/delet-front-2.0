@@ -1,7 +1,7 @@
 import { DataTable, useDataTable } from '@/components/data-table'
+import { Kit } from '../types'
 import { DataTableToolbar } from './data-table-toolbar'
 import { columns } from './kits-columns'
-import { Kit } from '../types'
 
 interface KitsTableProps {
   data: Kit[]

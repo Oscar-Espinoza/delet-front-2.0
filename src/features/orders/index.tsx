@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react'
 import { useSearch } from '@tanstack/react-router'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
-import { useOrders } from './hooks/use-orders'
-import { OrdersTable } from './components/orders-table'
 import { columns } from './components/orders-columns'
-import { OrdersPrimaryButtons } from './components/orders-primary-buttons'
 import { OrdersDialogs } from './components/orders-dialogs'
+import { OrdersPrimaryButtons } from './components/orders-primary-buttons'
+import { OrdersTable } from './components/orders-table'
 import { OrdersProvider } from './context/orders-provider'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { IconAlertCircle } from '@tabler/icons-react'
+import { useOrders } from './hooks/use-orders'
 import type { GetOrdersParams } from './types'
 
 export default function Orders() {
   const search = useSearch({ strict: false }) as { company?: string }
-  
+
   const [params, setParams] = useState<GetOrdersParams>({
     page: 1,
     pageSize: 10,

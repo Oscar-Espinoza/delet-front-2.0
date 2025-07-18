@@ -54,10 +54,13 @@ export function useDataTable<TData>({
 }: UseDataTableProps<TData>): UseDataTableReturn<TData> {
   // Table state
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(initialColumnVisibility)
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialColumnFilters)
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    initialColumnVisibility
+  )
+  const [columnFilters, setColumnFilters] =
+    useState<ColumnFiltersState>(initialColumnFilters)
   const [sorting, setSorting] = useState<SortingState>(initialSorting)
-  
+
   // Pagination state (only used for manual pagination)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -82,7 +85,8 @@ export function useDataTable<TData>({
     onColumnVisibilityChange: setColumnVisibility,
     ...(manualPagination && {
       onPaginationChange: (updater) => {
-        const newPagination = typeof updater === 'function' ? updater(pagination) : updater
+        const newPagination =
+          typeof updater === 'function' ? updater(pagination) : updater
         setPagination(newPagination)
         onPaginationChange?.(newPagination)
       },

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -21,21 +22,20 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from 'sonner'
-import { useCompaniesContext } from '../context/use-companies-context'
 import { useCreateCompany } from '../api'
+import { useCompaniesContext } from '../context/use-companies-context'
 import { companyFormSchema, CompanyFormData } from '../types'
 
 export function CreateCompanyModal() {
   const { isCreateDialogOpen, setIsCreateDialogOpen } = useCompaniesContext()
   const createCompany = useCreateCompany()
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [idImagePreview, setIdImagePreview] = useState<string | null>(null)
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: {
       name: '',
-      idImage: '',
       units: '',
       address: {
         street: '',
@@ -47,6 +47,7 @@ export function CreateCompanyModal() {
       phone: '',
       email: '',
       description: '',
+      users: '',
     },
   })
 
@@ -56,6 +57,7 @@ export function CreateCompanyModal() {
       toast.success('Company created successfully')
       form.reset()
       setLogoPreview(null)
+      setIdImagePreview(null)
       setIsCreateDialogOpen(false)
     } catch (_error) {
       toast.error('Failed to create company')
@@ -74,6 +76,18 @@ export function CreateCompanyModal() {
     }
   }
 
+  const handleIdImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      form.setValue('idImage', file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setIdImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   return (
     <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
       <DialogContent className='sm:max-w-[625px]'>
@@ -84,7 +98,10 @@ export function CreateCompanyModal() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -107,7 +124,11 @@ export function CreateCompanyModal() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='company@example.com' {...field} />
+                      <Input
+                        type='email'
+                        placeholder='company@example.com'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -144,21 +165,40 @@ export function CreateCompanyModal() {
 
               <FormField
                 control={form.control}
-                name='idImage'
+                name='users'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ID Image</FormLabel>
+                    <FormLabel>Users</FormLabel>
                     <FormControl>
-                      <Input placeholder='Image ID' {...field} />
+                      <Input placeholder='Users information' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              <FormItem className='col-span-2'>
+                <FormLabel>ID Image</FormLabel>
+                <FormControl>
+                  <Input
+                    type='file'
+                    accept='image/*'
+                    onChange={handleIdImageChange}
+                  />
+                </FormControl>
+                {idImagePreview && (
+                  <img
+                    src={idImagePreview}
+                    alt='ID Image preview'
+                    className='mt-2 h-20 w-20 rounded object-cover'
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+
               <div className='col-span-2'>
                 <FormLabel>Address</FormLabel>
-                <div className='grid grid-cols-2 gap-4 mt-2'>
+                <div className='mt-2 grid grid-cols-2 gap-4'>
                   <FormField
                     control={form.control}
                     name='address.street'
@@ -233,11 +273,11 @@ export function CreateCompanyModal() {
                   <FormItem className='col-span-2'>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder='Enter company description' 
-                        className='resize-none' 
+                      <Textarea
+                        placeholder='Enter company description'
+                        className='resize-none'
                         rows={3}
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -248,16 +288,16 @@ export function CreateCompanyModal() {
               <FormItem className='col-span-2'>
                 <FormLabel>Company Logo</FormLabel>
                 <FormControl>
-                  <Input 
-                    type='file' 
+                  <Input
+                    type='file'
                     accept='image/*'
                     onChange={handleLogoChange}
                   />
                 </FormControl>
                 {logoPreview && (
-                  <img 
-                    src={logoPreview} 
-                    alt='Logo preview' 
+                  <img
+                    src={logoPreview}
+                    alt='Logo preview'
                     className='mt-2 h-20 w-20 rounded object-cover'
                   />
                 )}

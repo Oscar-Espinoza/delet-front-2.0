@@ -3,7 +3,6 @@ import { DataTable, useDataTable } from '@/components/data-table'
 import { Company } from '../types'
 
 declare module '@tanstack/react-table' {
-   
   interface ColumnMeta<TData extends RowData, TValue> {
     className: string
   }

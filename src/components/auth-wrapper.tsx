@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useAuthStore } from '@/stores/authStore'
 import { Loader2 } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
 
 interface AuthWrapperProps {
   children: React.ReactNode
@@ -27,8 +27,8 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
 
   if (isChecking) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className='flex h-screen w-full items-center justify-center'>
+        <Loader2 className='text-primary h-8 w-8 animate-spin' />
       </div>
     )
   }

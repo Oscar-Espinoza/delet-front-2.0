@@ -1,5 +1,14 @@
 import { Row } from '@tanstack/react-table'
-import { MoreHorizontal, Pencil, Eye, Trash2, Archive, RotateCw, Copy, Link } from 'lucide-react'
+import {
+  MoreHorizontal,
+  Pencil,
+  Eye,
+  Trash2,
+  Archive,
+  RotateCw,
+  Copy,
+  Link,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,9 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Property, PROPERTY_STATUS } from '../types'
+import {
+  useArchiveProperty,
+  useRestoreProperty,
+  useDuplicateProperty,
+} from '../api'
 import { usePropertiesContext } from '../context/use-properties-context'
-import { useArchiveProperty, useRestoreProperty, useDuplicateProperty } from '../api'
+import { Property, PROPERTY_STATUS } from '../types'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -20,15 +33,15 @@ export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const property = row.original as Property
-  const { 
-    setEditingProperty, 
-    setIsEditDialogOpen, 
-    setViewingProperty, 
+  const {
+    setEditingProperty,
+    setIsEditDialogOpen,
+    setViewingProperty,
     setIsViewDialogOpen,
     setDeletingProperty,
-    setIsDeleteDialogOpen
+    setIsDeleteDialogOpen,
   } = usePropertiesContext()
-  
+
   const archiveMutation = useArchiveProperty()
   const restoreMutation = useRestoreProperty()
   const duplicateMutation = useDuplicateProperty()
@@ -73,7 +86,7 @@ export function DataTableRowActions<TData>({
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className='h-8 w-8 p-0 data-[state=open]:bg-muted'
+          className='data-[state=open]:bg-muted h-8 w-8 p-0'
         >
           <span className='sr-only'>Open menu</span>
           <MoreHorizontal className='h-4 w-4' />

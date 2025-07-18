@@ -1,6 +1,8 @@
+import { format } from 'date-fns'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,7 +21,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -27,11 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
-import { useBookingsContext } from '../context/use-bookings-context'
+import { Textarea } from '@/components/ui/textarea'
 import { useCreateBooking } from '../api'
+import { useBookingsContext } from '../context/use-bookings-context'
 import { bookingFormSchema, BookingFormData, BookingStatus } from '../types'
-import { format } from 'date-fns'
 
 // Mock data - replace with actual API calls
 const mockProperties = [
@@ -95,7 +95,10 @@ export function CreateBookingModal() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -103,7 +106,10 @@ export function CreateBookingModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Property *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder='Select a property' />
@@ -128,7 +134,10 @@ export function CreateBookingModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Contact *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder='Select a contact' />
@@ -156,8 +165,14 @@ export function CreateBookingModal() {
                     <FormControl>
                       <Input
                         type='datetime-local'
-                        value={field.value ? format(field.value, "yyyy-MM-dd'T'HH:mm") : ''}
-                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                        value={
+                          field.value
+                            ? format(field.value, "yyyy-MM-dd'T'HH:mm")
+                            : ''
+                        }
+                        onChange={(e) =>
+                          field.onChange(new Date(e.target.value))
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -171,7 +186,10 @@ export function CreateBookingModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder='Select status' />

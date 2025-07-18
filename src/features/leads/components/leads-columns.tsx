@@ -1,12 +1,12 @@
-import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
-import LongText from '@/components/long-text'
-import { DataTableColumnHeader } from '@/components/data-table'
-import { Lead, getStatusColor, getStatusLabel } from '../types'
+import { ColumnDef } from '@tanstack/react-table'
 import { CheckCircle2, XCircle, Calendar, User, MapPin } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { DataTableColumnHeader } from '@/components/data-table'
+import LongText from '@/components/long-text'
+import { Lead, getStatusColor, getStatusLabel } from '../types'
 
 export const columns: ColumnDef<Lead>[] = [
   {
@@ -55,7 +55,9 @@ export const columns: ColumnDef<Lead>[] = [
           <div className='flex flex-col'>
             <LongText className='max-w-48 font-medium'>{fullName}</LongText>
             {row.original.contact.email && (
-              <span className='text-xs text-muted-foreground'>{row.original.contact.email}</span>
+              <span className='text-muted-foreground text-xs'>
+                {row.original.contact.email}
+              </span>
             )}
           </div>
         </div>
@@ -95,11 +97,15 @@ export const columns: ColumnDef<Lead>[] = [
       const property = row.original.property
       return property ? (
         <div className='flex items-center space-x-2'>
-          <MapPin className='h-4 w-4 text-muted-foreground' />
+          <MapPin className='text-muted-foreground h-4 w-4' />
           <div>
-            <LongText className='max-w-48 text-sm'>{property.shortAddress || property.address}</LongText>
+            <LongText className='max-w-48 text-sm'>
+              {property.shortAddress || property.address}
+            </LongText>
             {property.unit && (
-              <span className='text-xs text-muted-foreground'>Unit {property.unit}</span>
+              <span className='text-muted-foreground text-xs'>
+                Unit {property.unit}
+              </span>
             )}
           </div>
         </div>
@@ -137,8 +143,10 @@ export const columns: ColumnDef<Lead>[] = [
       const startTime = row.getValue('startTime') as number
       return startTime ? (
         <div className='flex items-center space-x-2'>
-          <Calendar className='h-4 w-4 text-muted-foreground' />
-          <span className='text-sm'>{format(new Date(startTime), 'MMM dd, yyyy HH:mm')}</span>
+          <Calendar className='text-muted-foreground h-4 w-4' />
+          <span className='text-sm'>
+            {format(new Date(startTime), 'MMM dd, yyyy HH:mm')}
+          </span>
         </div>
       ) : (
         <span className='text-muted-foreground'>-</span>
@@ -154,11 +162,13 @@ export const columns: ColumnDef<Lead>[] = [
       const user = row.original.user
       return user ? (
         <div className='flex items-center space-x-2'>
-          <User className='h-4 w-4 text-muted-foreground' />
+          <User className='text-muted-foreground h-4 w-4' />
           <div className='flex flex-col'>
             <span className='text-sm'>{`${user.firstName} ${user.lastName}`}</span>
             {user.company && (
-              <span className='text-xs text-muted-foreground'>{user.company.name}</span>
+              <span className='text-muted-foreground text-xs'>
+                {user.company.name}
+              </span>
             )}
           </div>
         </div>
@@ -179,7 +189,7 @@ export const columns: ColumnDef<Lead>[] = [
           {!incomplete ? (
             <CheckCircle2 className='h-5 w-5 text-green-600' />
           ) : (
-            <XCircle className='h-5 w-5 text-muted-foreground' />
+            <XCircle className='text-muted-foreground h-5 w-5' />
           )}
         </div>
       )
@@ -215,7 +225,7 @@ export const columns: ColumnDef<Lead>[] = [
     cell: ({ row }) => {
       const createdAt = row.getValue('createdAt') as string
       return (
-        <span className='text-sm text-muted-foreground'>
+        <span className='text-muted-foreground text-sm'>
           {format(new Date(createdAt), 'MMM dd, yyyy')}
         </span>
       )

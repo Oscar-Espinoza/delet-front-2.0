@@ -48,6 +48,18 @@ Go to the project directory
   cd shadcn-admin
 ```
 
+Copy the example environment file and add your Google Maps API key
+
+```bash
+  cp .env.example .env
+```
+
+Edit the `.env` file and add your Google Maps API key:
+
+```
+VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+```
+
 Install dependencies
 
 ```bash

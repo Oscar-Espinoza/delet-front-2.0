@@ -1,8 +1,8 @@
 import { DataTable, useDataTable } from '@/components/data-table'
+import { useHardwareContext } from '../contexts/hardware-context'
+import type { Hardware } from '../types/hardware'
 import { hardwareColumns } from './hardware-columns'
 import { HardwareTableToolbar } from './hardware-table-toolbar'
-import type { Hardware } from '../types/hardware'
-import { useHardwareContext } from '../contexts/hardware-context'
 
 interface HardwareTableProps {
   data: Hardware[]
@@ -22,7 +22,7 @@ export function HardwareTable({ data, isLoading }: HardwareTableProps) {
     .filter((key) => rowSelection[key])
     .map((key) => data[parseInt(key)])
     .filter(Boolean)
-  
+
   if (selectedRows.length !== table.getSelectedRowModel().rows.length) {
     setSelectedHardware(selectedRows)
   }

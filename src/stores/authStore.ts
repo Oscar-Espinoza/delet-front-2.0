@@ -1,5 +1,5 @@
-import { create } from 'zustand'
 import { getCurrentUser, signOut, fetchAuthSession } from 'aws-amplify/auth'
+import { create } from 'zustand'
 
 interface AuthUser {
   userId: string
@@ -27,37 +27,40 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     isLoading: true,
     isAuthenticated: false,
     setUser: (user) =>
-      set((state) => ({ 
-        ...state, 
-        auth: { 
-          ...state.auth, 
-          user, 
-          isAuthenticated: !!user 
-        } 
+      set((state) => ({
+        ...state,
+        auth: {
+          ...state.auth,
+          user,
+          isAuthenticated: !!user,
+        },
       })),
     setLoading: (loading) =>
-      set((state) => ({ 
-        ...state, 
-        auth: { 
-          ...state.auth, 
-          isLoading: loading 
-        } 
+      set((state) => ({
+        ...state,
+        auth: {
+          ...state.auth,
+          isLoading: loading,
+        },
       })),
     checkAuthStatus: async () => {
       try {
         set((state) => ({ ...state, auth: { ...state.auth, isLoading: true } }))
-        
+
         const user = await getCurrentUser()
         const session = await fetchAuthSession()
-        
+
         if (user && session.tokens?.accessToken) {
           const cognitoUser: AuthUser = {
             userId: user.userId,
             email: user.signInDetails?.loginId || '',
             attributes: {},
-            groups: session.tokens.accessToken.payload['cognito:groups'] as string[] || []
+            groups:
+              (session.tokens.accessToken.payload[
+                'cognito:groups'
+              ] as string[]) || [],
           }
-          
+
           get().auth.setUser(cognitoUser)
         } else {
           get().auth.setUser(null)
@@ -66,7 +69,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         // Auth check failed - user not authenticated
         get().auth.setUser(null)
       } finally {
-        set((state) => ({ ...state, auth: { ...state.auth, isLoading: false } }))
+        set((state) => ({
+          ...state,
+          auth: { ...state.auth, isLoading: false },
+        }))
       }
     },
     logout: async () => {
@@ -81,11 +87,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     reset: () =>
       set((state) => ({
         ...state,
-        auth: { 
-          ...state.auth, 
-          user: null, 
+        auth: {
+          ...state.auth,
+          user: null,
           isAuthenticated: false,
-          isLoading: false
+          isLoading: false,
         },
       })),
   },

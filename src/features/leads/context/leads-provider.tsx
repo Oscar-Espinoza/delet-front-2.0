@@ -1,7 +1,7 @@
 import { useState, ReactNode } from 'react'
 import { Lead } from '../types'
-import { LeadsContextType } from './types'
 import { LeadsContext } from './context'
+import { LeadsContextType } from './types'
 
 interface LeadsProviderProps {
   children: ReactNode
@@ -10,22 +10,22 @@ interface LeadsProviderProps {
 export function LeadsProvider({ children }: LeadsProviderProps) {
   // Create dialog
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  
+
   // Edit dialog
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
-  
+
   // View dialog
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [viewingLead, setViewingLead] = useState<Lead | null>(null)
-  
+
   // Delete dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [deletingLead, setDeletingLead] = useState<Lead | null>(null)
-  
+
   // Selected leads
   const [selectedLeads, setSelectedLeads] = useState<Lead[]>([])
-  
+
   // Close all dialogs helper
   const closeAllDialogs = () => {
     setIsCreateDialogOpen(false)
@@ -36,7 +36,7 @@ export function LeadsProvider({ children }: LeadsProviderProps) {
     setViewingLead(null)
     setDeletingLead(null)
   }
-  
+
   const value: LeadsContextType = {
     isCreateDialogOpen,
     setIsCreateDialogOpen: (open) => {
@@ -79,6 +79,6 @@ export function LeadsProvider({ children }: LeadsProviderProps) {
     selectedLeads,
     setSelectedLeads,
   }
-  
+
   return <LeadsContext.Provider value={value}>{children}</LeadsContext.Provider>
 }

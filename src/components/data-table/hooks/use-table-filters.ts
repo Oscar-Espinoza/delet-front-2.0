@@ -15,16 +15,19 @@ export interface UseTableFiltersReturn<_TData> {
   // Text filters
   setTextFilter: (columnId: string, value: string) => void
   getTextFilter: (columnId: string) => string
-  
+
   // Faceted filters
   setFacetedFilter: (columnId: string, values: string[]) => void
   getFacetedFilter: (columnId: string) => string[]
   toggleFacetedFilter: (columnId: string, value: string) => void
-  
+
   // Date range filters
-  setDateRangeFilter: (columnId: string, range: { from?: Date; to?: Date }) => void
+  setDateRangeFilter: (
+    columnId: string,
+    range: { from?: Date; to?: Date }
+  ) => void
   getDateRangeFilter: (columnId: string) => { from?: Date; to?: Date }
-  
+
   // Utility functions
   resetFilter: (columnId: string) => void
   resetAllFilters: () => void
@@ -72,14 +75,16 @@ export function useTableFilters<TData>({
   const toggleFacetedFilter = useCallback(
     (columnId: string, value: string) => {
       const column = table.getColumn(columnId)
-      const currentValues = new Set((column?.getFilterValue() as string[]) || [])
-      
+      const currentValues = new Set(
+        (column?.getFilterValue() as string[]) || []
+      )
+
       if (currentValues.has(value)) {
         currentValues.delete(value)
       } else {
         currentValues.add(value)
       }
-      
+
       const newValues = Array.from(currentValues)
       column?.setFilterValue(newValues.length ? newValues : undefined)
     },

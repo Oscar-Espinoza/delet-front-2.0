@@ -8,7 +8,9 @@ export function HardwareProvider({ children }: { children: ReactNode }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [editingHardware, setEditingHardware] = useState<Hardware | null>(null)
-  const [deletingHardware, setDeletingHardware] = useState<Hardware | null>(null)
+  const [deletingHardware, setDeletingHardware] = useState<Hardware | null>(
+    null
+  )
 
   return (
     <HardwareContext.Provider

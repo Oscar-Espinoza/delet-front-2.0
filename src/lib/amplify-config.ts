@@ -1,4 +1,4 @@
-import { Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify'
 
 const amplifyConfig = {
   Auth: {
@@ -14,10 +14,10 @@ const amplifyConfig = {
       },
     },
   },
-};
+}
 
 export const configureAmplify = () => {
-  Amplify.configure(amplifyConfig);
-};
+  Amplify.configure(amplifyConfig)
+}
 
-export default amplifyConfig;
+export default amplifyConfig

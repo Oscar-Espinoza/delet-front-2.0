@@ -1,12 +1,12 @@
 import { useSearch } from '@tanstack/react-router'
-import { PropertiesProvider } from './context/properties-provider'
-import { PropertiesTable } from './components/properties-table'
 import { PropertiesDialogs } from './components/properties-dialogs'
 import { PropertiesPrimaryButtons } from './components/properties-primary-buttons'
+import { PropertiesTable } from './components/properties-table'
+import { PropertiesProvider } from './context/properties-provider'
 
 export default function PropertiesFeature() {
   const search = useSearch({ strict: false }) as { company?: string }
-  
+
   return (
     <PropertiesProvider>
       <div className='space-y-4'>
@@ -19,10 +19,10 @@ export default function PropertiesFeature() {
           </div>
           <PropertiesPrimaryButtons />
         </div>
-        
+
         <PropertiesTable companyId={search.company} />
       </div>
-      
+
       <PropertiesDialogs />
     </PropertiesProvider>
   )

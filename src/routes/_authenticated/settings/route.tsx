@@ -6,6 +6,6 @@ export const Route = createFileRoute('/_authenticated/settings')({
   staticData: {
     title: 'Settings',
     breadcrumb: 'Settings',
-    description: 'Configure application settings and preferences'
-  }
+    description: 'Configure application settings and preferences',
+  },
 })

@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getUsersList, getUser, updateUser, deleteUser, inviteUser } from '../api/users-api'
 import { queryKeys } from '@/lib/query-keys'
+import {
+  getUsersList,
+  getUser,
+  updateUser,
+  deleteUser,
+  inviteUser,
+} from '../api/users-api'
 import type { User, GetUsersListParams } from '../types'
 
 export const useUsersList = (params: GetUsersListParams = {}) => {
@@ -21,32 +27,44 @@ export const useUser = (userId: string) => {
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: ({ userId, data }: { userId: string; data: Partial<User> }) => 
+    mutationFn: ({ userId, data }: { userId: string; data: Partial<User> }) =>
       updateUser(userId, data),
     onMutate: async ({ userId, data }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: queryKeys.users.detail(userId) })
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.users.detail(userId),
+      })
       await queryClient.cancelQueries({ queryKey: queryKeys.users.lists() })
 
       // Snapshot the previous values
-      const previousUser = queryClient.getQueryData(queryKeys.users.detail(userId))
-      const previousLists = queryClient.getQueriesData({ queryKey: queryKeys.users.lists() })
+      const previousUser = queryClient.getQueryData(
+        queryKeys.users.detail(userId)
+      )
+      const previousLists = queryClient.getQueriesData({
+        queryKey: queryKeys.users.lists(),
+      })
 
       // Optimistically update the user detail
-      queryClient.setQueryData(queryKeys.users.detail(userId), (old: User | undefined) => {
-        if (!old) return old
-        return { ...old, ...data }
-      })
+      queryClient.setQueryData(
+        queryKeys.users.detail(userId),
+        (old: User | undefined) => {
+          if (!old) return old
+          return { ...old, ...data }
+        }
+      )
 
       // Optimistically update all user lists
-      queryClient.setQueriesData({ queryKey: queryKeys.users.lists() }, (old: User[] | undefined) => {
-        if (!old) return old
-        return old.map(user => 
-          user._id === userId ? { ...user, ...data } : user
-        )
-      })
+      queryClient.setQueriesData(
+        { queryKey: queryKeys.users.lists() },
+        (old: User[] | undefined) => {
+          if (!old) return old
+          return old.map((user) =>
+            user._id === userId ? { ...user, ...data } : user
+          )
+        }
+      )
 
       // Return context for rollback
       return { previousUser, previousLists }
@@ -67,7 +85,9 @@ export const useUpdateUser = () => {
     },
     onSettled: (_data, _error, { userId }) => {
       // Always refetch after error or success
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.detail(userId) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.detail(userId),
+      })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() })
     },
   })
@@ -75,7 +95,7 @@ export const useUpdateUser = () => {
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: (_, userId) => {
@@ -88,7 +108,7 @@ export const useDeleteUser = () => {
 
 export const useInviteUser = () => {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: inviteUser,
     onSuccess: () => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { MultiSelect } from '@/components/ui/multi-select'
 import {
   Select,
   SelectContent,
@@ -27,29 +29,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
-import { useStructuresContext } from '../context/structures-context'
-import { useCreateStructure, useStructures, structuresApi } from '../api'
-import { structureFormSchema, StructureFormData, StructureType } from '../types'
-import { getUsersList } from '@/features/users/api/users-api'
-import { User } from '@/features/users/types'
+import { CompanySelect } from '@/components/form/company-select'
 import { hardwareApi } from '@/features/hardware/api/hardware-api'
 import { Hardware } from '@/features/hardware/types/hardware'
-import { MultiSelect } from '@/components/ui/multi-select'
+import { useCreateStructure, useStructures, structuresApi } from '../api'
+import { useStructuresContext } from '../context/structures-context'
+import { structureFormSchema, StructureFormData, StructureType } from '../types'
 
 interface Property {
-  _id: string;
-  shortAddress: string;
-  unit?: string;
-  city?: string;
-  state?: string;
+  _id: string
+  shortAddress: string
+  unit?: string
+  city?: string
+  state?: string
+  zipCode?: string
 }
 
 export function CreateStructureModal() {
   const { isCreateDialogOpen, setIsCreateDialogOpen } = useStructuresContext()
   const createStructure = useCreateStructure()
   const { data: structures = [] } = useStructures()
-  const [users, setUsers] = useState<User[]>([])
   const [hardware, setHardware] = useState<Hardware[]>([])
   const [properties, setProperties] = useState<Property[]>([])
   const [loadingData, setLoadingData] = useState(false)
@@ -65,7 +64,7 @@ export function CreateStructureModal() {
         state: '',
         zipCode: '',
       },
-      user: '',
+      company: null,
       parentStructure: null,
       properties: [],
       hardware: [],
@@ -78,16 +77,35 @@ export function CreateStructureModal() {
     }
   }, [isCreateDialogOpen])
 
+  // Watch for property selection changes and auto-populate address
+  const selectedProperties = form.watch('properties')
+  useEffect(() => {
+    if (selectedProperties && selectedProperties.length > 0) {
+      const firstPropertyId = selectedProperties[0]
+      const firstProperty = properties.find((p) => p._id === firstPropertyId)
+      if (firstProperty) {
+        form.setValue('address', {
+          street: firstProperty.shortAddress || '',
+          city: firstProperty.city || '',
+          state: firstProperty.state || '',
+          zipCode: firstProperty.zipCode || '',
+        })
+      }
+    }
+  }, [selectedProperties, properties, form])
+
   const loadFormData = async () => {
     setLoadingData(true)
     try {
-      const [usersData, hardwareData, propertiesData] = await Promise.all([
-        getUsersList(),
+      const [hardwareData, propertiesData] = await Promise.all([
         hardwareApi.list(),
-        structuresApi.getProperties()
+        structuresApi.getProperties(),
       ])
-      setUsers(usersData)
-      setHardware(hardwareData)
+      // Filter hardware to only include lockboxes
+      const lockboxes = hardwareData.filter(
+        (hardware) => hardware.category === 'lockbox'
+      )
+      setHardware(lockboxes)
       setProperties(propertiesData)
     } catch (_error) {
       toast.error('Failed to load form data')
@@ -110,20 +128,27 @@ export function CreateStructureModal() {
   const selectedType = form.watch('type')
 
   const getParentStructureOptions = () => {
-    if (selectedType === StructureType.BUILDING || selectedType === StructureType.COMPLEX) {
-      return structures.filter(s => s.type === StructureType.COMPLEX)
+    if (
+      selectedType === StructureType.BUILDING ||
+      selectedType === StructureType.COMPLEX
+    ) {
+      return structures.filter((s) => s.type === StructureType.COMPLEX)
     }
     if (selectedType === StructureType.FLOOR) {
-      return structures.filter(s => s.type === StructureType.BUILDING)
+      return structures.filter((s) => s.type === StructureType.BUILDING)
     }
     if (selectedType === StructureType.ROOM) {
-      return structures.filter(s => s.type === StructureType.FLOOR || s.type === StructureType.BUILDING)
+      return structures.filter(
+        (s) =>
+          s.type === StructureType.FLOOR || s.type === StructureType.BUILDING
+      )
     }
     if (selectedType === StructureType.AREA) {
-      return structures.filter(s =>
-        s.type === StructureType.COMPLEX ||
-        s.type === StructureType.BUILDING ||
-        s.type === StructureType.FLOOR
+      return structures.filter(
+        (s) =>
+          s.type === StructureType.COMPLEX ||
+          s.type === StructureType.BUILDING ||
+          s.type === StructureType.FLOOR
       )
     }
     return []
@@ -131,11 +156,12 @@ export function CreateStructureModal() {
 
   return (
     <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-      <DialogContent className='sm:max-w-[725px] max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-[725px]'>
         <DialogHeader>
           <DialogTitle>Create Structure</DialogTitle>
           <DialogDescription>
-            Add a new structure to your system. Fill in the structure details below.
+            Add a new structure to your system. Fill in the structure details
+            below.
           </DialogDescription>
         </DialogHeader>
         {loadingData ? (
@@ -144,7 +170,10 @@ export function CreateStructureModal() {
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className='space-y-4'
+            >
               <div className='grid grid-cols-2 gap-4'>
                 <FormField
                   control={form.control}
@@ -166,18 +195,31 @@ export function CreateStructureModal() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Type *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Select type' />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={StructureType.BUILDING}>Building</SelectItem>
-                          <SelectItem value={StructureType.FLOOR}>Floor</SelectItem>
-                          <SelectItem value={StructureType.ROOM}>Room</SelectItem>
-                          <SelectItem value={StructureType.COMPLEX}>Complex</SelectItem>
-                          <SelectItem value={StructureType.AREA}>Area</SelectItem>
+                          <SelectItem value={StructureType.BUILDING}>
+                            Building
+                          </SelectItem>
+                          <SelectItem value={StructureType.FLOOR}>
+                            Floor
+                          </SelectItem>
+                          <SelectItem value={StructureType.ROOM}>
+                            Room
+                          </SelectItem>
+                          <SelectItem value={StructureType.COMPLEX}>
+                            Complex
+                          </SelectItem>
+                          <SelectItem value={StructureType.AREA}>
+                            Area
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -187,24 +229,15 @@ export function CreateStructureModal() {
 
                 <FormField
                   control={form.control}
-                  name='user'
+                  name='company'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>User *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select user' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {users.map((user) => (
-                            <SelectItem key={user._id} value={user._id}>
-                              {user.email} {user.company && typeof user.company === 'object' && `(${user.company.name})`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Company</FormLabel>
+                      <CompanySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Select company'
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -217,7 +250,9 @@ export function CreateStructureModal() {
                     <FormItem>
                       <FormLabel>Parent Structure</FormLabel>
                       <Select
-                        onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                        onValueChange={(value) =>
+                          field.onChange(value === 'none' ? null : value)
+                        }
                         value={field.value || 'none'}
                       >
                         <FormControl>
@@ -228,7 +263,10 @@ export function CreateStructureModal() {
                         <SelectContent>
                           <SelectItem value='none'>None</SelectItem>
                           {getParentStructureOptions().map((structure) => (
-                            <SelectItem key={structure._id} value={structure._id}>
+                            <SelectItem
+                              key={structure._id}
+                              value={structure._id}
+                            >
                               {structure.name || 'Unnamed'} ({structure.type})
                             </SelectItem>
                           ))}
@@ -240,7 +278,7 @@ export function CreateStructureModal() {
                 />
 
                 <div className='col-span-2'>
-                  <h3 className='text-sm font-medium mb-2'>Address</h3>
+                  <h3 className='mb-2 text-sm font-medium'>Address</h3>
                   <div className='grid grid-cols-2 gap-4'>
                     <FormField
                       control={form.control}
@@ -308,9 +346,9 @@ export function CreateStructureModal() {
                       <FormLabel>Properties</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={properties.map(p => ({
+                          options={properties.map((p) => ({
                             label: `${p.shortAddress || 'Unknown'}${p.unit ? ` Unit ${p.unit}` : ''} - ${p.city || 'Unknown'}, ${p.state || 'Unknown'}`,
-                            value: p._id
+                            value: p._id,
                           }))}
                           onValueChange={field.onChange}
                           value={field.value ?? []}
@@ -327,16 +365,16 @@ export function CreateStructureModal() {
                   name='hardware'
                   render={({ field }) => (
                     <FormItem className='col-span-2'>
-                      <FormLabel>Hardware</FormLabel>
+                      <FormLabel>Lockboxes</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={hardware.map(h => ({
-                            label: h.name ?? 'Unnamed Hardware',
-                            value: h._id
+                          options={hardware.map((h) => ({
+                            label: h.name ?? 'Unnamed Lockbox',
+                            value: h._id,
                           }))}
                           onValueChange={field.onChange}
                           value={field.value ?? []}
-                          placeholder='Select hardware'
+                          placeholder='Select lockboxes'
                         />
                       </FormControl>
                       <FormMessage />

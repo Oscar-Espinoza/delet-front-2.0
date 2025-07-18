@@ -1,23 +1,27 @@
 import { useSearch } from '@tanstack/react-router'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { columns } from './components/users-columns'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
 import { useUsersList } from './hooks/use-users'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { IconAlertCircle } from '@tabler/icons-react'
 
 export default function Users() {
   const search = useSearch({ strict: false }) as { company?: string }
-  const { data: users = [], isLoading, error } = useUsersList({ 
-    company: search.company 
+  const {
+    data: users = [],
+    isLoading,
+    error,
+  } = useUsersList({
+    company: search.company,
   })
 
   return (

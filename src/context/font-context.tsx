@@ -38,7 +38,6 @@ export const FontProvider: React.FC<{ children: React.ReactNode }> = ({
   return <FontContext value={{ font, setFont }}>{children}</FontContext>
 }
 
- 
 export const useFont = () => {
   const context = useContext(FontContext)
   if (!context) {

@@ -1,8 +1,8 @@
 import { usePropertiesContext } from '../context/use-properties-context'
 import { CreatePropertyModal } from './create-property-modal'
+import { DeletePropertyDialog } from './delete-property-dialog'
 import { EditPropertyModal } from './edit-property-modal'
 import { ViewPropertyModal } from './view-property-modal'
-import { DeletePropertyDialog } from './delete-property-dialog'
 
 export function PropertiesDialogs() {
   const {
@@ -21,11 +21,11 @@ export function PropertiesDialogs() {
 
   return (
     <>
-      <CreatePropertyModal 
-        open={isCreateDialogOpen} 
-        onOpenChange={setIsCreateDialogOpen} 
+      <CreatePropertyModal
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
       />
-      
+
       {editingProperty && (
         <EditPropertyModal
           open={isEditDialogOpen}
@@ -33,7 +33,7 @@ export function PropertiesDialogs() {
           property={editingProperty}
         />
       )}
-      
+
       {viewingProperty && (
         <ViewPropertyModal
           open={isViewDialogOpen}
@@ -41,7 +41,7 @@ export function PropertiesDialogs() {
           property={viewingProperty}
         />
       )}
-      
+
       {deletingProperty && (
         <DeletePropertyDialog
           open={isDeleteDialogOpen}

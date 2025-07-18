@@ -19,6 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -26,10 +27,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useUpdateLead } from '../api'
-import { updateLeadSchema, UpdateLeadFormData, LEAD_STATUS, getStatusLabel, Lead } from '../types'
+import {
+  updateLeadSchema,
+  UpdateLeadFormData,
+  LEAD_STATUS,
+  getStatusLabel,
+  Lead,
+} from '../types'
 
 interface EditLeadModalProps {
   open: boolean
@@ -74,7 +80,7 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
       tags: lead.contact.tags || [],
       status: lead.contact.status || LEAD_STATUS.NONE,
     })
-    
+
     // Set existing document previews
     setDocumentPreviews({
       idImage: lead.contact.idImage,
@@ -96,24 +102,26 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
     }
   }
 
-  const handleFileChange = (field: keyof typeof documentPreviews) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      form.setValue(field as keyof UpdateLeadFormData, file as never)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setDocumentPreviews(prev => ({
-          ...prev,
-          [field]: reader.result as string
-        }))
+  const handleFileChange =
+    (field: keyof typeof documentPreviews) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file) {
+        form.setValue(field as keyof UpdateLeadFormData, file as never)
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setDocumentPreviews((prev) => ({
+            ...prev,
+            [field]: reader.result as string,
+          }))
+        }
+        reader.readAsDataURL(file)
       }
-      reader.readAsDataURL(file)
     }
-  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className='sm:max-w-[625px] max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-[625px]'>
         <DialogHeader>
           <DialogTitle>Edit Lead</DialogTitle>
           <DialogDescription>
@@ -121,7 +129,10 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -158,7 +169,11 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='john@example.com' {...field} />
+                      <Input
+                        type='email'
+                        placeholder='john@example.com'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -211,7 +226,10 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                   <FormItem className='col-span-2'>
                     <FormLabel>Address</FormLabel>
                     <FormControl>
-                      <Input placeholder='123 Main St, City, State 12345' {...field} />
+                      <Input
+                        placeholder='123 Main St, City, State 12345'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -225,9 +243,9 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                   <FormItem className='col-span-2'>
                     <FormLabel>Notes</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder='Add any additional notes about this lead...' 
-                        {...field} 
+                      <Textarea
+                        placeholder='Add any additional notes about this lead...'
+                        {...field}
                         rows={3}
                       />
                     </FormControl>
@@ -239,7 +257,7 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
               {/* Document Upload Fields */}
               <div className='col-span-2 space-y-4'>
                 <h4 className='text-sm font-medium'>Documents</h4>
-                
+
                 <div className='grid grid-cols-2 gap-4'>
                   <FormField
                     control={form.control}
@@ -256,10 +274,10 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                               {...field}
                             />
                             {documentPreviews.idImage && (
-                              <img 
-                                src={documentPreviews.idImage} 
-                                alt='ID preview' 
-                                className='h-20 w-20 object-cover rounded'
+                              <img
+                                src={documentPreviews.idImage}
+                                alt='ID preview'
+                                className='h-20 w-20 rounded object-cover'
                               />
                             )}
                           </div>
@@ -284,10 +302,10 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                               {...field}
                             />
                             {documentPreviews.face && (
-                              <img 
-                                src={documentPreviews.face} 
-                                alt='Face preview' 
-                                className='h-20 w-20 object-cover rounded'
+                              <img
+                                src={documentPreviews.face}
+                                alt='Face preview'
+                                className='h-20 w-20 rounded object-cover'
                               />
                             )}
                           </div>
@@ -312,10 +330,10 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                               {...field}
                             />
                             {documentPreviews.document && (
-                              <img 
-                                src={documentPreviews.document} 
-                                alt='Document preview' 
-                                className='h-20 w-20 object-cover rounded'
+                              <img
+                                src={documentPreviews.document}
+                                alt='Document preview'
+                                className='h-20 w-20 rounded object-cover'
                               />
                             )}
                           </div>
@@ -340,10 +358,10 @@ export function EditLeadModal({ open, onClose, lead }: EditLeadModalProps) {
                               {...field}
                             />
                             {documentPreviews.documentBack && (
-                              <img 
-                                src={documentPreviews.documentBack} 
-                                alt='Document back preview' 
-                                className='h-20 w-20 object-cover rounded'
+                              <img
+                                src={documentPreviews.documentBack}
+                                alt='Document back preview'
+                                className='h-20 w-20 rounded object-cover'
                               />
                             )}
                           </div>

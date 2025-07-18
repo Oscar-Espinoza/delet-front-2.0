@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { confirmSignUp, resendSignUpCode } from 'aws-amplify/auth'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,7 +22,6 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from '@/components/ui/input-otp'
-import { useAuthStore } from '@/stores/authStore'
 
 type OtpFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -50,26 +50,33 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
     }
 
     setIsLoading(true)
-    
+
     try {
       await confirmSignUp({
         username: search.email,
         confirmationCode: data.otp,
       })
-      
+
       await checkAuthStatus()
       toast.success('Email verified successfully!')
       navigate({ to: '/' })
     } catch (error) {
-      
       if (error instanceof Error && error.name === 'CodeMismatchException') {
         toast.error('Invalid verification code')
-      } else if (error instanceof Error && error.name === 'ExpiredCodeException') {
+      } else if (
+        error instanceof Error &&
+        error.name === 'ExpiredCodeException'
+      ) {
         toast.error('Verification code has expired')
-      } else if (error instanceof Error && error.name === 'NotAuthorizedException') {
+      } else if (
+        error instanceof Error &&
+        error.name === 'NotAuthorizedException'
+      ) {
         toast.error('User is already confirmed')
       } else {
-        toast.error(error instanceof Error ? error.message : 'Failed to verify code')
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to verify code'
+        )
       }
     } finally {
       setIsLoading(false)
@@ -83,15 +90,17 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
     }
 
     setIsResending(true)
-    
+
     try {
       await resendSignUpCode({
         username: search.email,
       })
-      
+
       toast.success('Verification code resent to your email')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to resend code')
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to resend code'
+      )
     } finally {
       setIsResending(false)
     }
@@ -139,7 +148,7 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
         <Button className='mt-2' disabled={otp.length < 6 || isLoading}>
           {isLoading ? 'Verifying...' : 'Verify'}
         </Button>
-        
+
         <div className='mt-4 text-center'>
           <Button
             type='button'

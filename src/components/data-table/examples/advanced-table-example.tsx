@@ -1,23 +1,22 @@
 /**
  * Advanced Table Example
- * 
+ *
  * This example demonstrates how to use the shared table utilities
  * with advanced features like faceted filters, server-side pagination,
  * and custom toolbar components.
  */
-
 import { useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { 
-  DataTable, 
+import { Download, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  DataTable,
   DataTableColumnHeader,
   DataTableFacetedFilter,
   useDataTable,
   useTableFilters,
 } from '@/components/data-table'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Download, Plus } from 'lucide-react'
 
 // Example data type
 interface User {
@@ -90,10 +89,10 @@ export function AdvancedTableExample() {
   // State for server-side pagination
   const [page, setPage] = useState(0)
   const [pageSize, setPageSize] = useState(10)
-  
+
   // Simulated data fetch (replace with actual API call)
   const { data, isLoading, pageCount } = useSimulatedData(page, pageSize)
-  
+
   // Initialize table with server-side pagination
   const { table } = useDataTable({
     data: data || [],
@@ -105,10 +104,10 @@ export function AdvancedTableExample() {
       setPageSize(pagination.pageSize)
     },
   })
-  
+
   // Use the table filters hook for advanced filtering
   const filters = useTableFilters({ table })
-  
+
   // Custom toolbar with advanced filters
   const toolbar = (
     <div className='flex items-center justify-between'>
@@ -120,7 +119,7 @@ export function AdvancedTableExample() {
           onChange={(e) => filters.setTextFilter('name', e.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'
         />
-        
+
         {/* Faceted filters */}
         <DataTableFacetedFilter
           column={table.getColumn('status')}
@@ -132,7 +131,7 @@ export function AdvancedTableExample() {
           title='Role'
           options={roleOptions}
         />
-        
+
         {/* Reset filters */}
         {filters.isFiltered && (
           <Button
@@ -144,7 +143,7 @@ export function AdvancedTableExample() {
           </Button>
         )}
       </div>
-      
+
       {/* Action buttons */}
       <div className='flex items-center space-x-2'>
         <Button variant='outline' size='sm' className='h-8'>
@@ -158,7 +157,7 @@ export function AdvancedTableExample() {
       </div>
     </div>
   )
-  
+
   return (
     <DataTable
       table={table}
@@ -184,7 +183,7 @@ export function AdvancedTableExample() {
 // Simulated data hook (replace with actual API call)
 function useSimulatedData(page: number, pageSize: number) {
   const [isLoading] = useState(false)
-  
+
   // Simulate API call
   const data: User[] = Array.from({ length: pageSize }, (_, i) => ({
     id: `${page * pageSize + i}`,
@@ -194,7 +193,7 @@ function useSimulatedData(page: number, pageSize: number) {
     role: ['admin', 'user', 'guest'][i % 3] as User['role'],
     createdAt: new Date(Date.now() - Math.random() * 10000000000),
   }))
-  
+
   return {
     data,
     isLoading,

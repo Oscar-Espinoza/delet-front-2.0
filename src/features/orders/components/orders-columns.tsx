@@ -1,18 +1,12 @@
-import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
+import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
-import LongText from '@/components/long-text'
-import { 
-  Order, 
-  getOrderStatusColor, 
-  getOrderStatusLabel, 
-  getOrderTypeLabel 
-} from '../data/schema'
+import { Order } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
-import type { OrderStatus, OrderType } from '../types'
+
+const KIT_PRICE = 50
 
 export const columns: ColumnDef<Order>[] = [
   {
@@ -46,13 +40,37 @@ export const columns: ColumnDef<Order>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: '_id',
+    id: 'customer',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Order ID' />
+      <DataTableColumnHeader column={column} title='Customer' />
     ),
-    cell: ({ row }) => (
-      <div className='font-mono text-xs'>{row.getValue('_id')}</div>
-    ),
+    cell: ({ row }) => {
+      const user = row.original.user
+      if (typeof user === 'string') {
+        return <div>User ID: {user}</div>
+      }
+      const customerName =
+        `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
+      return (
+        <div>
+          <div className='font-medium'>{customerName}</div>
+          <div className='text-muted-foreground text-xs'>{user.email}</div>
+        </div>
+      )
+    },
+    filterFn: (row, _id, value) => {
+      const user = row.original.user
+      if (typeof user === 'string') {
+        return user.toLowerCase().includes(value.toLowerCase())
+      }
+      const customerName =
+        `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
+      const searchValue = value.toLowerCase()
+      return (
+        customerName.toLowerCase().includes(searchValue) ||
+        user.email.toLowerCase().includes(searchValue)
+      )
+    },
     meta: {
       className: cn(
         'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)] lg:drop-shadow-none',
@@ -63,42 +81,6 @@ export const columns: ColumnDef<Order>[] = [
     enableHiding: false,
   },
   {
-    id: 'customer',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Customer' />
-    ),
-    cell: ({ row }) => {
-      const user = row.original.user
-      if (typeof user === 'string') {
-        return <div>User ID: {user}</div>
-      }
-      const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
-      return (
-        <div>
-          <div className='font-medium'>{customerName}</div>
-          <div className='text-xs text-muted-foreground'>{user.email}</div>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'type',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Type' />
-    ),
-    cell: ({ row }) => {
-      const type = row.getValue('type') as string
-      return (
-        <Badge variant='outline' className='capitalize'>
-          {getOrderTypeLabel(type as OrderType)}
-        </Badge>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-  },
-  {
     accessorKey: 'quantity',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Quantity' />
@@ -106,26 +88,6 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => (
       <div className='text-center'>{row.getValue('quantity')}</div>
     ),
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
-    cell: ({ row }) => {
-      const status = row.getValue('status') as string
-      return (
-        <Badge 
-          variant='outline' 
-          className={cn('capitalize', getOrderStatusColor(status as OrderStatus))}
-        >
-          {getOrderStatusLabel(status as OrderStatus)}
-        </Badge>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
   },
   {
     id: 'company',
@@ -139,17 +101,33 @@ export const columns: ColumnDef<Order>[] = [
     },
   },
   {
-    accessorKey: 'address',
+    id: 'addresses',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Address' />
+      <DataTableColumnHeader column={column} title='Addresses' />
     ),
     cell: ({ row }) => {
-      const address = row.getValue('address') as string
-      return address ? (
-        <LongText className='max-w-48'>{address}</LongText>
-      ) : (
-        <span className='text-muted-foreground'>No address</span>
+      const deliveryAddresses = row.original.deliveryAddresses
+      if (!deliveryAddresses || deliveryAddresses.length === 0) {
+        return <span className='text-muted-foreground'>No addresses</span>
+      }
+
+      const count = deliveryAddresses.length
+      return (
+        <div className='text-center'>
+          {count === 1 ? '1 address' : `${count} addresses`}
+        </div>
       )
+    },
+  },
+  {
+    id: 'total',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Total' />
+    ),
+    cell: ({ row }) => {
+      const quantity = row.original.quantity
+      const total = quantity * KIT_PRICE
+      return <div className='text-right font-medium'>${total.toFixed(2)}</div>
     },
   },
   {
@@ -163,7 +141,7 @@ export const columns: ColumnDef<Order>[] = [
       return (
         <div className='text-nowrap'>
           {format(date, 'MMM dd, yyyy')}
-          <div className='text-xs text-muted-foreground'>
+          <div className='text-muted-foreground text-xs'>
             {format(date, 'h:mm a')}
           </div>
         </div>

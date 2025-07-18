@@ -51,22 +51,18 @@ function MyServerTable({ data, isLoading, pageCount, onPaginationChange }) {
     onPaginationChange,
   })
 
-  return (
-    <DataTable
-      table={table}
-      columns={columns}
-      isLoading={isLoading}
-    />
-  )
+  return <DataTable table={table} columns={columns} isLoading={isLoading} />
 }
 ```
 
 ## Components
 
 ### DataTable
+
 The main table component with built-in toolbar, pagination, and loading states.
 
 Props:
+
 - `table`: TanStack table instance
 - `columns`: Column definitions
 - `isLoading`: Loading state
@@ -78,6 +74,7 @@ Props:
 - `loadingState`: Custom loading state component
 
 ### DataTableColumnHeader
+
 Sortable column header with dropdown menu.
 
 ```tsx
@@ -89,17 +86,18 @@ const columns = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Name' />
     ),
-  }
+  },
 ]
 ```
 
 ### DataTableFacetedFilter
+
 Multi-select filter for categorical data.
 
 ```tsx
 import { DataTableFacetedFilter } from '@/components/data-table'
 
-<DataTableFacetedFilter
+;<DataTableFacetedFilter
   column={table.getColumn('status')}
   title='Status'
   options={[
@@ -112,6 +110,7 @@ import { DataTableFacetedFilter } from '@/components/data-table'
 ## Hooks
 
 ### useDataTable
+
 Main hook for table state management.
 
 ```tsx
@@ -125,6 +124,7 @@ const { table, rowSelection, columnFilters, sorting } = useDataTable({
 ```
 
 ### usePagination
+
 Standalone pagination hook for custom implementations.
 
 ```tsx
@@ -132,11 +132,12 @@ const { pagination, setPageIndex, setPageSize } = usePagination({
   defaultPageSize: 20,
   onPaginationChange: (pagination) => {
     // Handle pagination change
-  }
+  },
 })
 ```
 
 ### useFilters
+
 Standalone filters hook for custom implementations.
 
 ```tsx
@@ -144,7 +145,7 @@ const { columnFilters, setFilter, resetFilters, isFiltered } = useFilters({
   initialFilters: [],
   onFiltersChange: (filters) => {
     // Handle filter changes
-  }
+  },
 })
 ```
 
@@ -158,6 +159,7 @@ To migrate existing tables:
 4. Remove local DataTablePagination, DataTableToolbar components
 
 ### Before:
+
 ```tsx
 const [rowSelection, setRowSelection] = useState({})
 const [columnVisibility, setColumnVisibility] = useState({})
@@ -177,6 +179,7 @@ return (
 ```
 
 ### After:
+
 ```tsx
 const { table } = useDataTable({ data, columns })
 

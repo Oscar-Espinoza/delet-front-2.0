@@ -39,6 +39,17 @@ export const getUser = async (userId: string): Promise<User> => {
   return apiClient.get<User>(`/api/users/${userId}`)
 }
 
+interface CreateUserData {
+  firstName: string
+  lastName: string
+  phone: string
+  email: string
+  password: string
+  role: string
+  adminPanelRole?: string
+  company?: string
+}
+
 interface UpdateUserData {
   lastName: string
   firstName: string
@@ -66,7 +77,10 @@ export const updateUser = async (
     adminPanelRole: data.adminPanelRole || '',
     active: String(data.active !== false), // Convert boolean to string
     role: data.role || '',
-    company: typeof data.company === 'object' ? data.company._id : data.company || undefined,
+    company:
+      typeof data.company === 'object'
+        ? data.company._id
+        : data.company || undefined,
   }
 
   // Only include password if it's provided and not empty
@@ -81,12 +95,33 @@ export const deleteUser = async (userId: string): Promise<void> => {
   return apiClient.delete<void>(`/api/users/${userId}`)
 }
 
+export const createUser = async (data: CreateUserData): Promise<User> => {
+  return apiClient.post<User>('/api/users/admin/create', data)
+}
+
+export const getCurrentUser = async (): Promise<User> => {
+  return apiClient.get<User>('/api/users/profile')
+}
+
 export const inviteUser = async (data: {
   email: string
   role: string
   company?: string
 }): Promise<User> => {
   return apiClient.post<User>('/api/users/invite', data)
+}
+
+// Mutation hook for creating users
+export function useCreateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      // Invalidate and refetch users list
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+    },
+  })
 }
 
 // Mutation hook for updating users

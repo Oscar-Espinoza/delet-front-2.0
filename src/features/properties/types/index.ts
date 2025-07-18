@@ -5,10 +5,11 @@ export const PROPERTY_STATUS = {
   ACTIVE: 'active',
   PENDING: 'pending',
   ARCHIVED: 'archived',
-  INACTIVE: 'inactive'
+  INACTIVE: 'inactive',
 } as const
 
-export type PropertyStatus = typeof PROPERTY_STATUS[keyof typeof PROPERTY_STATUS]
+export type PropertyStatus =
+  (typeof PROPERTY_STATUS)[keyof typeof PROPERTY_STATUS]
 
 // Property type enum
 export const PROPERTY_TYPE = {
@@ -16,10 +17,10 @@ export const PROPERTY_TYPE = {
   APARTMENT: 'apartment',
   CONDO: 'condo',
   TOWNHOUSE: 'townhouse',
-  OTHER: 'other'
+  OTHER: 'other',
 } as const
 
-export type PropertyType = typeof PROPERTY_TYPE[keyof typeof PROPERTY_TYPE]
+export type PropertyType = (typeof PROPERTY_TYPE)[keyof typeof PROPERTY_TYPE]
 
 // Main Property interface (matches API response)
 export interface Property {
@@ -101,25 +102,27 @@ export const createPropertySchema = z.object({
     PROPERTY_TYPE.APARTMENT,
     PROPERTY_TYPE.CONDO,
     PROPERTY_TYPE.TOWNHOUSE,
-    PROPERTY_TYPE.OTHER
+    PROPERTY_TYPE.OTHER,
   ]),
-  status: z.enum([
-    PROPERTY_STATUS.ACTIVE,
-    PROPERTY_STATUS.PENDING,
-    PROPERTY_STATUS.ARCHIVED,
-    PROPERTY_STATUS.INACTIVE
-  ]).default(PROPERTY_STATUS.PENDING),
+  status: z
+    .enum([
+      PROPERTY_STATUS.ACTIVE,
+      PROPERTY_STATUS.PENDING,
+      PROPERTY_STATUS.ARCHIVED,
+      PROPERTY_STATUS.INACTIVE,
+    ])
+    .default(PROPERTY_STATUS.PENDING),
   price: z.number().optional(),
   isManaged: z.boolean().default(false),
   redirectUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
   company: z.string().optional(),
   kit: z.string().optional(),
   primaryImage: z.instanceof(File).optional(),
-  images: z.array(z.instanceof(File)).optional()
+  images: z.array(z.instanceof(File)).optional(),
 })
 
 export const updatePropertySchema = createPropertySchema.partial().extend({
-  _id: z.string()
+  _id: z.string(),
 })
 
 // Type inference from schemas
@@ -147,24 +150,24 @@ export const formatAddress = (property: {
 
   // Otherwise, build from components
   const parts: string[] = []
-  
+
   if (property.street) {
     parts.push(property.street)
   }
-  
+
   if (property.unit) {
     parts.push(`Unit ${property.unit}`)
   }
-  
+
   const cityStateZip: string[] = []
   if (property.city) cityStateZip.push(property.city)
   if (property.state) cityStateZip.push(property.state)
   if (property.zipCode) cityStateZip.push(property.zipCode)
-  
+
   if (cityStateZip.length > 0) {
     parts.push(cityStateZip.join(', '))
   }
-  
+
   return parts.join(', ')
 }
 

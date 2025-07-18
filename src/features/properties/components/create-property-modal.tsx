@@ -22,7 +22,9 @@ export function CreatePropertyModal({
         </DialogHeader>
         <div className='py-4'>
           {/* TODO: Implement create property form */}
-          <p className='text-muted-foreground'>Create property form will be implemented here.</p>
+          <p className='text-muted-foreground'>
+            Create property form will be implemented here.
+          </p>
         </div>
       </DialogContent>
     </Dialog>

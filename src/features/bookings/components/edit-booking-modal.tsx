@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
+import { format } from 'date-fns'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,7 +22,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -28,11 +29,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
-import { useBookingsContext } from '../context/use-bookings-context'
+import { Textarea } from '@/components/ui/textarea'
 import { useUpdateBooking } from '../api'
+import { useBookingsContext } from '../context/use-bookings-context'
 import { bookingFormSchema, BookingFormData, BookingStatus } from '../types'
-import { format } from 'date-fns'
 
 // Mock data - replace with actual API calls
 const mockProperties = [
@@ -61,7 +61,8 @@ const bookingStatuses: { value: BookingStatus; label: string }[] = [
 ]
 
 export function EditBookingModal() {
-  const { showEditModal, setShowEditModal, selectedBooking } = useBookingsContext()
+  const { showEditModal, setShowEditModal, selectedBooking } =
+    useBookingsContext()
   const updateBooking = useUpdateBooking()
 
   const form = useForm<BookingFormData>({
@@ -114,7 +115,10 @@ export function EditBookingModal() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -175,8 +179,14 @@ export function EditBookingModal() {
                     <FormControl>
                       <Input
                         type='datetime-local'
-                        value={field.value ? format(field.value, "yyyy-MM-dd'T'HH:mm") : ''}
-                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                        value={
+                          field.value
+                            ? format(field.value, "yyyy-MM-dd'T'HH:mm")
+                            : ''
+                        }
+                        onChange={(e) =>
+                          field.onChange(new Date(e.target.value))
+                        }
                       />
                     </FormControl>
                     <FormMessage />

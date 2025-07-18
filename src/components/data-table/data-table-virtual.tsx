@@ -1,16 +1,13 @@
-import {
-  ColumnDef,
-  Table as TanstackTable,
-} from '@tanstack/react-table'
+import { ColumnDef, Table as TanstackTable } from '@tanstack/react-table'
 
 /**
  * Virtual Scrolling DataTable Component
- * 
+ *
  * This is a proof of concept for implementing virtual scrolling with TanStack Table.
  * To use this component, you need to install @tanstack/react-virtual:
- * 
+ *
  * pnpm add @tanstack/react-virtual
- * 
+ *
  * Then uncomment the import and implementation below.
  */
 
@@ -40,7 +37,7 @@ export function DataTableVirtual<TData, TValue>({
   showToolbar: _showToolbar = true,
 }: VirtualDataTableProps<TData, TValue>) {
   // Uncomment this implementation when @tanstack/react-virtual is installed
-  
+
   /*
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
   const { rows } = table.getRowModel()
@@ -139,14 +136,14 @@ export function DataTableVirtual<TData, TValue>({
   return (
     <div className='space-y-4'>
       <div className='rounded-md border p-8 text-center'>
-        <h3 className='text-lg font-semibold mb-2'>Virtual Scrolling Ready</h3>
+        <h3 className='mb-2 text-lg font-semibold'>Virtual Scrolling Ready</h3>
         <p className='text-muted-foreground mb-4'>
           To enable virtual scrolling for large datasets:
         </p>
-        <code className='bg-muted px-2 py-1 rounded text-sm'>
+        <code className='bg-muted rounded px-2 py-1 text-sm'>
           pnpm add @tanstack/react-virtual
         </code>
-        <p className='text-sm text-muted-foreground mt-4'>
+        <p className='text-muted-foreground mt-4 text-sm'>
           Then uncomment the implementation in data-table-virtual.tsx
         </p>
       </div>
@@ -156,15 +153,15 @@ export function DataTableVirtual<TData, TValue>({
 
 /**
  * Example usage:
- * 
+ *
  * import { DataTableVirtual, useDataTable } from '@/components/data-table'
- * 
+ *
  * function LargeDatasetTable({ data }) {
  *   const { table } = useDataTable({
  *     data, // thousands of rows
  *     columns,
  *   })
- * 
+ *
  *   return (
  *     <DataTableVirtual
  *       table={table}

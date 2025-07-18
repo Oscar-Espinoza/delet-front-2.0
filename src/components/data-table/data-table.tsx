@@ -3,6 +3,7 @@ import {
   flexRender,
   Table as TanstackTable,
 } from '@tanstack/react-table'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -11,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
 
@@ -81,8 +81,8 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className='space-y-4'>
-      {showToolbar && (
-        toolbar || (
+      {showToolbar &&
+        (toolbar || (
           <DataTableToolbar
             table={table}
             searchColumn={searchColumn}
@@ -90,9 +90,8 @@ export function DataTable<TData, TValue>({
           >
             {toolbarChildren}
           </DataTableToolbar>
-        )
-      )}
-      <div className='rounded-md border min-h-[500px]'>
+        ))}
+      <div className='min-h-[500px] rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -117,31 +116,31 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              loadingState || defaultLoadingState
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className='group/row'
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cell.column.columnDef.meta?.className ?? ''}
+            {isLoading
+              ? loadingState || defaultLoadingState
+              : table.getRowModel().rows?.length
+                ? table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                      className='group/row'
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              emptyState || defaultEmptyState
-            )}
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className={
+                            cell.column.columnDef.meta?.className ?? ''
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                : emptyState || defaultEmptyState}
           </TableBody>
         </Table>
       </div>

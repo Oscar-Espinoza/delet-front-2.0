@@ -1,6 +1,16 @@
 import { apiClient } from '@/lib/api-client'
 import type { Hardware, HardwareFilters } from '../types/hardware'
 
+export interface AugustLock {
+  id: string
+  name: string
+}
+
+export interface AugustSerialNumber {
+  serialNumber: string
+  LockID: string
+}
+
 export const hardwareApi = {
   list: async (filters?: HardwareFilters): Promise<Hardware[]> => {
     const params = new URLSearchParams({
@@ -40,5 +50,13 @@ export const hardwareApi = {
 
   delete: async (id: string): Promise<void> => {
     return apiClient.delete<void>(`/api/hardware/${id}`)
+  },
+
+  getLocksList: async (): Promise<AugustLock[]> => {
+    return apiClient.get<AugustLock[]>('/api/lock/august-id')
+  },
+
+  getSNList: async (): Promise<AugustSerialNumber[]> => {
+    return apiClient.get<AugustSerialNumber[]>('/api/lock/august-sn')
   },
 }

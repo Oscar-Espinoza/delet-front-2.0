@@ -1,26 +1,28 @@
-import { Main } from '@/components/layout/main'
+import { useSearch } from '@tanstack/react-router'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { useKits } from './api'
-import { KitsTable } from './components/kits-table'
 import { CreateKitModal } from './components/create-kit-modal'
 import { EditKitModal } from './components/edit-kit-modal'
-import { ViewKitDialog } from './components/view-kit-dialog'
 import { DeleteKitDialog } from './components/kits-dialogs'
 import { KitsPrimaryButtons } from './components/kits-primary-buttons'
+import { KitsTable } from './components/kits-table'
+import { ViewKitDialog } from './components/view-kit-dialog'
 import { KitsProvider } from './context/kits-context'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { IconAlertCircle } from '@tabler/icons-react'
-import { useSearch } from '@tanstack/react-router'
 
 export default function KitsPage() {
   const search = useSearch({ strict: false }) as { company?: string }
-  const { data: kits = [], isLoading, error } = useKits(
-    search.company ? { company: search.company } : undefined
-  )
+  const {
+    data: kits = [],
+    isLoading,
+    error,
+  } = useKits(search.company ? { company: search.company } : undefined)
   return (
     <KitsProvider>
       <Header fixed>
@@ -41,12 +43,15 @@ export default function KitsPage() {
           </div>
           <KitsPrimaryButtons />
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           {error ? (
             <Alert variant='destructive'>
               <IconAlertCircle className='h-4 w-4' />
               <AlertDescription>
-                Failed to load kits. {error instanceof Error ? error.message : 'Please try again later.'}
+                Failed to load kits.{' '}
+                {error instanceof Error
+                  ? error.message
+                  : 'Please try again later.'}
               </AlertDescription>
             </Alert>
           ) : (

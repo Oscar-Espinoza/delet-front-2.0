@@ -1,7 +1,7 @@
 import { DataTable, useDataTable } from '@/components/data-table'
+import { Structure } from '../types'
 import { DataTableToolbar } from './data-table-toolbar'
 import { columns } from './structures-columns'
-import { Structure } from '../types'
 
 interface StructuresTableProps {
   data: Structure[]

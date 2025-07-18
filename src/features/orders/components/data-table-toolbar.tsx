@@ -2,8 +2,6 @@ import { Cross2Icon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { orderStatuses, orderTypes } from '../data/data'
-import { DataTableFacetedFilter } from './data-table-faceted-filter'
 import { DataTableViewOptions } from './data-table-view-options'
 
 interface DataTableToolbarProps<TData> {
@@ -19,31 +17,15 @@ export function DataTableToolbar<TData>({
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder='Search orders...'
+          placeholder='Search customers...'
           value={
-            (table.getColumn('_id')?.getFilterValue() as string) ?? ''
+            (table.getColumn('customer')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('_id')?.setFilterValue(event.target.value)
+            table.getColumn('customer')?.setFilterValue(event.target.value)
           }
           className='h-8 w-[150px] lg:w-[250px]'
         />
-        <div className='flex gap-x-2'>
-          {table.getColumn('status') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('status')}
-              title='Status'
-              options={orderStatuses}
-            />
-          )}
-          {table.getColumn('type') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('type')}
-              title='Type'
-              options={orderTypes}
-            />
-          )}
-        </div>
         {isFiltered && (
           <Button
             variant='ghost'

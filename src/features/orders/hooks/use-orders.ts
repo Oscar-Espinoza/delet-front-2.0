@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { ordersApi } from '../api/orders-api'
-import type { GetOrdersParams } from '../types'
-import type { OrderPlacedFormValues, Order } from '../data/schema'
 import { queryKeys } from '@/lib/query-keys'
+import { ordersApi } from '../api/orders-api'
+import type { OrderPlacedFormValues, Order } from '../data/schema'
+import type { GetOrdersParams } from '../types'
 
 export const useOrders = (params: GetOrdersParams = {}) => {
   return useQuery({
@@ -24,8 +24,13 @@ export const usePlaceOrder = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ data, isAdmin }: { data: OrderPlacedFormValues; isAdmin?: boolean }) =>
-      ordersApi.placeOrder(data, isAdmin),
+    mutationFn: ({
+      data,
+      isAdmin,
+    }: {
+      data: OrderPlacedFormValues
+      isAdmin?: boolean
+    }) => ordersApi.placeOrder(data, isAdmin),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
       toast.success('Order placed successfully')
@@ -52,12 +57,16 @@ export const useUpdateOrderStatus = () => {
     }) => ordersApi.updateOrderStatus(id, status, isAdmin),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(variables.id),
+      })
       toast.success('Order status updated')
     },
     onError: (error) => {
       const err = error as { response?: { data?: { message?: string } } }
-      toast.error(err.response?.data?.message || 'Failed to update order status')
+      toast.error(
+        err.response?.data?.message || 'Failed to update order status'
+      )
     },
   })
 }
@@ -77,7 +86,9 @@ export const useUpdateOrder = () => {
     }) => ordersApi.updateOrder(id, data, isAdmin),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(variables.id),
+      })
       toast.success('Order updated successfully')
     },
     onError: (error) => {
@@ -95,7 +106,9 @@ export const useCancelOrder = () => {
       ordersApi.cancelOrder(id, isAdmin),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orders.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders.detail(variables.id) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.detail(variables.id),
+      })
       toast.success('Order cancelled')
     },
     onError: (error) => {
@@ -124,8 +137,13 @@ export const useDeleteOrder = () => {
 
 export const useExportOrders = () => {
   return useMutation({
-    mutationFn: ({ params, format }: { params: GetOrdersParams; format?: string }) =>
-      ordersApi.exportOrders(params, format),
+    mutationFn: ({
+      params,
+      format,
+    }: {
+      params: GetOrdersParams
+      format?: string
+    }) => ordersApi.exportOrders(params, format),
     onSuccess: (blob) => {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')

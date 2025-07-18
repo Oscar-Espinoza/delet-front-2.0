@@ -1,11 +1,11 @@
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
+import { IconPlus } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { DataTableViewOptions } from './data-table-view-options'
-import { DataTableFacetedFilter } from './data-table-faceted-filter'
-import { IconPlus } from '@tabler/icons-react'
 import { useHardwareContext } from '../contexts/hardware-context'
+import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import { DataTableViewOptions } from './data-table-view-options'
 
 interface HardwareTableToolbarProps<TData> {
   table: Table<TData>
@@ -40,56 +40,56 @@ export function HardwareTableToolbar<TData>({
   const { setIsCreateDialogOpen } = useHardwareContext()
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
+    <div className='flex items-center justify-between'>
+      <div className='flex flex-1 items-center space-x-2'>
         <Input
-          placeholder="Search hardware..."
+          placeholder='Search hardware...'
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className='h-8 w-[150px] lg:w-[250px]'
         />
         {table.getColumn('category') && (
           <DataTableFacetedFilter
             column={table.getColumn('category')}
-            title="Category"
+            title='Category'
             options={categoryOptions}
           />
         )}
         {table.getColumn('status') && (
           <DataTableFacetedFilter
             column={table.getColumn('status')}
-            title="Status"
+            title='Status'
             options={statusOptions}
           />
         )}
         {table.getColumn('operationalStatus') && (
           <DataTableFacetedFilter
             column={table.getColumn('operationalStatus')}
-            title="Operational"
+            title='Operational'
             options={operationalStatusOptions}
           />
         )}
         {isFiltered && (
           <Button
-            variant="ghost"
+            variant='ghost'
             onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
+            className='h-8 px-2 lg:px-3'
           >
             Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <Cross2Icon className='ml-2 h-4 w-4' />
           </Button>
         )}
       </div>
-      <div className="flex items-center space-x-2">
+      <div className='flex items-center space-x-2'>
         <DataTableViewOptions table={table} />
         <Button
-          size="sm"
-          className="h-8"
+          size='sm'
+          className='h-8'
           onClick={() => setIsCreateDialogOpen(true)}
         >
-          <IconPlus className="mr-2 h-4 w-4" />
+          <IconPlus className='mr-2 h-4 w-4' />
           Add Hardware
         </Button>
       </div>

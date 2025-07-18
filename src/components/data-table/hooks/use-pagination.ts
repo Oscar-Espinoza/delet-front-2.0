@@ -28,18 +28,27 @@ export function usePagination({
     pageSize: defaultPageSize,
   })
 
-  const setPagination = useCallback((newPagination: PaginationState) => {
-    setPaginationState(newPagination)
-    onPaginationChange?.(newPagination)
-  }, [onPaginationChange])
+  const setPagination = useCallback(
+    (newPagination: PaginationState) => {
+      setPaginationState(newPagination)
+      onPaginationChange?.(newPagination)
+    },
+    [onPaginationChange]
+  )
 
-  const setPageIndex = useCallback((pageIndex: number) => {
-    setPagination({ ...pagination, pageIndex })
-  }, [pagination, setPagination])
+  const setPageIndex = useCallback(
+    (pageIndex: number) => {
+      setPagination({ ...pagination, pageIndex })
+    },
+    [pagination, setPagination]
+  )
 
-  const setPageSize = useCallback((pageSize: number) => {
-    setPagination({ pageIndex: 0, pageSize })
-  }, [setPagination])
+  const setPageSize = useCallback(
+    (pageSize: number) => {
+      setPagination({ pageIndex: 0, pageSize })
+    },
+    [setPagination]
+  )
 
   const nextPage = useCallback(() => {
     setPageIndex(pagination.pageIndex + 1)
@@ -49,9 +58,12 @@ export function usePagination({
     setPageIndex(Math.max(0, pagination.pageIndex - 1))
   }, [pagination.pageIndex, setPageIndex])
 
-  const canNextPage = useCallback((pageCount: number) => {
-    return pagination.pageIndex < pageCount - 1
-  }, [pagination.pageIndex])
+  const canNextPage = useCallback(
+    (pageCount: number) => {
+      return pagination.pageIndex < pageCount - 1
+    },
+    [pagination.pageIndex]
+  )
 
   const canPreviousPage = useCallback(() => {
     return pagination.pageIndex > 0

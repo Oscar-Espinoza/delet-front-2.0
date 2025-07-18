@@ -1,8 +1,10 @@
+import type { Address } from '@/types/common'
 import type { Order } from './data/schema'
 
 export interface OrderAddress {
-  address: string
+  address: Address
   quantity: number
+  assignedKits?: number
 }
 
 export interface OrderPlaced {
@@ -10,6 +12,19 @@ export interface OrderPlaced {
   addresses: OrderAddress[]
   provideShippingLater: boolean
   notes: string
+  billingEntityId?: string
+}
+
+export interface KitAllocationState {
+  totalKits: number
+  availableKits: number
+  assignedKits: number
+}
+
+export interface KitAllocationError {
+  addressIndex?: number
+  message: string
+  type: 'over_allocation' | 'invalid_quantity' | 'missing_allocation'
 }
 
 export interface GetOrdersParams {
@@ -56,7 +71,7 @@ export interface GetOrdersResponse {
 
 export type OrderType = 'purchase' | 'service'
 
-export type OrderStatus = 
+export type OrderStatus =
   | 'waiting for payment information'
   | 'assembling kits'
   | 'complete'

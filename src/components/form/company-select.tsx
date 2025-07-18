@@ -1,3 +1,4 @@
+import { FormControl } from '@/components/ui/form'
 import {
   Select,
   SelectContent,
@@ -5,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FormControl } from '@/components/ui/form'
 import { useAllCompanies } from '@/features/companies/hooks/use-all-companies'
 
 interface CompanySelectProps {
@@ -29,9 +29,7 @@ export function CompanySelect({
 
   if (error) {
     return (
-      <div className='text-sm text-destructive'>
-        Failed to load companies
-      </div>
+      <div className='text-destructive text-sm'>Failed to load companies</div>
     )
   }
 
@@ -43,13 +41,13 @@ export function CompanySelect({
     >
       <FormControl>
         <SelectTrigger className={className}>
-          <SelectValue placeholder={isLoading ? 'Loading companies...' : placeholder} />
+          <SelectValue
+            placeholder={isLoading ? 'Loading companies...' : placeholder}
+          />
         </SelectTrigger>
       </FormControl>
       <SelectContent>
-        {includeNone && (
-          <SelectItem value='none'>None</SelectItem>
-        )}
+        {includeNone && <SelectItem value='none'>None</SelectItem>}
         {companies.map((company) => (
           <SelectItem key={company._id} value={company._id}>
             {company.name}
@@ -73,9 +71,7 @@ export function CompanySelectStandalone({
 
   if (error) {
     return (
-      <div className='text-sm text-destructive'>
-        Failed to load companies
-      </div>
+      <div className='text-destructive text-sm'>Failed to load companies</div>
     )
   }
 
@@ -86,12 +82,12 @@ export function CompanySelectStandalone({
       disabled={disabled || isLoading}
     >
       <SelectTrigger className={className}>
-        <SelectValue placeholder={isLoading ? 'Loading companies...' : placeholder} />
+        <SelectValue
+          placeholder={isLoading ? 'Loading companies...' : placeholder}
+        />
       </SelectTrigger>
       <SelectContent>
-        {includeNone && (
-          <SelectItem value='none'>None</SelectItem>
-        )}
+        {includeNone && <SelectItem value='none'>None</SelectItem>}
         {companies.map((company) => (
           <SelectItem key={company._id} value={company._id}>
             {company.name}

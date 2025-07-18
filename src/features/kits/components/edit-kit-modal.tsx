@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, X } from 'lucide-react'
+import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,6 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { MultiSelect } from '@/components/ui/multi-select'
 import {
   Select,
   SelectContent,
@@ -28,30 +31,30 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
-import { useKitsContext } from '../context/kits-context'
-import { useUpdateKit, useKit } from '../api'
-import { kitFormSchema, KitFormData, KitState } from '../types'
 import { CompanySelect } from '@/components/form/company-select'
 import { hardwareApi } from '@/features/hardware/api/hardware-api'
 import { Hardware } from '@/features/hardware/types/hardware'
-import { MultiSelect } from '@/components/ui/multi-select'
 import { structuresApi } from '@/features/structures/api'
+import { useUpdateKit, useKit } from '../api'
+import { useKitsContext } from '../context/kits-context'
+import { kitFormSchema, KitFormData, KitState } from '../types'
 
 interface Property {
-  _id: string;
-  shortAddress: string;
-  unit?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
+  _id: string
+  shortAddress: string
+  unit?: string
+  city?: string
+  state?: string
+  zipCode?: string
 }
 
 export function EditKitModal() {
-  const { isEditDialogOpen, setIsEditDialogOpen, selectedKit } = useKitsContext()
+  const { isEditDialogOpen, setIsEditDialogOpen, selectedKit } =
+    useKitsContext()
   const updateKit = useUpdateKit()
-  const { data: kitDetails, isLoading: loadingKit } = useKit(selectedKit?._id || '')
+  const { data: kitDetails, isLoading: loadingKit } = useKit(
+    selectedKit?._id || ''
+  )
   const [hardware, setHardware] = useState<Hardware[]>([])
   const [properties, setProperties] = useState<Property[]>([])
   const [loadingData, setLoadingData] = useState(false)
@@ -100,7 +103,7 @@ export function EditKitModal() {
         company: kitDetails.company?._id || null,
         user: kitDetails.user?._id || null,
         property: kitDetails.property?._id || null,
-        hardware: kitDetails.hardware?.map(h => h._id) || [],
+        hardware: kitDetails.hardware?.map((h) => h._id) || [],
       })
     }
   }, [isEditDialogOpen, kitDetails, form])
@@ -110,7 +113,7 @@ export function EditKitModal() {
     try {
       const [hardwareData, propertiesData] = await Promise.all([
         hardwareApi.list(),
-        structuresApi.getProperties()
+        structuresApi.getProperties(),
       ])
       setHardware(hardwareData)
       setProperties(propertiesData)
@@ -150,17 +153,18 @@ export function EditKitModal() {
 
   const handleRemoveTag = (tagToRemove: string) => {
     const currentTags = form.getValues('tags') ?? []
-    form.setValue('tags', currentTags.filter(tag => tag !== tagToRemove))
+    form.setValue(
+      'tags',
+      currentTags.filter((tag) => tag !== tagToRemove)
+    )
   }
 
   return (
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogContent className='sm:max-w-[725px] max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-[725px]'>
         <DialogHeader>
           <DialogTitle>Edit Kit</DialogTitle>
-          <DialogDescription>
-            Update the kit details below.
-          </DialogDescription>
+          <DialogDescription>Update the kit details below.</DialogDescription>
         </DialogHeader>
         {loadingData || loadingKit ? (
           <div className='flex items-center justify-center py-6'>
@@ -168,7 +172,10 @@ export function EditKitModal() {
           </div>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className='space-y-4'
+            >
               <div className='grid grid-cols-2 gap-4'>
                 <FormField
                   control={form.control}
@@ -190,7 +197,10 @@ export function EditKitModal() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>State *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Select state' />
@@ -216,10 +226,10 @@ export function EditKitModal() {
                     <FormItem className='col-span-2'>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder='Enter kit description' 
-                          className='resize-none' 
-                          {...field} 
+                        <Textarea
+                          placeholder='Enter kit description'
+                          className='resize-none'
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -234,10 +244,10 @@ export function EditKitModal() {
                     <FormItem className='col-span-2'>
                       <FormLabel>Notes</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder='Enter notes' 
-                          className='resize-none' 
-                          {...field} 
+                        <Textarea
+                          placeholder='Enter notes'
+                          className='resize-none'
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -304,8 +314,10 @@ export function EditKitModal() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Property</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(value === 'none' ? null : value)}
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(value === 'none' ? null : value)
+                        }
                         value={field.value || 'none'}
                       >
                         <FormControl>
@@ -319,7 +331,9 @@ export function EditKitModal() {
                             <SelectItem key={property._id} value={property._id}>
                               {property.shortAddress}
                               {property.unit && ` Unit ${property.unit}`}
-                              {property.city && property.state && ` - ${property.city}, ${property.state}`}
+                              {property.city &&
+                                property.state &&
+                                ` - ${property.city}, ${property.state}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -330,7 +344,7 @@ export function EditKitModal() {
                 />
 
                 <div className='col-span-2'>
-                  <h3 className='text-sm font-medium mb-2'>Shipping Address</h3>
+                  <h3 className='mb-2 text-sm font-medium'>Shipping Address</h3>
                   <div className='grid grid-cols-2 gap-4'>
                     <FormField
                       control={form.control}
@@ -426,9 +440,9 @@ export function EditKitModal() {
                       <FormLabel>Hardware</FormLabel>
                       <FormControl>
                         <MultiSelect
-                          options={hardware.map(h => ({
+                          options={hardware.map((h) => ({
                             label: `${h.name} (${h.category})`,
-                            value: h._id
+                            value: h._id,
                           }))}
                           onValueChange={field.onChange}
                           value={field.value ?? []}

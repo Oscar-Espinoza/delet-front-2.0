@@ -1,12 +1,15 @@
 import { ColumnDef, RowData, PaginationState } from '@tanstack/react-table'
-import { DataTable, useDataTable, DataTableViewOptions } from '@/components/data-table'
-import { Lead } from '../types'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  DataTable,
+  useDataTable,
+  DataTableViewOptions,
+} from '@/components/data-table'
+import { Lead } from '../types'
 
 declare module '@tanstack/react-table' {
-   
   interface ColumnMeta<TData extends RowData, TValue> {
     className: string
   }
@@ -17,7 +20,10 @@ interface DataTableProps {
   data: Lead[]
   isLoading?: boolean
   pageCount?: number
-  onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void
+  onPaginationChange?: (pagination: {
+    pageIndex: number
+    pageSize: number
+  }) => void
   pagination?: {
     pageIndex: number
     pageSize: number
@@ -28,9 +34,9 @@ interface DataTableProps {
   onSearchClear?: () => void
 }
 
-export function LeadsTable({ 
-  columns, 
-  data, 
+export function LeadsTable({
+  columns,
+  data,
   isLoading,
   pageCount,
   onPaginationChange,
@@ -44,7 +50,9 @@ export function LeadsTable({
     columns,
     pageCount,
     manualPagination: true,
-    onPaginationChange: onPaginationChange as ((pagination: PaginationState) => void) | undefined,
+    onPaginationChange: onPaginationChange as
+      | ((pagination: PaginationState) => void)
+      | undefined,
   })
 
   // Custom toolbar with search
@@ -86,10 +94,7 @@ export function LeadsTable({
       showToolbar={true}
       emptyState={
         <tr>
-          <td
-            colSpan={columns.length}
-            className='h-24 text-center'
-          >
+          <td colSpan={columns.length} className='h-24 text-center'>
             No leads found.
           </td>
         </tr>

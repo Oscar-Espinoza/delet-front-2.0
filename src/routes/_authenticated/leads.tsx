@@ -6,10 +6,10 @@ export const Route = createFileRoute('/_authenticated/leads')({
   staticData: {
     title: 'Leads',
     breadcrumb: 'Leads',
-    description: 'Manage leads and prospects'
+    description: 'Manage leads and prospects',
   },
   preload: true,
-  preloadStaleTime: 1000 * 60 * 5 // 5 minutes
+  preloadStaleTime: 1000 * 60 * 5, // 5 minutes
 })
 
 function LeadsComponent() {

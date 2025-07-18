@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api-client'
 import { queryKeys } from '@/lib/query-keys'
-import type {
-  Booking,
-  BookingFilters,
-  BookingFormData,
-} from '../types'
+import type { Booking, BookingFilters, BookingFormData } from '../types'
 
 // API endpoints
 const BOOKINGS_ENDPOINT = '/api/booking'
@@ -22,13 +18,12 @@ export const getBookings = async (
   params.append('agents', filters.agents || '')
   params.append('firstName', filters.firstName || '')
   params.append('lastName', filters.lastName || '')
-  
+
   // These are required and should always have values
   if (filters.startTime)
     params.append('startTime', filters.startTime.toString())
-  if (filters.endTime) 
-    params.append('endTime', filters.endTime.toString())
-    
+  if (filters.endTime) params.append('endTime', filters.endTime.toString())
+
   // Optional parameters
   if (filters.status) params.append('status', filters.status)
   if (filters.outcome) params.append('outcome', filters.outcome)
@@ -57,7 +52,9 @@ export const updateBooking = async (
 ): Promise<Booking> => {
   const payload = { ...data }
   if (data.startTime) {
-    payload.startTime = Math.floor(data.startTime.getTime() / 1000) as unknown as Date
+    payload.startTime = Math.floor(
+      data.startTime.getTime() / 1000
+    ) as unknown as Date
   }
   return await apiClient.patch(`${BOOKINGS_ENDPOINT}/${id}`, payload)
 }
@@ -118,7 +115,9 @@ export const useDeleteBooking = () => {
     mutationFn: deleteBooking,
     onSuccess: (_, deletedId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lists() })
-      queryClient.removeQueries({ queryKey: queryKeys.bookings.detail(deletedId) })
+      queryClient.removeQueries({
+        queryKey: queryKeys.bookings.detail(deletedId),
+      })
     },
   })
 }

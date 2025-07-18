@@ -1,5 +1,6 @@
-import { PlaceOrderDialog } from './place-order-dialog'
 import { useOrdersContext } from '../context/use-orders-context'
+import { PlaceOrderDialog } from './place-order-dialog'
+import { ViewOrderDialog } from './view-order-dialog'
 
 export function OrdersDialogs() {
   const { placeOrderOpen, setPlaceOrderOpen } = useOrdersContext()
@@ -10,6 +11,7 @@ export function OrdersDialogs() {
         open={placeOrderOpen}
         onOpenChange={setPlaceOrderOpen}
       />
+      <ViewOrderDialog />
     </>
   )
 }

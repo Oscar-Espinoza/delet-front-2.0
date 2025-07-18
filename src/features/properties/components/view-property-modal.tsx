@@ -23,7 +23,7 @@ export function ViewPropertyModal({
         <DialogHeader>
           <DialogTitle>Property Details</DialogTitle>
         </DialogHeader>
-        
+
         <div className='flex items-center justify-center py-8'>
           <p className='text-muted-foreground'>
             Property details for {property._id} will be implemented here.

@@ -1,12 +1,26 @@
-import { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
+import { ColumnDef } from '@tanstack/react-table'
+import {
+  Building2,
+  Link,
+  Calendar,
+  DollarSign,
+  Users,
+  Check,
+  X,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import LongText from '@/components/long-text'
+import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { Property, PropertyStatus, formatAddress, getStatusColor, getStatusLabel } from '../types'
-import { Building2, Link, Calendar, DollarSign, Users, Check, X } from 'lucide-react'
+import LongText from '@/components/long-text'
+import {
+  Property,
+  PropertyStatus,
+  formatAddress,
+  getStatusColor,
+  getStatusLabel,
+} from '../types'
 import { DataTableRowActions } from './data-table-row-actions'
 
 export const columns: ColumnDef<Property>[] = [
@@ -52,7 +66,7 @@ export const columns: ColumnDef<Property>[] = [
           {isManaged ? (
             <Check className='h-4 w-4 text-green-600' />
           ) : (
-            <X className='h-4 w-4 text-muted-foreground/50' />
+            <X className='text-muted-foreground/50 h-4 w-4' />
           )}
         </div>
       )
@@ -66,7 +80,7 @@ export const columns: ColumnDef<Property>[] = [
     cell: ({ row }) => {
       const property = row.original
       const address = formatAddress(property)
-      
+
       return (
         <div className='flex items-start space-x-3'>
           {/* Images column */}
@@ -78,17 +92,17 @@ export const columns: ColumnDef<Property>[] = [
                 className='h-16 w-16 rounded-md object-cover'
               />
             ) : (
-              <div className='flex h-16 w-16 items-center justify-center rounded-md bg-muted'>
-                <Building2 className='h-6 w-6 text-muted-foreground' />
+              <div className='bg-muted flex h-16 w-16 items-center justify-center rounded-md'>
+                <Building2 className='text-muted-foreground h-6 w-6' />
               </div>
             )}
           </div>
-          
+
           {/* Address details column */}
           <div className='flex flex-col space-y-1'>
             <LongText className='max-w-xs font-medium'>{address}</LongText>
             {property.propertyType && (
-              <span className='text-xs text-muted-foreground capitalize'>
+              <span className='text-muted-foreground text-xs capitalize'>
                 {property.propertyType}
               </span>
             )}
@@ -153,7 +167,7 @@ export const columns: ColumnDef<Property>[] = [
       const price = row.getValue('price') as number | undefined
       return price ? (
         <div className='flex items-center space-x-1'>
-          <DollarSign className='h-3 w-3 text-muted-foreground' />
+          <DollarSign className='text-muted-foreground h-3 w-3' />
           <span className='font-medium'>{price.toLocaleString()}</span>
         </div>
       ) : (
@@ -170,7 +184,7 @@ export const columns: ColumnDef<Property>[] = [
       const leads = row.getValue('leadsCount') as number | undefined
       return (
         <div className='flex items-center space-x-1'>
-          <Users className='h-3 w-3 text-muted-foreground' />
+          <Users className='text-muted-foreground h-3 w-3' />
           <span className='font-medium'>{leads || 0}</span>
         </div>
       )
@@ -185,8 +199,10 @@ export const columns: ColumnDef<Property>[] = [
       const date = row.getValue('listedDate') as string | undefined
       return date ? (
         <div className='flex items-center space-x-1'>
-          <Calendar className='h-3 w-3 text-muted-foreground' />
-          <span className='text-sm'>{format(new Date(date), 'MMM d, yyyy')}</span>
+          <Calendar className='text-muted-foreground h-3 w-3' />
+          <span className='text-sm'>
+            {format(new Date(date), 'MMM d, yyyy')}
+          </span>
         </div>
       ) : (
         <span className='text-muted-foreground'>-</span>
@@ -201,12 +217,7 @@ export const columns: ColumnDef<Property>[] = [
     cell: ({ row }) => {
       const status = row.getValue('status') as PropertyStatus
       return (
-        <Badge
-          className={cn(
-            'font-normal',
-            getStatusColor(status)
-          )}
-        >
+        <Badge className={cn('font-normal', getStatusColor(status))}>
           {getStatusLabel(status)}
         </Badge>
       )

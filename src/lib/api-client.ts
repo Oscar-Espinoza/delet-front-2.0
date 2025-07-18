@@ -24,7 +24,7 @@ class ApiClient {
           if (token) {
             config.headers.Authorization = `Bearer ${token}`
           }
-        } catch (_error) {
+        } catch (error) {
           // Continue without auth token
         }
 

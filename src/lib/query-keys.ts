@@ -1,12 +1,12 @@
 /**
  * Centralized query key factory for TanStack Query
  * This ensures consistent query key patterns across the application
- * 
+ *
  * Usage examples:
  * - queryKeys.companies.list({ page: 1, limit: 10 })
  * - queryKeys.users.detail('user-id')
  * - queryKeys.leads.all
- * 
+ *
  * Benefits:
  * - Type-safe query keys
  * - Consistent patterns across the app
@@ -19,7 +19,8 @@ export const queryKeys = {
   companies: {
     all: ['companies'] as const,
     lists: () => [...queryKeys.companies.all, 'list'] as const,
-    list: (params?: unknown) => [...queryKeys.companies.lists(), params] as const,
+    list: (params?: unknown) =>
+      [...queryKeys.companies.lists(), params] as const,
     details: () => [...queryKeys.companies.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.companies.details(), id] as const,
   },
@@ -31,7 +32,9 @@ export const queryKeys = {
     list: (params?: unknown) => [...queryKeys.users.lists(), params] as const,
     details: () => [...queryKeys.users.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.users.details(), id] as const,
-    avatar: (userId: string) => [...queryKeys.users.all, 'avatar', userId] as const,
+    avatar: (userId: string) =>
+      [...queryKeys.users.all, 'avatar', userId] as const,
+    current: ['users', 'current'] as const,
   },
 
   // Leads
@@ -47,7 +50,8 @@ export const queryKeys = {
   bookings: {
     all: ['bookings'] as const,
     lists: () => [...queryKeys.bookings.all, 'list'] as const,
-    list: (params?: unknown) => [...queryKeys.bookings.lists(), params] as const,
+    list: (params?: unknown) =>
+      [...queryKeys.bookings.lists(), params] as const,
     details: () => [...queryKeys.bookings.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.bookings.details(), id] as const,
   },
@@ -56,7 +60,8 @@ export const queryKeys = {
   hardware: {
     all: ['hardware'] as const,
     lists: () => [...queryKeys.hardware.all, 'list'] as const,
-    list: (params?: unknown) => [...queryKeys.hardware.lists(), params] as const,
+    list: (params?: unknown) =>
+      [...queryKeys.hardware.lists(), params] as const,
     details: () => [...queryKeys.hardware.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.hardware.details(), id] as const,
   },
@@ -74,7 +79,8 @@ export const queryKeys = {
   structures: {
     all: ['structures'] as const,
     lists: () => [...queryKeys.structures.all, 'list'] as const,
-    list: (params?: unknown) => [...queryKeys.structures.lists(), params] as const,
+    list: (params?: unknown) =>
+      [...queryKeys.structures.lists(), params] as const,
     details: () => [...queryKeys.structures.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.structures.details(), id] as const,
   },
@@ -101,8 +107,22 @@ export const queryKeys = {
   properties: {
     all: ['properties'] as const,
     lists: () => [...queryKeys.properties.all, 'list'] as const,
-    list: (params?: unknown) => [...queryKeys.properties.lists(), params] as const,
+    list: (params?: unknown) =>
+      [...queryKeys.properties.lists(), params] as const,
     details: () => [...queryKeys.properties.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.properties.details(), id] as const,
+  },
+
+  // Billing Entities
+  billingEntities: {
+    all: ['billingEntities'] as const,
+    lists: () => [...queryKeys.billingEntities.all, 'list'] as const,
+    list: (params?: unknown) =>
+      [...queryKeys.billingEntities.lists(), params] as const,
+    byCompany: (companyId: string) =>
+      [...queryKeys.billingEntities.all, 'company', companyId] as const,
+    details: () => [...queryKeys.billingEntities.all, 'detail'] as const,
+    detail: (id: string) =>
+      [...queryKeys.billingEntities.details(), id] as const,
   },
 } as const

@@ -8,7 +8,10 @@ interface LeadsPrimaryButtonsProps {
   isAdmin?: boolean
 }
 
-export function LeadsPrimaryButtons({ filters, isAdmin }: LeadsPrimaryButtonsProps) {
+export function LeadsPrimaryButtons({
+  filters,
+  isAdmin,
+}: LeadsPrimaryButtonsProps) {
   const exportLeads = useExportLeads()
 
   const handleExport = () => {
@@ -16,7 +19,7 @@ export function LeadsPrimaryButtons({ filters, isAdmin }: LeadsPrimaryButtonsPro
       page: 1,
       limit: 10000, // Export all
       filters,
-      isAdmin
+      isAdmin,
     })
   }
 

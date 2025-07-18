@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Dashboard from '@/features/dashboard'
+import Companies from '@/features/companies'
 
 export const Route = createFileRoute('/_authenticated/')({
-  component: Dashboard,
+  component: Companies,
   staticData: {
-    title: 'Dashboard',
-    breadcrumb: 'Dashboard',
-    description: 'Overview and analytics'
+    title: 'Companies',
+    breadcrumb: 'Companies',
+    description: 'Manage your companies and their information',
   },
   preload: true,
-  preloadStaleTime: 1000 * 60 * 10 // 10 minutes - dashboard data can be cached longer
+  preloadStaleTime: 1000 * 60 * 5, // 5 minutes - company data cache
 })

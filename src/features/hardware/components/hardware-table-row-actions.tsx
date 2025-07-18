@@ -1,4 +1,5 @@
 import { Row } from '@tanstack/react-table'
+import { IconDots, IconEdit, IconTrash, IconEye } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,9 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { IconDots, IconEdit, IconTrash, IconEye } from '@tabler/icons-react'
-import type { Hardware } from '../types/hardware'
 import { useHardwareContext } from '../contexts/hardware-context'
+import type { Hardware } from '../types/hardware'
 
 interface HardwareTableRowActionsProps {
   row: Row<Hardware>
@@ -18,7 +18,12 @@ interface HardwareTableRowActionsProps {
 
 export function HardwareTableRowActions({ row }: HardwareTableRowActionsProps) {
   const hardware = row.original
-  const { setEditingHardware, setIsEditDialogOpen, setDeletingHardware, setIsDeleteDialogOpen } = useHardwareContext()
+  const {
+    setEditingHardware,
+    setIsEditDialogOpen,
+    setDeletingHardware,
+    setIsDeleteDialogOpen,
+  } = useHardwareContext()
 
   const handleEdit = () => {
     setEditingHardware(hardware)
@@ -33,27 +38,27 @@ export function HardwareTableRowActions({ row }: HardwareTableRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <IconDots className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
+        <Button variant='ghost' size='icon' className='h-8 w-8'>
+          <IconDots className='h-4 w-4' />
+          <span className='sr-only'>Open menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <IconEye className="mr-2 h-4 w-4" />
+        <DropdownMenuItem className='cursor-pointer'>
+          <IconEye className='mr-2 h-4 w-4' />
           View Details
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={handleEdit}>
-          <IconEdit className="mr-2 h-4 w-4" />
+        <DropdownMenuItem className='cursor-pointer' onClick={handleEdit}>
+          <IconEdit className='mr-2 h-4 w-4' />
           Edit
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="cursor-pointer text-destructive hover:text-destructive"
+          className='text-destructive hover:text-destructive cursor-pointer'
           onClick={handleDelete}
         >
-          <IconTrash className="mr-2 h-4 w-4" />
+          <IconTrash className='mr-2 h-4 w-4' />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -13,7 +13,10 @@ interface DataTableProps<TData, TValue> {
     pageIndex: number
     pageSize: number
   }
-  onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void
+  onPaginationChange?: (pagination: {
+    pageIndex: number
+    pageSize: number
+  }) => void
 }
 
 export function OrdersTable<TData, TValue>({
@@ -28,7 +31,9 @@ export function OrdersTable<TData, TValue>({
     columns,
     pageCount,
     manualPagination: !!onPaginationChange,
-    onPaginationChange: onPaginationChange as ((pagination: PaginationState) => void) | undefined,
+    onPaginationChange: onPaginationChange as
+      | ((pagination: PaginationState) => void)
+      | undefined,
   })
 
   return (

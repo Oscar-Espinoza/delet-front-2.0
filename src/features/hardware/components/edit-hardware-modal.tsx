@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -28,10 +27,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { useHardwareContext } from '../contexts/use-hardware-context'
 import { useUpdateHardware } from '../hooks/use-hardware'
-import { hardwareFormSchema, type HardwareFormData } from '../types/hardware-form'
-import type { Hardware, HardwareCategory, HardwareStatus } from '../types/hardware'
+import type {
+  Hardware,
+  HardwareCategory,
+  HardwareStatus,
+} from '../types/hardware'
+import {
+  hardwareFormSchema,
+  type HardwareFormData,
+} from '../types/hardware-form'
 
 const categoryOptions: { value: HardwareCategory; label: string }[] = [
   { value: 'router', label: 'Router' },
@@ -50,7 +57,12 @@ const statusOptions: { value: HardwareStatus; label: string }[] = [
 ]
 
 export function EditHardwareModal() {
-  const { isEditDialogOpen, setIsEditDialogOpen, editingHardware, setEditingHardware } = useHardwareContext()
+  const {
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    editingHardware,
+    setEditingHardware,
+  } = useHardwareContext()
   const updateHardware = useUpdateHardware()
 
   const form = useForm<HardwareFormData>({
@@ -138,7 +150,10 @@ export function EditHardwareModal() {
         }
       }
 
-      if (data.category === 'lockbox' && (data.lockboxId || data.lockboxVendor)) {
+      if (
+        data.category === 'lockbox' &&
+        (data.lockboxId || data.lockboxVendor)
+      ) {
         payload.lockbox = {
           id: data.lockboxId,
           vendor: data.lockboxVendor,
@@ -204,7 +219,10 @@ export function EditHardwareModal() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -372,7 +390,10 @@ export function EditHardwareModal() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Router Status</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder='Select status' />
@@ -412,7 +433,10 @@ export function EditHardwareModal() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Lock Vendor</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder='Select vendor' />
@@ -438,7 +462,10 @@ export function EditHardwareModal() {
                   render={({ field }) => (
                     <FormItem className='col-span-2'>
                       <FormLabel>Camera Firmware</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Select firmware' />

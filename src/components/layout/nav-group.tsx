@@ -40,14 +40,33 @@ export function NavGroup({ title, items }: NavGroup) {
           const key = `${item.title}-${item.url}`
 
           if (!item.items)
-            return <SidebarMenuLink key={key} item={item} href={href} search={search} />
+            return (
+              <SidebarMenuLink
+                key={key}
+                item={item}
+                href={href}
+                search={search}
+              />
+            )
 
           if (state === 'collapsed' && !isMobile)
             return (
-              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} search={search} />
+              <SidebarMenuCollapsedDropdown
+                key={key}
+                item={item}
+                href={href}
+                search={search}
+              />
             )
 
-          return <SidebarMenuCollapsible key={key} item={item} href={href} search={search} />
+          return (
+            <SidebarMenuCollapsible
+              key={key}
+              item={item}
+              href={href}
+              search={search}
+            />
+          )
         })}
       </SidebarMenu>
     </SidebarGroup>
@@ -59,7 +78,15 @@ const NavBadge = ({ children }: { children: ReactNode }) => (
 )
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const SidebarMenuLink = ({ item, href, search }: { item: NavLink; href: string; search?: any }) => {
+const SidebarMenuLink = ({
+  item,
+  href,
+  search,
+}: {
+  item: NavLink
+  href: string
+  search?: any
+}) => {
   const { setOpenMobile } = useSidebar()
   return (
     <SidebarMenuItem>
@@ -68,7 +95,11 @@ const SidebarMenuLink = ({ item, href, search }: { item: NavLink; href: string; 
         isActive={checkIsActive(href, item)}
         tooltip={item.title}
       >
-        <Link to={item.url} search={search} onClick={() => setOpenMobile(false)}>
+        <Link
+          to={item.url}
+          search={search}
+          onClick={() => setOpenMobile(false)}
+        >
           {item.icon && <item.icon />}
           <span>{item.title}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
@@ -112,7 +143,11 @@ const SidebarMenuCollapsible = ({
                   asChild
                   isActive={checkIsActive(href, subItem)}
                 >
-                  <Link to={subItem.url} search={search} onClick={() => setOpenMobile(false)}>
+                  <Link
+                    to={subItem.url}
+                    search={search}
+                    onClick={() => setOpenMobile(false)}
+                  >
                     {subItem.icon && <subItem.icon />}
                     <span>{subItem.title}</span>
                     {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}

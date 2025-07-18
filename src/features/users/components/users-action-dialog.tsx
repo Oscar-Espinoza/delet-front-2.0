@@ -3,8 +3,8 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -23,18 +23,18 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { CompanySelect } from '@/components/form/company-select'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { CompanySelect } from '@/components/form/company-select'
+import { useUpdateUser, useCreateUser } from '../api/users-api'
 import { User } from '../data/schema'
-import { useUpdateUser } from '../api/users-api'
+import { useCurrentUser } from '../hooks/use-current-user'
 
 const formSchema = z
   .object({
     firstName: z.string().min(1, { message: 'First Name is required.' }),
     lastName: z.string().min(1, { message: 'Last Name is required.' }),
-    username: z.string().min(1, { message: 'Username is required.' }),
-    phoneNumber: z.string().optional(),
+    phone: z.string().optional(),
     email: z
       .string()
       .min(1, { message: 'Email is required.' })
@@ -45,50 +45,92 @@ const formSchema = z
     company: z.string().nullable().optional(),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
+    isSuperAdmin: z.boolean().optional(),
   })
-  .superRefine(({ isEdit, password, confirmPassword }, ctx) => {
-    if (!isEdit || (isEdit && password !== '')) {
-      if (password === '') {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Password is required.',
-          path: ['password'],
-        })
+  .superRefine(
+    (
+      { isEdit, password, confirmPassword, isSuperAdmin, phone, company },
+      ctx
+    ) => {
+      // Password validation: required for create mode, or for edit mode if user is superadmin
+      const shouldValidatePassword =
+        !isEdit || (isEdit && isSuperAdmin && password !== '')
+
+      if (shouldValidatePassword) {
+        if (password === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Password is required.',
+            path: ['password'],
+          })
+        }
+
+        if (password.length < 8) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Password must be at least 8 characters long.',
+            path: ['password'],
+          })
+        }
+
+        if (!password.match(/[a-z]/)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Password must contain at least one lowercase letter.',
+            path: ['password'],
+          })
+        }
+
+        if (!password.match(/\d/)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Password must contain at least one number.',
+            path: ['password'],
+          })
+        }
+
+        if (password !== confirmPassword) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Passwords don't match.",
+            path: ['confirmPassword'],
+          })
+        }
       }
 
-      if (password.length < 8) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Password must be at least 8 characters long.',
-          path: ['password'],
-        })
+      // Phone validation
+      if (phone) {
+        const phoneRegex =
+          /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+        if (!phoneRegex.test(phone)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Please enter a valid phone number.',
+            path: ['phone'],
+          })
+        }
+
+        // Remove all non-digits and check length
+        const digitsOnly = phone.replace(/\D/g, '')
+        if (digitsOnly.length !== 10) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Phone number must be 10 digits.',
+            path: ['phone'],
+          })
+        }
       }
 
-      if (!password.match(/[a-z]/)) {
+      // Company validation for create mode
+      if (!isEdit && !company) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Password must contain at least one lowercase letter.',
-          path: ['password'],
-        })
-      }
-
-      if (!password.match(/\d/)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Password must contain at least one number.',
-          path: ['password'],
-        })
-      }
-
-      if (password !== confirmPassword) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Passwords don't match.",
-          path: ['confirmPassword'],
+          message: 'Company is required.',
+          path: ['company'],
         })
       }
     }
-  })
+  )
 type UserForm = z.infer<typeof formSchema>
 
 interface Props {
@@ -100,29 +142,36 @@ interface Props {
 export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
   const isEdit = !!currentRow
   const updateUser = useUpdateUser()
-  
+  const createUser = useCreateUser()
+  const { data: currentUser } = useCurrentUser()
+  const isSuperAdmin = currentUser?.adminPanelRole === 'superadmin'
+
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
           ...currentRow,
-          company: typeof currentRow.company === 'object' ? currentRow.company._id : currentRow.company,
+          company:
+            typeof currentRow.company === 'object'
+              ? currentRow.company._id
+              : currentRow.company,
           password: '',
           confirmPassword: '',
           isEdit,
+          isSuperAdmin,
         }
       : {
           firstName: '',
           lastName: '',
-          username: '',
           email: '',
           role: '',
           adminPanelRole: '',
           company: null,
-          phoneNumber: '',
+          phone: '',
           password: '',
           confirmPassword: '',
           isEdit,
+          isSuperAdmin,
         },
   })
 
@@ -134,15 +183,16 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           firstName: values.firstName,
           lastName: values.lastName,
           email: values.email,
-          phone: values.phoneNumber || '',
+          phone: values.phone || '',
           role: values.role as User['role'],
-          adminPanelRole: (values.adminPanelRole || '') as User['adminPanelRole'],
+          adminPanelRole: (values.adminPanelRole ||
+            '') as User['adminPanelRole'],
           company: values.company || undefined,
           active: currentRow.active, // Preserve existing active state
         }
 
-        // Only include password if it was changed
-        if (values.password && values.password.trim() !== '') {
+        // Only include password if it was changed and user is superadmin
+        if (isSuperAdmin && values.password && values.password.trim() !== '') {
           updateData.password = values.password
         }
 
@@ -150,13 +200,25 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
           userId: currentRow._id,
           data: updateData,
         })
-        
+
         toast.success('User updated successfully')
       } else {
-        // Create user logic would go here
-        toast.error('User creation not yet implemented')
+        // Create user logic
+        const createData = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phone: values.phone || '',
+          email: values.email,
+          password: values.password,
+          role: values.role,
+          adminPanelRole: values.adminPanelRole || '',
+          company: values.company || undefined,
+        }
+
+        await createUser.mutateAsync(createData)
+        toast.success('User created successfully')
       }
-      
+
       form.reset()
       onOpenChange(false)
     } catch (_error) {
@@ -231,25 +293,6 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
               />
               <FormField
                 control={form.control}
-                name='username'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
-                      Username
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='john_doe'
-                        className='col-span-4'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name='email'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
@@ -269,7 +312,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
               />
               <FormField
                 control={form.control}
-                name='phoneNumber'
+                name='phone'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-right'>
@@ -351,58 +394,62 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='password'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
-                      Password
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        placeholder='e.g., S3cur3P@ssw0rd'
-                        className='col-span-4'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='confirmPassword'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
-                      Confirm Password
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        disabled={!isPasswordTouched}
-                        placeholder='e.g., S3cur3P@ssw0rd'
-                        className='col-span-4'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
+              {(!isEdit || isSuperAdmin) && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name='password'
+                    render={({ field }) => (
+                      <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                        <FormLabel className='col-span-2 text-right'>
+                          Password
+                        </FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            placeholder='e.g., S3cur3P@ssw0rd'
+                            className='col-span-4'
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className='col-span-4 col-start-3' />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='confirmPassword'
+                    render={({ field }) => (
+                      <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                        <FormLabel className='col-span-2 text-right'>
+                          Confirm Password
+                        </FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            disabled={!isPasswordTouched}
+                            placeholder='e.g., S3cur3P@ssw0rd'
+                            className='col-span-4'
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className='col-span-4 col-start-3' />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </form>
           </Form>
         </div>
         <DialogFooter>
-          <Button 
-            type='submit' 
-            form='user-form' 
-            disabled={updateUser.isPending}
+          <Button
+            type='submit'
+            form='user-form'
+            disabled={updateUser.isPending || createUser.isPending}
           >
-            {updateUser.isPending && (
+            {(updateUser.isPending || createUser.isPending) && (
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
             )}
-            Save changes
+            {isEdit ? 'Save changes' : 'Create user'}
           </Button>
         </DialogFooter>
       </DialogContent>

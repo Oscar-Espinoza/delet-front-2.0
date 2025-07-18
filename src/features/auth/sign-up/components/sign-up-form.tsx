@@ -56,7 +56,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    
+
     try {
       await signUp({
         username: data.email,
@@ -67,13 +67,14 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
           },
         },
       })
-      
-      toast.success('Account created! Please check your email for verification code.')
+
+      toast.success(
+        'Account created! Please check your email for verification code.'
+      )
       navigate({ to: '/otp', search: { email: data.email } })
     } catch (error) {
-      
       const authError = error as { name?: string; message?: string }
-      
+
       if (authError.name === 'UsernameExistsException') {
         toast.error('An account with this email already exists')
       } else if (authError.name === 'InvalidPasswordException') {

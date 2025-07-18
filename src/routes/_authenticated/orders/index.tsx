@@ -6,7 +6,7 @@ export const Route = createFileRoute('/_authenticated/orders/')({
   staticData: {
     title: 'Orders',
     breadcrumb: 'Orders',
-    description: 'Manage customer orders and transactions'
+    description: 'Manage customer orders and transactions',
   },
   preload: true,
   preloadStaleTime: 1000 * 60 * 2, // 2 minutes - orders change frequently
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_authenticated/orders/')({
     return {
       company: search.company as string | undefined,
     }
-  }
+  },
 })
 
 function OrdersRoute() {

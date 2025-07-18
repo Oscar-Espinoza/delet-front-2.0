@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -14,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge'
 
 interface Option {
   label: string
@@ -76,7 +76,7 @@ export function MultiSelect({
                   }}
                 >
                   {option.label}
-                  <X className='ml-1 h-3 w-3 hover:text-destructive' />
+                  <X className='hover:text-destructive ml-1 h-3 w-3' />
                 </Badge>
               ))
             ) : (

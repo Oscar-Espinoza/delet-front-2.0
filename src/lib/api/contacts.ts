@@ -106,58 +106,78 @@ export const contactsApi = {
   // Get contacts (regular user endpoint)
   getContacts: async (params: ContactsParams): Promise<ContactsResponse> => {
     const queryParams = new URLSearchParams()
-    
+
     if (params.page) queryParams.append('page', params.page.toString())
-    if (params.pageLimit) queryParams.append('pageLimit', params.pageLimit.toString())
+    if (params.pageLimit)
+      queryParams.append('pageLimit', params.pageLimit.toString())
     if (params.sort) queryParams.append('sort', params.sort)
     if (params.tabValue) queryParams.append('tabValue', params.tabValue)
-    if (params.propertyIds) queryParams.append('propertyIds', params.propertyIds)
-    if (params.companiesIds) queryParams.append('companiesIds', params.companiesIds)
+    if (params.propertyIds)
+      queryParams.append('propertyIds', params.propertyIds)
+    if (params.companiesIds)
+      queryParams.append('companiesIds', params.companiesIds)
     if (params.search) queryParams.append('search', params.search)
-    
+
     // Handle date parameters
     if (params.startTimeStartTimestamp) {
-      queryParams.append('startTimeStartTimestamp', params.startTimeStartTimestamp)
+      queryParams.append(
+        'startTimeStartTimestamp',
+        params.startTimeStartTimestamp
+      )
     }
     if (params.startTimeEndTimestamp) {
       queryParams.append('startTimeEndTimestamp', params.startTimeEndTimestamp)
     }
     if (params.createdAtStartTimestamp) {
-      queryParams.append('createdAtStartTimestamp', params.createdAtStartTimestamp)
+      queryParams.append(
+        'createdAtStartTimestamp',
+        params.createdAtStartTimestamp
+      )
     }
     if (params.createdAtEndTimestamp) {
       queryParams.append('createdAtEndTimestamp', params.createdAtEndTimestamp)
     }
-    
+
     return apiClient.get(`/api/contact?${queryParams.toString()}`)
   },
 
   // Get contacts (admin endpoint)
-  getContactsAdmin: async (params: ContactsParams): Promise<ContactsResponse> => {
+  getContactsAdmin: async (
+    params: ContactsParams
+  ): Promise<ContactsResponse> => {
     const queryParams = new URLSearchParams()
-    
+
     if (params.page) queryParams.append('page', params.page.toString())
-    if (params.pageLimit) queryParams.append('pageLimit', params.pageLimit.toString())
+    if (params.pageLimit)
+      queryParams.append('pageLimit', params.pageLimit.toString())
     if (params.sort) queryParams.append('sort', params.sort)
     if (params.tabValue) queryParams.append('tabValue', params.tabValue)
-    if (params.propertyIds) queryParams.append('propertyIds', params.propertyIds)
-    if (params.companiesIds) queryParams.append('companiesIds', params.companiesIds)
+    if (params.propertyIds)
+      queryParams.append('propertyIds', params.propertyIds)
+    if (params.companiesIds)
+      queryParams.append('companiesIds', params.companiesIds)
     if (params.search) queryParams.append('search', params.search)
-    
+
     // Handle date parameters
     if (params.startTimeStartTimestamp) {
-      queryParams.append('startTimeStartTimestamp', params.startTimeStartTimestamp)
+      queryParams.append(
+        'startTimeStartTimestamp',
+        params.startTimeStartTimestamp
+      )
     }
     if (params.startTimeEndTimestamp) {
       queryParams.append('startTimeEndTimestamp', params.startTimeEndTimestamp)
     }
     if (params.createdAtStartTimestamp) {
-      queryParams.append('createdAtStartTimestamp', params.createdAtStartTimestamp)
+      queryParams.append(
+        'createdAtStartTimestamp',
+        params.createdAtStartTimestamp
+      )
     }
     if (params.createdAtEndTimestamp) {
       queryParams.append('createdAtEndTimestamp', params.createdAtEndTimestamp)
     }
-    
+
     return apiClient.get(`/api/contact/admin/list?${queryParams.toString()}`)
   },
 
@@ -169,7 +189,7 @@ export const contactsApi = {
   // Create contact
   createContact: async (data: CreateContactData): Promise<ContactData> => {
     const formData = new FormData()
-    
+
     // Add text fields
     formData.append('firstName', data.firstName)
     formData.append('lastName', data.lastName)
@@ -178,56 +198,63 @@ export const contactsApi = {
     if (data.address) formData.append('address', data.address)
     if (data.notes) formData.append('notes', data.notes)
     if (data.status) formData.append('status', data.status)
-    
+
     // Add arrays
     if (data.tags?.length) {
-      data.tags.forEach(tag => formData.append('tags[]', tag))
+      data.tags.forEach((tag) => formData.append('tags[]', tag))
     }
     if (data.propertyIds?.length) {
-      data.propertyIds.forEach(id => formData.append('properties[]', id))
+      data.propertyIds.forEach((id) => formData.append('properties[]', id))
     }
-    
+
     // Add files
     if (data.idImage) formData.append('idImage', data.idImage)
     if (data.document) formData.append('document', data.document)
     if (data.documentBack) formData.append('documentBack', data.documentBack)
     if (data.face) formData.append('face', data.face)
-    
+
     return apiClient.postFormData('/api/contact/create', formData)
   },
 
   // Update contact
-  updateContact: async ({ _id, ...data }: UpdateContactData): Promise<ContactData> => {
+  updateContact: async ({
+    _id,
+    ...data
+  }: UpdateContactData): Promise<ContactData> => {
     const formData = new FormData()
-    
+
     // Add text fields
     if (data.firstName) formData.append('firstName', data.firstName)
     if (data.lastName) formData.append('lastName', data.lastName)
     if (data.email !== undefined) formData.append('email', data.email || '')
     if (data.phone !== undefined) formData.append('phone', data.phone || '')
-    if (data.address !== undefined) formData.append('address', data.address || '')
+    if (data.address !== undefined)
+      formData.append('address', data.address || '')
     if (data.notes !== undefined) formData.append('notes', data.notes || '')
     if (data.status !== undefined) formData.append('status', data.status || '')
-    
+
     // Add arrays
     if (data.tags) {
-      data.tags.forEach(tag => formData.append('tags[]', tag))
+      data.tags.forEach((tag) => formData.append('tags[]', tag))
     }
     if (data.propertyIds) {
-      data.propertyIds.forEach(id => formData.append('properties[]', id))
+      data.propertyIds.forEach((id) => formData.append('properties[]', id))
     }
-    
+
     // Add files
     if (data.idImage) formData.append('idImage', data.idImage)
     if (data.document) formData.append('document', data.document)
     if (data.documentBack) formData.append('documentBack', data.documentBack)
     if (data.face) formData.append('face', data.face)
-    
+
     return apiClient.patchFormData(`/api/contact/update/${_id}`, formData)
   },
 
   // Update contact status
-  updateContactStatus: async (id: string, status: string): Promise<ContactData> => {
+  updateContactStatus: async (
+    id: string,
+    status: string
+  ): Promise<ContactData> => {
     return apiClient.patch(`/api/contact/${id}/status`, { status })
   },
 
@@ -237,60 +264,85 @@ export const contactsApi = {
   },
 
   // Export to CSV
-  exportContactsToCsv: async (params: ContactsParams, isAdmin = false): Promise<Blob> => {
+  exportContactsToCsv: async (
+    params: ContactsParams,
+    isAdmin = false
+  ): Promise<Blob> => {
     const queryParams = new URLSearchParams()
-    
-    if (params.propertyIds) queryParams.append('propertyIds', params.propertyIds)
-    if (params.companiesIds) queryParams.append('companiesIds', params.companiesIds)
+
+    if (params.propertyIds)
+      queryParams.append('propertyIds', params.propertyIds)
+    if (params.companiesIds)
+      queryParams.append('companiesIds', params.companiesIds)
     if (params.search) queryParams.append('search', params.search)
     if (params.tabValue) queryParams.append('tabValue', params.tabValue)
-    
+
     const endpoint = isAdmin ? '/api/contact/admin/toCsv' : '/api/contact/toCsv'
-    
-    const response = await apiClient.get(endpoint + '?' + queryParams.toString(), {
-      responseType: 'blob'
-    })
-    
+
+    const response = await apiClient.get(
+      endpoint + '?' + queryParams.toString(),
+      {
+        responseType: 'blob',
+      }
+    )
+
     return response as Blob
   },
 
   // Get contact count
   getContactCount: async (): Promise<{ count: number }> => {
     return apiClient.get('/api/contact/all-count')
-  }
+  },
 }
 
 // Helper function to convert dates for API params
-export const prepareContactsParams = (params: ContactsParams & {
-  startTimeStartDate?: Date | string
-  startTimeEndDate?: Date | string
-  createdAtStartDate?: Date | string
-  createdAtEndDate?: Date | string
-}): ContactsParams => {
+export const prepareContactsParams = (
+  params: ContactsParams & {
+    startTimeStartDate?: Date | string
+    startTimeEndDate?: Date | string
+    createdAtStartDate?: Date | string
+    createdAtEndDate?: Date | string
+  }
+): ContactsParams => {
   const apiParams: ContactsParams = { ...params }
-  
+
   // Convert dates to timestamps
   if (params.startTimeStartDate) {
-    apiParams.startTimeStartTimestamp = dateToTimestamp(params.startTimeStartDate)
+    apiParams.startTimeStartTimestamp = dateToTimestamp(
+      params.startTimeStartDate
+    )
   }
   if (params.startTimeEndDate) {
-    apiParams.startTimeEndTimestamp = dateToTimestamp(params.startTimeEndDate, true)
+    apiParams.startTimeEndTimestamp = dateToTimestamp(
+      params.startTimeEndDate,
+      true
+    )
   }
   if (params.createdAtStartDate) {
-    apiParams.createdAtStartTimestamp = dateToTimestamp(params.createdAtStartDate)
+    apiParams.createdAtStartTimestamp = dateToTimestamp(
+      params.createdAtStartDate
+    )
   }
   if (params.createdAtEndDate) {
-    apiParams.createdAtEndTimestamp = dateToTimestamp(params.createdAtEndDate, true)
+    apiParams.createdAtEndTimestamp = dateToTimestamp(
+      params.createdAtEndDate,
+      true
+    )
   }
-  
+
   // Remove the date fields
   const result = { ...apiParams }
-  const dateFields = ['startTimeStartDate', 'startTimeEndDate', 'createdAtStartDate', 'createdAtEndDate']
-  dateFields.forEach(field => {
+  const dateFields = [
+    'startTimeStartDate',
+    'startTimeEndDate',
+    'createdAtStartDate',
+    'createdAtEndDate',
+  ]
+  dateFields.forEach((field) => {
     if (field in result) {
       delete (result as Record<string, unknown>)[field]
     }
   })
-  
+
   return result as ContactsParams
 }

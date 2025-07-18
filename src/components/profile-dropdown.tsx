@@ -1,4 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useAuthStore } from '@/stores/authStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,12 +12,11 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useAuthStore } from '@/stores/authStore'
 
 export function ProfileDropdown() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore((state) => state.auth)
-  
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -25,12 +25,14 @@ export function ProfileDropdown() {
       // Handle logout error silently
     }
   }
-  
-  const userInitials = user?.email
-    ? user.email.charAt(0).toUpperCase()
-    : 'U'
-  
-  const displayName = user?.attributes?.name || user?.attributes?.given_name || user?.email || 'User'
+
+  const userInitials = user?.email ? user.email.charAt(0).toUpperCase() : 'U'
+
+  const displayName =
+    user?.attributes?.name ||
+    user?.attributes?.given_name ||
+    user?.email ||
+    'User'
   const displayEmail = user?.email || 'user@example.com'
   return (
     <DropdownMenu modal={false}>

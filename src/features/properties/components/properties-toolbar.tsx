@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
 import { Search } from 'lucide-react'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from '@/components/data-table'
-import { DataTableFacetedFilter } from './data-table-faceted-filter'
 import { PROPERTY_STATUS, getStatusLabel } from '../types'
+import { DataTableFacetedFilter } from './data-table-faceted-filter'
 
 interface PropertiesToolbarProps<TData> {
   table: Table<TData>
@@ -53,7 +52,7 @@ export function PropertiesToolbar<TData>({
       <div className='flex flex-1 items-center space-x-2'>
         {/* Search Input */}
         <div className='relative'>
-          <Search className='absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+          <Search className='text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2' />
           <Input
             placeholder='Search properties by address...'
             value={searchInput}
@@ -62,7 +61,7 @@ export function PropertiesToolbar<TData>({
             className='h-8 w-[150px] pl-8 lg:w-[250px]'
           />
         </div>
-        
+
         {/* Status Filter */}
         {table.getColumn('status') && (
           <DataTableFacetedFilter
@@ -71,7 +70,7 @@ export function PropertiesToolbar<TData>({
             options={statusOptions}
           />
         )}
-        
+
         {/* Reset Button */}
         {isFiltered && (
           <Button
@@ -84,7 +83,7 @@ export function PropertiesToolbar<TData>({
           </Button>
         )}
       </div>
-      
+
       <DataTableViewOptions table={table} />
     </div>
   )

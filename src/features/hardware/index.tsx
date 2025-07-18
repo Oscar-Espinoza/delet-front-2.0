@@ -1,15 +1,15 @@
+import { IconAlertCircle } from '@tabler/icons-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
-import { HardwareProvider } from './contexts/hardware-context'
-import { HardwareTable } from './components/hardware-table'
 import { HardwareDialogs } from './components/hardware-dialogs'
+import { HardwareTable } from './components/hardware-table'
+import { HardwareProvider } from './contexts/hardware-context'
 import { useHardwareList } from './hooks/use-hardware'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { IconAlertCircle } from '@tabler/icons-react'
 
 function HardwarePage() {
   const { data: hardware = [], isLoading, error } = useHardwareList()
@@ -18,7 +18,7 @@ function HardwarePage() {
     <HardwareProvider>
       <Header fixed>
         <Search />
-        <div className="ml-auto flex items-center space-x-4">
+        <div className='ml-auto flex items-center space-x-4'>
           <HeaderCompanyDropdown />
           <ThemeSwitch />
           <ProfileDropdown />
@@ -26,19 +26,21 @@ function HardwarePage() {
       </Header>
 
       <Main>
-        <div className="mb-2 flex items-center justify-between space-y-2">
+        <div className='mb-2 flex items-center justify-between space-y-2'>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Hardware Management</h2>
-            <p className="text-muted-foreground">
+            <h2 className='text-2xl font-bold tracking-tight'>
+              Hardware Management
+            </h2>
+            <p className='text-muted-foreground'>
               Manage and monitor all hardware devices
             </p>
           </div>
         </div>
-        
-        <div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
+
+        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           {error ? (
-            <Alert variant="destructive">
-              <IconAlertCircle className="h-4 w-4" />
+            <Alert variant='destructive'>
+              <IconAlertCircle className='h-4 w-4' />
               <AlertDescription>
                 Failed to load hardware. Please try again later.
               </AlertDescription>

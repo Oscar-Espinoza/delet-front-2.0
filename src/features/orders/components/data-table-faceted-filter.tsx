@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import { Column } from '@tanstack/react-table'
-
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -106,7 +105,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        'border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible'
@@ -115,7 +114,12 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <CheckIcon className={cn('h-4 w-4')} />
                     </div>
                     {option.icon && (
-                      <option.icon className={cn('mr-2 h-4 w-4 text-muted-foreground', option.color)} />
+                      <option.icon
+                        className={cn(
+                          'text-muted-foreground mr-2 h-4 w-4',
+                          option.color
+                        )}
+                      />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (

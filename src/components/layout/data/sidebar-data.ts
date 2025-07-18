@@ -4,15 +4,12 @@ import {
   IconBug,
   IconBuilding,
   IconBuildingSkyscraper,
-  IconChecklist,
+  IconCreditCard,
   IconError404,
   IconHelp,
-  IconLayoutDashboard,
   IconLock,
   IconLockAccess,
-  IconMessages,
   IconNotification,
-  IconPackages,
   IconPalette,
   IconServerOff,
   IconSettings,
@@ -58,25 +55,9 @@ export const sidebarData: SidebarData = {
       title: 'General',
       items: [
         {
-          title: 'Dashboard',
-          url: '/',
-          icon: IconLayoutDashboard,
-        },
-        {
-          title: 'Tasks',
-          url: '/tasks',
-          icon: IconChecklist,
-        },
-        {
-          title: 'Apps',
-          url: '/apps',
-          icon: IconPackages,
-        },
-        {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: IconMessages,
+          title: 'Companies',
+          url: '/companies',
+          icon: IconBuilding,
         },
         {
           title: 'Users',
@@ -99,9 +80,9 @@ export const sidebarData: SidebarData = {
           icon: IconShoppingCart,
         },
         {
-          title: 'Companies',
-          url: '/companies',
-          icon: IconBuilding,
+          title: 'Billing Entities',
+          url: '/billing-entities',
+          icon: IconCreditCard,
         },
         {
           title: 'Properties',

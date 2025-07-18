@@ -1,7 +1,4 @@
-import {
-  CircleIcon,
-  CrossCircledIcon,
-} from '@radix-ui/react-icons'
+import { CircleIcon, CrossCircledIcon } from '@radix-ui/react-icons'
 import { Package, CreditCard, CheckCircle } from 'lucide-react'
 
 export const orderStatuses = [

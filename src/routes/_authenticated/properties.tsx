@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import PropertiesFeature from '@/features/properties'
 
 export const Route = createFileRoute('/_authenticated/properties')({

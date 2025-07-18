@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -5,12 +6,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
 import { useKitsContext } from '../context/kits-context'
-import { getKitStateColor, formatShippingAddress, type KitHardware } from '../types'
+import {
+  getKitStateColor,
+  formatShippingAddress,
+  type KitHardware,
+} from '../types'
 
 export function ViewKitDialog() {
-  const { isViewDialogOpen, setIsViewDialogOpen, selectedKit } = useKitsContext()
+  const { isViewDialogOpen, setIsViewDialogOpen, selectedKit } =
+    useKitsContext()
 
   if (!selectedKit) return null
 
@@ -26,11 +31,15 @@ export function ViewKitDialog() {
         <div className='space-y-4'>
           <div className='grid grid-cols-2 gap-4'>
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Name</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Name
+              </h4>
               <p className='text-sm'>{selectedKit.name}</p>
             </div>
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>State</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                State
+              </h4>
               <Badge className={getKitStateColor(selectedKit.state)}>
                 {selectedKit.state}
               </Badge>
@@ -39,21 +48,27 @@ export function ViewKitDialog() {
 
           {selectedKit.description && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Description</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Description
+              </h4>
               <p className='text-sm'>{selectedKit.description}</p>
             </div>
           )}
 
           {selectedKit.notes && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Notes</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Notes
+              </h4>
               <p className='text-sm'>{selectedKit.notes}</p>
             </div>
           )}
 
           {selectedKit.tags && selectedKit.tags.length > 0 && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground mb-2'>Tags</h4>
+              <h4 className='text-muted-foreground mb-2 text-sm font-medium'>
+                Tags
+              </h4>
               <div className='flex flex-wrap gap-2'>
                 {selectedKit.tags.map((tag: string, index: number) => (
                   <Badge key={index} variant='secondary'>
@@ -66,11 +81,15 @@ export function ViewKitDialog() {
 
           <div className='grid grid-cols-2 gap-4'>
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Company</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Company
+              </h4>
               <p className='text-sm'>{selectedKit.company?.name || '-'}</p>
             </div>
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>User</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                User
+              </h4>
               {selectedKit.user ? (
                 <div className='text-sm'>
                   <p>
@@ -78,7 +97,9 @@ export function ViewKitDialog() {
                       ? `${selectedKit.user.firstName} ${selectedKit.user.lastName}`
                       : selectedKit.user.email}
                   </p>
-                  <p className='text-muted-foreground'>{selectedKit.user.email}</p>
+                  <p className='text-muted-foreground'>
+                    {selectedKit.user.email}
+                  </p>
                 </div>
               ) : (
                 <p className='text-sm'>-</p>
@@ -86,13 +107,26 @@ export function ViewKitDialog() {
             </div>
           </div>
 
+          {selectedKit.billingEntity && (
+            <div>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Billed To
+              </h4>
+              <p className='text-sm'>{selectedKit.billingEntity.entityName}</p>
+            </div>
+          )}
+
           {selectedKit.property && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Property</h4>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Property
+              </h4>
               <p className='text-sm'>
                 {selectedKit.property.shortAddress}
-                {selectedKit.property.unit && ` Unit ${selectedKit.property.unit}`}
-                {selectedKit.property.city && selectedKit.property.state && 
+                {selectedKit.property.unit &&
+                  ` Unit ${selectedKit.property.unit}`}
+                {selectedKit.property.city &&
+                  selectedKit.property.state &&
                   ` - ${selectedKit.property.city}, ${selectedKit.property.state}`}
               </p>
             </div>
@@ -100,18 +134,29 @@ export function ViewKitDialog() {
 
           {selectedKit.shippingAddress && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Shipping Address</h4>
-              <p className='text-sm'>{formatShippingAddress(selectedKit.shippingAddress)}</p>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Shipping Address
+              </h4>
+              <p className='text-sm'>
+                {formatShippingAddress(selectedKit.shippingAddress)}
+              </p>
             </div>
           )}
 
           {selectedKit.hardware && selectedKit.hardware.length > 0 && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground mb-2'>Hardware ({selectedKit.hardware.length})</h4>
+              <h4 className='text-muted-foreground mb-2 text-sm font-medium'>
+                Hardware ({selectedKit.hardware.length})
+              </h4>
               <div className='space-y-1'>
                 {selectedKit.hardware.map((hw: KitHardware) => (
                   <div key={hw._id} className='text-sm'>
-                    {hw.name} {hw.category && <span className='text-muted-foreground'>({hw.category})</span>}
+                    {hw.name}{' '}
+                    {hw.category && (
+                      <span className='text-muted-foreground'>
+                        ({hw.category})
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -120,15 +165,21 @@ export function ViewKitDialog() {
 
           {selectedKit.assignedDate && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Assigned Date</h4>
-              <p className='text-sm'>{new Date(selectedKit.assignedDate).toLocaleDateString()}</p>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Assigned Date
+              </h4>
+              <p className='text-sm'>
+                {new Date(selectedKit.assignedDate).toLocaleDateString()}
+              </p>
             </div>
           )}
 
           {selectedKit.device_id && (
             <div>
-              <h4 className='text-sm font-medium text-muted-foreground'>Device ID</h4>
-              <p className='text-sm font-mono'>{selectedKit.device_id}</p>
+              <h4 className='text-muted-foreground text-sm font-medium'>
+                Device ID
+              </h4>
+              <p className='font-mono text-sm'>{selectedKit.device_id}</p>
             </div>
           )}
         </div>

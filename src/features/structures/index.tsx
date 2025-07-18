@@ -1,27 +1,29 @@
 import { useSearch } from '@tanstack/react-router'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
-import { StructuresProvider } from './context/structures-context'
-import { StructuresTable } from './components/structures-table'
+import { useStructures } from './api'
 import { StructuresDialogs } from './components/structures-dialogs'
 import { StructuresPrimaryButtons } from './components/structures-primary-buttons'
-import { useStructures } from './api'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { IconAlertCircle } from '@tabler/icons-react'
+import { StructuresTable } from './components/structures-table'
+import { StructuresProvider } from './context/structures-context'
 
 export default function StructuresPage() {
   const search = useSearch({ strict: false }) as { company?: string }
   const { data: structures = [], isLoading, error } = useStructures()
-  
+
   // Filter structures by company on the client side since backend doesn't support it yet
-  const filteredStructures = search.company 
-    ? structures.filter(structure => structure.user?.company?._id === search.company)
+  const filteredStructures = search.company
+    ? structures.filter(
+        (structure) => structure.user?.company?._id === search.company
+      )
     : structures
-    
+
   return (
     <StructuresProvider>
       <Header fixed>
@@ -43,7 +45,7 @@ export default function StructuresPage() {
           </div>
           <StructuresPrimaryButtons />
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           {error ? (
             <Alert variant='destructive'>
               <IconAlertCircle className='h-4 w-4' />

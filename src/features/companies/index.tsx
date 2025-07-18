@@ -1,21 +1,21 @@
 import { useState } from 'react'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
+import { useCompanies } from './api'
 import { columns } from './components/companies-columns'
 import { CompaniesDialogs } from './components/companies-dialogs'
 import { CompaniesPrimaryButtons } from './components/companies-primary-buttons'
 import { CompaniesTable } from './components/companies-table'
 import { CompaniesProvider } from './context/companies-context'
-import { useCompanies } from './api'
 
 export default function Companies() {
   const [page, _setPage] = useState(1)
   const [limit] = useState(10)
-  
+
   // Fetch companies data with pagination
   const { data, isLoading, error } = useCompanies({
     page,
@@ -58,9 +58,9 @@ export default function Companies() {
           <CompaniesPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <CompaniesTable 
-            data={companies} 
-            columns={columns} 
+          <CompaniesTable
+            data={companies}
+            columns={columns}
             isLoading={isLoading}
           />
         </div>

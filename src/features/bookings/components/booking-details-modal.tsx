@@ -1,5 +1,15 @@
 import { format } from 'date-fns'
-import { Calendar, Clock, MapPin, Phone, Mail, User, FileText } from 'lucide-react'
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
+  User,
+  FileText,
+  Key,
+} from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useBookingsContext } from '../context/use-bookings-context'
 
@@ -27,7 +36,12 @@ const statusColors: Record<string, string> = {
 }
 
 export function BookingDetailsModal() {
-  const { showDetailsModal, setShowDetailsModal, selectedBooking, setShowEditModal } = useBookingsContext()
+  const {
+    showDetailsModal,
+    setShowDetailsModal,
+    selectedBooking,
+    setShowEditModal,
+  } = useBookingsContext()
 
   if (!selectedBooking) return null
 
@@ -47,15 +61,32 @@ export function BookingDetailsModal() {
         </DialogHeader>
 
         <div className='space-y-6'>
-          {/* Status and Time */}
+          {/* Status, Access Code, and Time */}
           <div className='flex items-center justify-between'>
-            <Badge variant={statusColors[selectedBooking.status] as 'default' | 'secondary' | 'destructive' | 'outline'}>
-              {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
-            </Badge>
-            <div className='flex items-center text-sm text-muted-foreground'>
+            <div className='flex items-center gap-3'>
+              <Badge
+                variant={
+                  statusColors[selectedBooking.status] as
+                    | 'default'
+                    | 'secondary'
+                    | 'destructive'
+                    | 'outline'
+                }
+              >
+                {selectedBooking.status.charAt(0).toUpperCase() +
+                  selectedBooking.status.slice(1)}
+              </Badge>
+              {selectedBooking.passCode && (
+                <div className='text-muted-foreground flex items-center text-sm'>
+                  <Key className='mr-1 h-4 w-4' />
+                  <span className='font-mono'>{selectedBooking.passCode}</span>
+                </div>
+              )}
+            </div>
+            <div className='text-muted-foreground flex items-center text-sm'>
               <Calendar className='mr-1 h-4 w-4' />
               {format(new Date(selectedBooking.startTime * 1000), 'PPP')}
-              <Clock className='ml-3 mr-1 h-4 w-4' />
+              <Clock className='mr-1 ml-3 h-4 w-4' />
               {format(new Date(selectedBooking.startTime * 1000), 'p')}
             </div>
           </div>
@@ -64,20 +95,22 @@ export function BookingDetailsModal() {
 
           {/* Property Information */}
           <div className='space-y-2'>
-            <h3 className='font-semibold flex items-center'>
+            <h3 className='flex items-center font-semibold'>
               <MapPin className='mr-2 h-4 w-4' />
               Property
             </h3>
             <div className='ml-6 space-y-1'>
               <p className='text-sm'>{selectedBooking.property.address}</p>
               {selectedBooking.property.unitNumber && (
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-muted-foreground text-sm'>
                   Unit: {selectedBooking.property.unitNumber}
                 </p>
               )}
               {selectedBooking.property.city && (
-                <p className='text-sm text-muted-foreground'>
-                  {selectedBooking.property.city}, {selectedBooking.property.state} {selectedBooking.property.zipCode}
+                <p className='text-muted-foreground text-sm'>
+                  {selectedBooking.property.city},{' '}
+                  {selectedBooking.property.state}{' '}
+                  {selectedBooking.property.zipCode}
                 </p>
               )}
             </div>
@@ -87,22 +120,23 @@ export function BookingDetailsModal() {
 
           {/* Contact Information */}
           <div className='space-y-2'>
-            <h3 className='font-semibold flex items-center'>
+            <h3 className='flex items-center font-semibold'>
               <User className='mr-2 h-4 w-4' />
               Contact
             </h3>
             <div className='ml-6 space-y-1'>
               <p className='text-sm font-medium'>
-                {selectedBooking.contact.firstName} {selectedBooking.contact.lastName}
+                {selectedBooking.contact.firstName}{' '}
+                {selectedBooking.contact.lastName}
               </p>
               {selectedBooking.contact.email && (
-                <p className='text-sm text-muted-foreground flex items-center'>
+                <p className='text-muted-foreground flex items-center text-sm'>
                   <Mail className='mr-2 h-3 w-3' />
                   {selectedBooking.contact.email}
                 </p>
               )}
               {selectedBooking.contact.phone && (
-                <p className='text-sm text-muted-foreground flex items-center'>
+                <p className='text-muted-foreground flex items-center text-sm'>
                   <Phone className='mr-2 h-3 w-3' />
                   {selectedBooking.contact.phone}
                 </p>
@@ -114,7 +148,7 @@ export function BookingDetailsModal() {
 
           {/* Agent Information */}
           <div className='space-y-2'>
-            <h3 className='font-semibold flex items-center'>
+            <h3 className='flex items-center font-semibold'>
               <User className='mr-2 h-4 w-4' />
               Agent
             </h3>
@@ -122,9 +156,11 @@ export function BookingDetailsModal() {
               <p className='text-sm font-medium'>
                 {selectedBooking.user.firstName} {selectedBooking.user.lastName}
               </p>
-              <p className='text-sm text-muted-foreground'>{selectedBooking.user.email}</p>
+              <p className='text-muted-foreground text-sm'>
+                {selectedBooking.user.email}
+              </p>
               {selectedBooking.user.company && (
-                <p className='text-sm text-muted-foreground'>
+                <p className='text-muted-foreground text-sm'>
                   {selectedBooking.user.company.name}
                 </p>
               )}
@@ -136,11 +172,11 @@ export function BookingDetailsModal() {
             <>
               <Separator />
               <div className='space-y-2'>
-                <h3 className='font-semibold flex items-center'>
+                <h3 className='flex items-center font-semibold'>
                   <FileText className='mr-2 h-4 w-4' />
                   Notes
                 </h3>
-                <p className='ml-6 text-sm text-muted-foreground'>
+                <p className='text-muted-foreground ml-6 text-sm'>
                   {selectedBooking.notes}
                 </p>
               </div>
@@ -148,24 +184,36 @@ export function BookingDetailsModal() {
           )}
 
           {/* Outcome */}
-          {selectedBooking.outcome && (
-            <>
-              <Separator />
-              <div className='space-y-2'>
-                <h3 className='font-semibold'>Outcome</h3>
-                <Badge variant='outline' className='ml-6'>
-                  {selectedBooking.outcome.replace(/_/g, ' ').charAt(0).toUpperCase() + 
-                   selectedBooking.outcome.replace(/_/g, ' ').slice(1)}
+          <Separator />
+          <div className='space-y-2'>
+            <h3 className='font-semibold'>Outcome</h3>
+            <div className='ml-6'>
+              {selectedBooking.outcome &&
+              selectedBooking.outcome.trim() !== '' ? (
+                <Badge variant='outline'>
+                  {selectedBooking.outcome
+                    .replace(/_/g, ' ')
+                    .charAt(0)
+                    .toUpperCase() +
+                    selectedBooking.outcome.replace(/_/g, ' ').slice(1)}
                 </Badge>
-              </div>
-            </>
-          )}
+              ) : (
+                <span className='text-muted-foreground text-sm'>
+                  No outcome recorded
+                </span>
+              )}
+            </div>
+          </div>
 
           {/* Timestamps */}
           <Separator />
-          <div className='flex justify-between text-xs text-muted-foreground'>
-            <span>Created: {format(new Date(selectedBooking.createdAt), 'PPp')}</span>
-            <span>Updated: {format(new Date(selectedBooking.updatedAt), 'PPp')}</span>
+          <div className='text-muted-foreground flex justify-between text-xs'>
+            <span>
+              Created: {format(new Date(selectedBooking.createdAt), 'PPp')}
+            </span>
+            <span>
+              Updated: {format(new Date(selectedBooking.updatedAt), 'PPp')}
+            </span>
           </div>
         </div>
 
@@ -173,9 +221,7 @@ export function BookingDetailsModal() {
           <Button variant='outline' onClick={() => setShowDetailsModal(false)}>
             Close
           </Button>
-          <Button onClick={handleEdit}>
-            Edit Booking
-          </Button>
+          <Button onClick={handleEdit}>Edit Booking</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,6 +1,5 @@
 import { Column } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
-
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
@@ -24,7 +23,7 @@ export function DataTableColumnHeader<TData, TValue>({
       <Button
         variant='ghost'
         size='sm'
-        className='-ml-3 h-8 hover:bg-accent'
+        className='hover:bg-accent -ml-3 h-8'
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
         <span>{title}</span>

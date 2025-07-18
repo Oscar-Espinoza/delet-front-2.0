@@ -1,3 +1,6 @@
+// Zod schema for form validation
+import { z } from 'zod'
+
 export interface Contact {
   _id: string
   firstName: string
@@ -28,7 +31,7 @@ export interface User {
   company?: Company
 }
 
-export type BookingStatus = 
+export type BookingStatus =
   | 'active'
   | 'archived'
   | 'attended'
@@ -40,7 +43,8 @@ export type BookingStatus =
   | 'scheduled'
   | 'show'
 
-export type BookingOutcome = 
+export type BookingOutcome =
+  | ''
   | 'interested'
   | 'not interested'
   | 'send application'
@@ -51,6 +55,7 @@ export interface Booking {
   _id: string
   status: BookingStatus
   outcome?: BookingOutcome
+  passCode?: string
   startTime: number // Unix timestamp in seconds
   property: Property
   contact: Contact
@@ -82,9 +87,6 @@ export interface BookingFormData {
   status: BookingStatus
   notes?: string
 }
-
-// Zod schema for form validation
-import { z } from 'zod'
 
 export const bookingFormSchema = z.object({
   propertyId: z.string().min(1, 'Property is required'),

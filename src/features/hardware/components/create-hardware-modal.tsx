@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
@@ -19,7 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -27,10 +27,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { useHardwareContext } from '../contexts/use-hardware-context'
-import { useCreateHardware } from '../hooks/use-hardware'
-import { hardwareFormSchema, type HardwareFormData } from '../types/hardware-form'
-import type { Hardware, HardwareCategory, HardwareStatus } from '../types/hardware'
+import {
+  useCreateHardware,
+  useAugustLocks,
+  useAugustSerialNumbers,
+} from '../hooks/use-hardware'
+import type {
+  Hardware,
+  HardwareCategory,
+  HardwareStatus,
+} from '../types/hardware'
+import {
+  hardwareFormSchema,
+  type HardwareFormData,
+} from '../types/hardware-form'
 
 const categoryOptions: { value: HardwareCategory; label: string }[] = [
   { value: 'router', label: 'Router' },
@@ -51,6 +63,8 @@ const statusOptions: { value: HardwareStatus; label: string }[] = [
 export function CreateHardwareModal() {
   const { isCreateDialogOpen, setIsCreateDialogOpen } = useHardwareContext()
   const createHardware = useCreateHardware()
+  const augustLocks = useAugustLocks()
+  const augustSerialNumbers = useAugustSerialNumbers()
 
   const form = useForm<HardwareFormData>({
     resolver: zodResolver(hardwareFormSchema),
@@ -96,7 +110,10 @@ export function CreateHardwareModal() {
         }
       }
 
-      if (data.category === 'lockbox' && (data.lockboxId || data.lockboxVendor)) {
+      if (
+        data.category === 'lockbox' &&
+        (data.lockboxId || data.lockboxVendor)
+      ) {
         payload.lockbox = {
           id: data.lockboxId,
           vendor: data.lockboxVendor,
@@ -141,6 +158,54 @@ export function CreateHardwareModal() {
   }
 
   const selectedCategory = form.watch('category')
+  const selectedLockVendor = form.watch('lockVendor')
+
+  // Fetch August lock data when category is lock and vendor is august or yale
+  useEffect(() => {
+    if (
+      selectedCategory === 'lock' &&
+      (selectedLockVendor === 'august' || selectedLockVendor === 'yale')
+    ) {
+      augustLocks.refetch()
+      augustSerialNumbers.refetch()
+    }
+  }, [selectedCategory, selectedLockVendor, augustLocks, augustSerialNumbers])
+
+  // Handle lock selection and auto-populate name and serial
+  const handleLockSelection = (lockId: string) => {
+    const selectedLock = augustLocks.data?.find((lock) => lock.id === lockId)
+    const matchingSerial = augustSerialNumbers.data?.find(
+      (serial) => serial.LockID === lockId
+    )
+
+    if (selectedLock) {
+      // Update name field
+      form.setValue('name', selectedLock.name, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      })
+
+      // Update lockId field
+      form.setValue('lockId', lockId, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      })
+
+      // Update serial field
+      const serialValue = matchingSerial ? matchingSerial.serialNumber : ''
+
+      form.setValue('serial', serialValue, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      })
+
+      // Trigger form validation to ensure UI updates
+      form.trigger(['name', 'serial', 'lockId'])
+    }
+  }
 
   return (
     <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
@@ -152,7 +217,10 @@ export function CreateHardwareModal() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -174,7 +242,10 @@ export function CreateHardwareModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder='Select category' />
@@ -213,7 +284,10 @@ export function CreateHardwareModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder='Select status' />
@@ -320,7 +394,10 @@ export function CreateHardwareModal() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Router Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder='Select status' />
@@ -343,24 +420,14 @@ export function CreateHardwareModal() {
                 <>
                   <FormField
                     control={form.control}
-                    name='lockId'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Lock ID</FormLabel>
-                        <FormControl>
-                          <Input placeholder='Enter lock ID' {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
                     name='lockVendor'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Lock Vendor</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder='Select vendor' />
@@ -376,6 +443,82 @@ export function CreateHardwareModal() {
                       </FormItem>
                     )}
                   />
+
+                  {selectedLockVendor === 'august' ||
+                  selectedLockVendor === 'yale' ? (
+                    <FormField
+                      control={form.control}
+                      name='lockId'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Select Lock</FormLabel>
+                          <Select
+                            onValueChange={(value) => {
+                              field.onChange(value)
+                              // Only handle selection if both data sets are loaded
+                              if (
+                                !augustLocks.isLoading &&
+                                !augustSerialNumbers.isLoading &&
+                                augustLocks.data &&
+                                augustSerialNumbers.data
+                              ) {
+                                handleLockSelection(value)
+                              }
+                            }}
+                            defaultValue={field.value}
+                            disabled={
+                              augustLocks.isLoading ||
+                              augustSerialNumbers.isLoading
+                            }
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={
+                                    augustLocks.isLoading
+                                      ? 'Loading locks...'
+                                      : 'Select lock'
+                                  }
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {augustLocks.isError && (
+                                <SelectItem value='' disabled>
+                                  Error loading locks
+                                </SelectItem>
+                              )}
+                              {augustLocks.data?.map((lock) => (
+                                <SelectItem key={lock.id} value={lock.id}>
+                                  {lock.name}
+                                </SelectItem>
+                              ))}
+                              {augustLocks.data?.length === 0 && (
+                                <SelectItem value='' disabled>
+                                  No locks available
+                                </SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : (
+                    <FormField
+                      control={form.control}
+                      name='lockId'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lock ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder='Enter lock ID' {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </>
               )}
 
@@ -386,7 +529,10 @@ export function CreateHardwareModal() {
                   render={({ field }) => (
                     <FormItem className='col-span-2'>
                       <FormLabel>Camera Firmware</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Select firmware' />

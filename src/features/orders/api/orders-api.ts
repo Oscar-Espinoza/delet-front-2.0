@@ -3,7 +3,9 @@ import type { Order, OrderPlacedFormValues } from '../data/schema'
 import type { GetOrdersParams, GetOrdersResponse, OrderPlaced } from '../types'
 
 export const ordersApi = {
-  getOrders: async (params: GetOrdersParams = {}): Promise<GetOrdersResponse> => {
+  getOrders: async (
+    params: GetOrdersParams = {}
+  ): Promise<GetOrdersResponse> => {
     const {
       page = 1,
       pageSize = 10,
@@ -35,7 +37,9 @@ export const ordersApi = {
     if (createdAtTo) queryParams.append('createdAtTo', createdAtTo)
 
     const endpoint = isAdmin ? '/api/order/admin/query' : '/api/order/query'
-    return apiClient.get<GetOrdersResponse>(`${endpoint}?${queryParams.toString()}`)
+    return apiClient.get<GetOrdersResponse>(
+      `${endpoint}?${queryParams.toString()}`
+    )
   },
 
   getOrder: async (id: string, isAdmin = false): Promise<Order> => {
@@ -43,13 +47,17 @@ export const ordersApi = {
     return apiClient.get<Order>(endpoint)
   },
 
-  placeOrder: async (orderData: OrderPlacedFormValues, isAdmin = false): Promise<Order> => {
+  placeOrder: async (
+    orderData: OrderPlacedFormValues,
+    isAdmin = false
+  ): Promise<Order> => {
     const endpoint = isAdmin ? '/api/order/admin/place' : '/api/order/place'
     const payload: OrderPlaced = {
       quantity: orderData.quantity,
       addresses: orderData.addresses,
       provideShippingLater: orderData.provideShippingLater,
       notes: orderData.notes || '',
+      billingEntityId: orderData.billingEntityId,
     }
     return apiClient.post<Order>(endpoint, payload)
   },
@@ -59,7 +67,9 @@ export const ordersApi = {
     status: string,
     isAdmin = false
   ): Promise<Order> => {
-    const endpoint = isAdmin ? `/api/order/admin/${id}/status` : `/api/order/${id}/status`
+    const endpoint = isAdmin
+      ? `/api/order/admin/${id}/status`
+      : `/api/order/${id}/status`
     return apiClient.patch<Order>(endpoint, { status })
   },
 
@@ -73,7 +83,9 @@ export const ordersApi = {
   },
 
   cancelOrder: async (id: string, isAdmin = false): Promise<Order> => {
-    const endpoint = isAdmin ? `/api/order/admin/${id}/cancel` : `/api/order/${id}/cancel`
+    const endpoint = isAdmin
+      ? `/api/order/admin/${id}/cancel`
+      : `/api/order/${id}/cancel`
     return apiClient.post<Order>(endpoint)
   },
 
@@ -82,9 +94,12 @@ export const ordersApi = {
     return apiClient.delete<void>(endpoint)
   },
 
-  exportOrders: async (params: GetOrdersParams = {}, format = 'csv'): Promise<Blob> => {
+  exportOrders: async (
+    params: GetOrdersParams = {},
+    format = 'csv'
+  ): Promise<Blob> => {
     const queryParams = new URLSearchParams()
-    
+
     // Add only defined params to query string
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -92,11 +107,17 @@ export const ordersApi = {
       }
     })
     queryParams.append('format', format)
-    
+
     const response = await apiClient.get<Blob>(
       `/api/order/export?${queryParams.toString()}`,
       { responseType: 'blob' }
     )
     return response
   },
+}
+
+// Convenience function for getting order by ID (following requested pattern)
+export const getOrderById = async (id: string): Promise<Order> => {
+  const response = await apiClient.get(`/api/order/${id}`)
+  return response.data
 }

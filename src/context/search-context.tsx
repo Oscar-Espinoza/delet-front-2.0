@@ -34,7 +34,6 @@ export function SearchProvider({ children }: Props) {
   )
 }
 
- 
 export const useSearch = () => {
   const searchContext = React.useContext(SearchContext)
 

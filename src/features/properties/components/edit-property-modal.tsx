@@ -25,7 +25,9 @@ export function EditPropertyModal({
         </DialogHeader>
         <div className='py-4'>
           {/* TODO: Implement edit property form */}
-          <p className='text-muted-foreground'>Edit property form for {property._id} will be implemented here.</p>
+          <p className='text-muted-foreground'>
+            Edit property form for {property._id} will be implemented here.
+          </p>
         </div>
       </DialogContent>
     </Dialog>

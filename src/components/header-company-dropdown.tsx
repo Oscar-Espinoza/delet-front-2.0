@@ -35,7 +35,9 @@ export function HeaderCompanyDropdown() {
         disabled={isLoading}
       >
         <SelectTrigger className='w-[200px]'>
-          <SelectValue placeholder={isLoading ? 'Loading companies...' : 'Company...'} />
+          <SelectValue
+            placeholder={isLoading ? 'Loading companies...' : 'Company...'}
+          />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value='none'>Company...</SelectItem>

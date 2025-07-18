@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
-import LongText from '@/components/long-text'
 import { DataTableColumnHeader } from '@/components/data-table'
+import LongText from '@/components/long-text'
 import { Company } from '../types'
 import { DataTableRowActions } from './data-table-row-actions'
 
@@ -45,13 +45,15 @@ export const columns: ColumnDef<Company>[] = [
     cell: ({ row }) => (
       <div className='flex items-center space-x-2'>
         {row.original.logoUrl && (
-          <img 
-            src={row.original.logoUrl} 
-            alt={row.getValue('name')} 
+          <img
+            src={row.original.logoUrl}
+            alt={row.getValue('name')}
             className='h-8 w-8 rounded object-cover'
           />
         )}
-        <LongText className='max-w-48 font-medium'>{row.getValue('name')}</LongText>
+        <LongText className='max-w-48 font-medium'>
+          {row.getValue('name')}
+        </LongText>
       </div>
     ),
     meta: {
@@ -104,14 +106,16 @@ export const columns: ColumnDef<Company>[] = [
       if (!address || (!address.city && !address.state && !address.country)) {
         return <span className='text-muted-foreground'>-</span>
       }
-      
-      const parts = [address.city, address.state, address.country].filter(Boolean)
+
+      const parts = [address.city, address.state, address.country].filter(
+        Boolean
+      )
       return <LongText className='max-w-48'>{parts.join(', ')}</LongText>
     },
     filterFn: (row, _id, value) => {
       const { address } = row.original
       if (!address) return false
-      
+
       const searchValue = value.toLowerCase()
       return (
         address.city?.toLowerCase().includes(searchValue) ||

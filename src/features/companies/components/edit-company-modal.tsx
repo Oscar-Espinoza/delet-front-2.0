@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -21,21 +22,25 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from 'sonner'
-import { useCompaniesContext } from '../context/use-companies-context'
 import { useUpdateCompany } from '../api'
+import { useCompaniesContext } from '../context/use-companies-context'
 import { companyFormSchema, CompanyFormData } from '../types'
 
 export function EditCompanyModal() {
-  const { isEditDialogOpen, setIsEditDialogOpen, editingCompany, setEditingCompany } = useCompaniesContext()
+  const {
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    editingCompany,
+    setEditingCompany,
+  } = useCompaniesContext()
   const updateCompany = useUpdateCompany()
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [idImagePreview, setIdImagePreview] = useState<string | null>(null)
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: {
       name: '',
-      idImage: '',
       units: '',
       address: {
         street: '',
@@ -47,6 +52,7 @@ export function EditCompanyModal() {
       phone: '',
       email: '',
       description: '',
+      users: '',
     },
   })
 
@@ -54,7 +60,6 @@ export function EditCompanyModal() {
     if (editingCompany) {
       form.reset({
         name: editingCompany.name || '',
-        idImage: editingCompany.idImage || '',
         units: editingCompany.units || '',
         address: {
           street: editingCompany.address?.street || '',
@@ -66,8 +71,10 @@ export function EditCompanyModal() {
         phone: editingCompany.phone || '',
         email: editingCompany.email || '',
         description: editingCompany.description || '',
+        users: editingCompany.users || '',
       })
       setLogoPreview(editingCompany.logoUrl || null)
+      setIdImagePreview(editingCompany.idImage || null)
     }
   }, [editingCompany, form])
 
@@ -98,11 +105,24 @@ export function EditCompanyModal() {
     }
   }
 
+  const handleIdImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      form.setValue('idImage', file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setIdImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleClose = () => {
     setIsEditDialogOpen(false)
     setEditingCompany(null)
     form.reset()
     setLogoPreview(null)
+    setIdImagePreview(null)
   }
 
   return (
@@ -115,7 +135,10 @@ export function EditCompanyModal() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-4'
+          >
             <div className='grid grid-cols-2 gap-4'>
               <FormField
                 control={form.control}
@@ -138,7 +161,11 @@ export function EditCompanyModal() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='company@example.com' {...field} />
+                      <Input
+                        type='email'
+                        placeholder='company@example.com'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -175,21 +202,40 @@ export function EditCompanyModal() {
 
               <FormField
                 control={form.control}
-                name='idImage'
+                name='users'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ID Image</FormLabel>
+                    <FormLabel>Users</FormLabel>
                     <FormControl>
-                      <Input placeholder='Image ID' {...field} />
+                      <Input placeholder='Users information' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              <FormItem className='col-span-2'>
+                <FormLabel>ID Image</FormLabel>
+                <FormControl>
+                  <Input
+                    type='file'
+                    accept='image/*'
+                    onChange={handleIdImageChange}
+                  />
+                </FormControl>
+                {idImagePreview && (
+                  <img
+                    src={idImagePreview}
+                    alt='ID Image preview'
+                    className='mt-2 h-20 w-20 rounded object-cover'
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+
               <div className='col-span-2'>
                 <FormLabel>Address</FormLabel>
-                <div className='grid grid-cols-2 gap-4 mt-2'>
+                <div className='mt-2 grid grid-cols-2 gap-4'>
                   <FormField
                     control={form.control}
                     name='address.street'
@@ -264,11 +310,11 @@ export function EditCompanyModal() {
                   <FormItem className='col-span-2'>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder='Enter company description' 
-                        className='resize-none' 
+                      <Textarea
+                        placeholder='Enter company description'
+                        className='resize-none'
                         rows={3}
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -279,16 +325,16 @@ export function EditCompanyModal() {
               <FormItem className='col-span-2'>
                 <FormLabel>Company Logo</FormLabel>
                 <FormControl>
-                  <Input 
-                    type='file' 
+                  <Input
+                    type='file'
                     accept='image/*'
                     onChange={handleLogoChange}
                   />
                 </FormControl>
                 {logoPreview && (
-                  <img 
-                    src={logoPreview} 
-                    alt='Logo preview' 
+                  <img
+                    src={logoPreview}
+                    alt='Logo preview'
                     className='mt-2 h-20 w-20 rounded object-cover'
                   />
                 )}
@@ -297,11 +343,7 @@ export function EditCompanyModal() {
             </div>
 
             <DialogFooter>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={handleClose}
-              >
+              <Button type='button' variant='outline' onClick={handleClose}>
                 Cancel
               </Button>
               <Button type='submit' disabled={updateCompany.isPending}>

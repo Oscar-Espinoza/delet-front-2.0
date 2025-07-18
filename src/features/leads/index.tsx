@@ -1,30 +1,30 @@
 import { useState, useEffect } from 'react'
 import { useSearch } from '@tanstack/react-router'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
-import { LeadsProvider } from './context/leads-provider'
-import { LeadsTable } from './components/leads-table'
-import { LeadsPrimaryButtons } from './components/leads-primary-buttons'
-import { LeadsDialogs } from './components/leads-dialogs'
-import { columns } from './components/leads-columns'
 import { useLeads } from './api'
+import { columns } from './components/leads-columns'
+import { LeadsDialogs } from './components/leads-dialogs'
+import { LeadsPrimaryButtons } from './components/leads-primary-buttons'
+import { LeadsTable } from './components/leads-table'
+import { LeadsProvider } from './context/leads-provider'
 import { LeadFilters, LeadSort } from './types'
 
 export default function LeadsPage() {
   // Get auth state to determine if admin
   const isAdmin = true // TODO: Get from auth context
-  
+
   // Get company from URL search params
   const urlSearch = useSearch({ strict: false }) as { company?: string }
-  
+
   // Pagination state
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
-  
+
   // Search state
   const [search, setSearch] = useState('')
 
@@ -34,7 +34,7 @@ export default function LeadsPage() {
     search: '',
     companiesIds: urlSearch.company ? [urlSearch.company] : undefined,
   })
-  
+
   // Sort state
   const [sort, _setSort] = useState<LeadSort>({
     field: 'createdAt',
@@ -62,7 +62,7 @@ export default function LeadsPage() {
 
   // Update filters when URL company changes
   useEffect(() => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       companiesIds: urlSearch.company ? [urlSearch.company] : undefined,
     }))
@@ -70,21 +70,24 @@ export default function LeadsPage() {
   }, [urlSearch.company])
 
   // Handle pagination change
-  const handlePaginationChange = (pagination: { pageIndex: number; pageSize: number }) => {
+  const handlePaginationChange = (pagination: {
+    pageIndex: number
+    pageSize: number
+  }) => {
     setPage(pagination.pageIndex + 1)
     setLimit(pagination.pageSize)
   }
-  
+
   // Handle search submit (on Enter key)
   const handleSearchSubmit = () => {
-    setFilters(prev => ({ ...prev, search }))
+    setFilters((prev) => ({ ...prev, search }))
     setPage(1) // Reset to first page when searching
   }
-  
+
   // Handle search clear
   const handleSearchClear = () => {
     setSearch('')
-    setFilters(prev => ({ ...prev, search: '' }))
+    setFilters((prev) => ({ ...prev, search: '' }))
     setPage(1)
   }
 
@@ -127,7 +130,7 @@ export default function LeadsPage() {
           />
         </div>
       </Main>
-      
+
       <LeadsDialogs />
     </LeadsProvider>
   )

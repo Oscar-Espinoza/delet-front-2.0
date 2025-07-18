@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Check, ChevronsUpDown, User } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import { apiClient } from '@/lib/api-client'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -14,12 +18,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { useBookingsContext } from '../../context/use-bookings-context'
-import { apiClient } from '@/lib/api-client'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useAuthStore } from '@/stores/authStore'
+import { useBookingsContext } from '../../context/use-bookings-context'
 
 interface Agent {
   _id: string
@@ -38,21 +38,24 @@ export function AgentsFilter() {
   const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
-  
+
   const selectedAgents = filters.agents?.split(',').filter(Boolean) || []
-  
+
   useEffect(() => {
     fetchAgents()
   }, [])
-  
+
   const fetchAgents = async () => {
     setLoading(true)
     try {
-      const response = await apiClient.post<{ agents: Agent[]; total: number }>('/api/users/admin/agents/all', {
-        page: 1,
-        limit: 100,
-        select: 'firstName lastName email company'
-      })
+      const response = await apiClient.post<{ agents: Agent[]; total: number }>(
+        '/api/users/admin/agents/all',
+        {
+          page: 1,
+          limit: 100,
+          select: 'firstName lastName email company',
+        }
+      )
       setAgents(response.agents || [])
     } catch (_error) {
       // Handle error silently
@@ -60,43 +63,46 @@ export function AgentsFilter() {
       setLoading(false)
     }
   }
-  
+
   const handleSelect = (agentId: string) => {
     const isSelected = selectedAgents.includes(agentId)
     let newSelection: string[]
-    
+
     if (isSelected) {
-      newSelection = selectedAgents.filter(id => id !== agentId)
+      newSelection = selectedAgents.filter((id) => id !== agentId)
     } else {
       newSelection = [...selectedAgents, agentId]
     }
-    
+
     setFilters({
       ...filters,
       agents: newSelection.join(','),
     })
   }
-  
+
   const handleSelectAll = () => {
     if (selectedAgents.length === agents.length) {
       setFilters({ ...filters, agents: '' })
     } else {
       setFilters({
         ...filters,
-        agents: agents.map(a => a._id).join(','),
+        agents: agents.map((a) => a._id).join(','),
       })
     }
   }
-  
+
   const handleClear = () => {
     setFilters({ ...filters, agents: '' })
   }
-  
-  const filteredAgents = agents.filter(agent =>
-    `${agent.firstName} ${agent.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
-    (agent.email && agent.email.toLowerCase().includes(search.toLowerCase()))
+
+  const filteredAgents = agents.filter(
+    (agent) =>
+      `${agent.firstName} ${agent.lastName}`
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      (agent.email && agent.email.toLowerCase().includes(search.toLowerCase()))
   )
-  
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -150,7 +156,7 @@ export function AgentsFilter() {
                 </CommandGroup>
                 <CommandGroup heading='Agents'>
                   <ScrollArea className='h-[200px]'>
-                    {filteredAgents.map(agent => (
+                    {filteredAgents.map((agent) => (
                       <CommandItem
                         key={agent._id}
                         onSelect={() => handleSelect(agent._id)}
@@ -160,11 +166,13 @@ export function AgentsFilter() {
                           <span className='text-sm'>
                             {agent.firstName} {agent.lastName}
                             {agent._id === auth.user?.userId && (
-                              <span className='ml-2 text-xs text-muted-foreground'>(You)</span>
+                              <span className='text-muted-foreground ml-2 text-xs'>
+                                (You)
+                              </span>
                             )}
                           </span>
                           {agent.email && (
-                            <span className='text-xs text-muted-foreground'>
+                            <span className='text-muted-foreground text-xs'>
                               {agent.email}
                             </span>
                           )}

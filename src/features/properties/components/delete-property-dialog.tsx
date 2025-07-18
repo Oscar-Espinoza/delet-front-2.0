@@ -42,8 +42,8 @@ export function DeletePropertyDialog({
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This will permanently delete the property at{' '}
-            <span className='font-semibold'>{address}</span>.
-            This action cannot be undone.
+            <span className='font-semibold'>{address}</span>. This action cannot
+            be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

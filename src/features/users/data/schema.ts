@@ -23,7 +23,7 @@ const companySchema = z.union([
   z.object({
     _id: z.string(),
     name: z.string(),
-  })
+  }),
 ])
 
 const userSchema = z.object({

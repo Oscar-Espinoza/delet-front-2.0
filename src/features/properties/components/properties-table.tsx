@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -21,11 +22,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination } from '@/components/data-table'
-import { Skeleton } from '@/components/ui/skeleton'
-import { columns } from './properties-columns'
-import { PropertiesToolbar } from './properties-toolbar'
 import { useProperties } from '../api'
 import { PropertyFilters } from '../types'
+import { columns } from './properties-columns'
+import { PropertiesToolbar } from './properties-toolbar'
 
 interface PropertiesTableProps {
   companyId?: string
@@ -68,7 +68,7 @@ export function PropertiesTable({ companyId }: PropertiesTableProps) {
 
   // Update filters when pagination changes
   useEffect(() => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       page: pagination.pageIndex + 1,
       limit: pagination.pageSize,
@@ -79,13 +79,13 @@ export function PropertiesTable({ companyId }: PropertiesTableProps) {
   useEffect(() => {
     if (sorting.length > 0) {
       const sort = sorting[0]
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
         sortBy: sort.id,
         sortOrder: sort.desc ? 'desc' : 'asc',
       }))
     } else {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
         sortBy: undefined,
         sortOrder: undefined,
@@ -95,17 +95,17 @@ export function PropertiesTable({ companyId }: PropertiesTableProps) {
 
   // Update filters when column filters change
   useEffect(() => {
-    const statusFilter = columnFilters.find(f => f.id === 'status')
-    const typeFilter = columnFilters.find(f => f.id === 'propertyType')
-    
-    setFilters(prev => ({
+    const statusFilter = columnFilters.find((f) => f.id === 'status')
+    const typeFilter = columnFilters.find((f) => f.id === 'propertyType')
+
+    setFilters((prev) => ({
       ...prev,
-      status: statusFilter?.value as string[] || undefined,
-      type: typeFilter?.value as string[] || undefined,
+      status: (statusFilter?.value as string[]) || undefined,
+      type: (typeFilter?.value as string[]) || undefined,
       companiesIds: companyId ? [companyId] : undefined,
       page: 1,
     }))
-    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
   }, [columnFilters, companyId])
 
   const table = useReactTable({
@@ -137,8 +137,8 @@ export function PropertiesTable({ companyId }: PropertiesTableProps) {
 
   // Filter handlers
   const handleSearchChange = (search: string) => {
-    setFilters(prev => ({ ...prev, search, page: 1 }))
-    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+    setFilters((prev) => ({ ...prev, search, page: 1 }))
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
   }
 
   return (
@@ -148,7 +148,7 @@ export function PropertiesTable({ companyId }: PropertiesTableProps) {
         onSearchChange={handleSearchChange}
         searchValue={filters.search}
       />
-      
+
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -214,7 +214,7 @@ export function PropertiesTable({ companyId }: PropertiesTableProps) {
           </TableBody>
         </Table>
       </div>
-      
+
       <DataTablePagination table={table} />
     </div>
   )

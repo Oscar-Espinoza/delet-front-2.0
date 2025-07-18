@@ -22,4 +22,3 @@ export function CompaniesProvider({ children }: { children: ReactNode }) {
     </CompaniesContext.Provider>
   )
 }
-

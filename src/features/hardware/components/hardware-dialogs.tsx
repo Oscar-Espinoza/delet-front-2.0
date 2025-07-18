@@ -1,3 +1,4 @@
+import { showSubmittedData } from '@/utils/show-submitted-data'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,7 +10,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useHardwareContext } from '../contexts/use-hardware-context'
-import { showSubmittedData } from '@/utils/show-submitted-data'
 import { CreateHardwareModal } from './create-hardware-modal'
 import { EditHardwareModal } from './edit-hardware-modal'
 
@@ -29,10 +29,10 @@ export function HardwareDialogs() {
         hardwareId: deletingHardware._id,
         hardwareName: deletingHardware.name,
       })
-      
+
       // Uncomment when API is ready
       // deleteHardwareMutation.mutate(deletingHardware._id)
-      
+
       setIsDeleteDialogOpen(false)
       setDeletingHardware(null)
     }
@@ -42,19 +42,23 @@ export function HardwareDialogs() {
     <>
       <CreateHardwareModal />
       <EditHardwareModal />
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the hardware
+              This action cannot be undone. This will permanently delete the
+              hardware
               {deletingHardware?.name && (
                 <>
                   {' '}
-                  <span className="font-semibold">{deletingHardware.name}</span>
+                  <span className='font-semibold'>{deletingHardware.name}</span>
                 </>
-              )}
-              {' '}from the system.
+              )}{' '}
+              from the system.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

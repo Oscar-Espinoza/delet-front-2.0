@@ -1,10 +1,15 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import LongText from '@/components/long-text'
-import { Structure, StructureType, formatAddress, getStructureTypeColor } from '../types'
+import {
+  Structure,
+  StructureType,
+  formatAddress,
+  getStructureTypeColor,
+} from '../types'
 import { DataTableRowActions } from './data-table-row-actions'
 
 export const columns: ColumnDef<Structure>[] = [
@@ -70,7 +75,12 @@ export const columns: ColumnDef<Structure>[] = [
     cell: ({ row }) => {
       const type = row.getValue('type') as string
       return (
-        <Badge className={cn('font-medium', getStructureTypeColor(type as StructureType))}>
+        <Badge
+          className={cn(
+            'font-medium',
+            getStructureTypeColor(type as StructureType)
+          )}
+        >
           {type}
         </Badge>
       )
@@ -86,11 +96,7 @@ export const columns: ColumnDef<Structure>[] = [
     ),
     cell: ({ row }) => {
       const address = row.original.address
-      return (
-        <div className='text-nowrap'>
-          {formatAddress(address)}
-        </div>
-      )
+      return <div className='text-nowrap'>{formatAddress(address)}</div>
     },
     enableSorting: false,
   },
@@ -105,7 +111,7 @@ export const columns: ColumnDef<Structure>[] = [
         <div className='space-y-1'>
           <div className='text-sm'>{user?.email || '-'}</div>
           {user?.company && (
-            <div className='text-xs text-muted-foreground'>
+            <div className='text-muted-foreground text-xs'>
               {user.company.name}
             </div>
           )}
@@ -138,9 +144,7 @@ export const columns: ColumnDef<Structure>[] = [
       const count = row.original.properties?.length || 0
       return (
         <div className='text-center'>
-          <Badge variant='secondary'>
-            {count}
-          </Badge>
+          <Badge variant='secondary'>{count}</Badge>
         </div>
       )
     },
@@ -155,9 +159,7 @@ export const columns: ColumnDef<Structure>[] = [
       const count = row.original.hardware?.length || 0
       return (
         <div className='text-center'>
-          <Badge variant='secondary'>
-            {count}
-          </Badge>
+          <Badge variant='secondary'>{count}</Badge>
         </div>
       )
     },
@@ -173,4 +175,4 @@ export const columns: ColumnDef<Structure>[] = [
       ),
     },
   },
-];
+]

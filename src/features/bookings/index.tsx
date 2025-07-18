@@ -1,20 +1,20 @@
-import { BookingsProvider } from './context/bookings-context'
+import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { HeaderCompanyDropdown } from '@/components/header-company-dropdown'
-import { DateFilter } from './components/filters/date-filter'
-import { PropertiesFilter } from './components/filters/properties-filter'
-import { AgentsFilter } from './components/filters/agents-filter'
-import { ViewTypeButtons } from './components/filters/view-type-buttons'
+import { BookingDetailsModal } from './components/booking-details-modal'
 import { BookingsCalendar } from './components/bookings-calendar'
 import { CreateBookingModal } from './components/create-booking-modal'
 import { EditBookingModal } from './components/edit-booking-modal'
-import { BookingDetailsModal } from './components/booking-details-modal'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { AgentsFilter } from './components/filters/agents-filter'
+import { DateFilter } from './components/filters/date-filter'
+import { PropertiesFilter } from './components/filters/properties-filter'
+import { ViewTypeButtons } from './components/filters/view-type-buttons'
+import { BookingsProvider } from './context/bookings-context'
 import { useBookingsContext } from './context/use-bookings-context'
 
 function BookingsContent() {
@@ -30,11 +30,13 @@ function BookingsContent() {
           <ProfileDropdown />
         </div>
       </Header>
-      
+
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Bookings Calendar</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>
+              Bookings Calendar
+            </h2>
             <p className='text-muted-foreground'>
               View and manage all property showings and appointments
             </p>
@@ -44,7 +46,7 @@ function BookingsContent() {
             New Booking
           </Button>
         </div>
-        
+
         <div className='mb-4 flex flex-wrap items-center gap-2'>
           <DateFilter />
           <PropertiesFilter />
@@ -53,12 +55,12 @@ function BookingsContent() {
             <ViewTypeButtons />
           </div>
         </div>
-        
+
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1'>
           <BookingsCalendar />
         </div>
       </Main>
-      
+
       {/* Modals */}
       <CreateBookingModal />
       <EditBookingModal />

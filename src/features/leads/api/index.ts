@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { queryKeys } from '@/lib/query-keys'
-import { 
-  contactsApi, 
-  ContactsParams, 
+import {
+  contactsApi,
+  ContactsParams,
   CreateContactData,
   UpdateContactData,
-  prepareContactsParams
+  prepareContactsParams,
 } from '@/lib/api/contacts'
+import { queryKeys } from '@/lib/query-keys'
 import { Lead, LeadsResponse, LeadFilters, LeadSort } from '../types'
 
 // Convert ContactData to Lead type (they're the same, just aliased for clarity)
@@ -23,11 +23,9 @@ interface GetLeadsParams {
 }
 
 // Helper to convert our filter format to API format
-const convertFiltersToApiParams = (
-  params: GetLeadsParams
-): ContactsParams => {
+const convertFiltersToApiParams = (params: GetLeadsParams): ContactsParams => {
   const { page, limit, filters, sort } = params
-  
+
   const apiParams: ContactsParams & {
     startTimeStartDate?: Date
     startTimeEndDate?: Date
@@ -76,10 +74,10 @@ const convertFiltersToApiParams = (
 const leadsApi = {
   getLeads: async (params: GetLeadsParams): Promise<LeadsResponse> => {
     const apiParams = convertFiltersToApiParams(params)
-    const response = params.isAdmin 
+    const response = params.isAdmin
       ? await contactsApi.getContactsAdmin(apiParams)
       : await contactsApi.getContacts(apiParams)
-    
+
     // The response is already in the correct format
     return response as LeadsResponse
   },
@@ -99,7 +97,13 @@ const leadsApi = {
     return response as Lead
   },
 
-  updateLeadStatus: async ({ id, status }: { id: string; status: string }): Promise<Lead> => {
+  updateLeadStatus: async ({
+    id,
+    status,
+  }: {
+    id: string
+    status: string
+  }): Promise<Lead> => {
     const response = await contactsApi.updateContactStatus(id, status)
     return response as Lead
   },
@@ -111,7 +115,7 @@ const leadsApi = {
   exportLeads: async (params: GetLeadsParams): Promise<Blob> => {
     const apiParams = convertFiltersToApiParams(params)
     return contactsApi.exportContactsToCsv(apiParams, params.isAdmin)
-  }
+  },
 }
 
 // React Query hooks
@@ -159,29 +163,41 @@ export const useUpdateLead = () => {
       }
 
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: queryKeys.leads.detail(updatedLead._id) })
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.leads.detail(updatedLead._id),
+      })
       await queryClient.cancelQueries({ queryKey: queryKeys.leads.lists() })
 
       // Snapshot the previous values
-      const previousLead = queryClient.getQueryData(queryKeys.leads.detail(updatedLead._id))
-      const previousLists = queryClient.getQueriesData({ queryKey: queryKeys.leads.lists() })
+      const previousLead = queryClient.getQueryData(
+        queryKeys.leads.detail(updatedLead._id)
+      )
+      const previousLists = queryClient.getQueriesData({
+        queryKey: queryKeys.leads.lists(),
+      })
 
       // Optimistically update the lead detail
-      queryClient.setQueryData(queryKeys.leads.detail(updatedLead._id), (old: Lead | undefined) => {
-        if (!old) return old
-        return { ...old, ...updatedLead }
-      })
+      queryClient.setQueryData(
+        queryKeys.leads.detail(updatedLead._id),
+        (old: Lead | undefined) => {
+          if (!old) return old
+          return { ...old, ...updatedLead }
+        }
+      )
 
       // Optimistically update all lead lists
-      queryClient.setQueriesData({ queryKey: queryKeys.leads.lists() }, (old: { leads?: Lead[] } | undefined) => {
-        if (!old?.leads) return old
-        return {
-          ...old,
-          leads: old.leads.map((lead: Lead) =>
-            lead._id === updatedLead._id ? { ...lead, ...updatedLead } : lead
-          ),
+      queryClient.setQueriesData(
+        { queryKey: queryKeys.leads.lists() },
+        (old: { leads?: Lead[] } | undefined) => {
+          if (!old?.leads) return old
+          return {
+            ...old,
+            leads: old.leads.map((lead: Lead) =>
+              lead._id === updatedLead._id ? { ...lead, ...updatedLead } : lead
+            ),
+          }
         }
-      })
+      )
 
       // Return context for rollback
       return { previousLead, previousLists, leadId: updatedLead._id }
@@ -207,7 +223,9 @@ export const useUpdateLead = () => {
     onSettled: (data) => {
       // Always refetch after error or success
       if (data) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.leads.detail(data._id) })
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.leads.detail(data._id),
+        })
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.leads.lists() })
     },
@@ -221,7 +239,9 @@ export const useUpdateLeadStatus = () => {
     mutationFn: leadsApi.updateLeadStatus,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.leads.all })
-      queryClient.invalidateQueries({ queryKey: queryKeys.leads.detail(data._id) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.leads.detail(data._id),
+      })
       toast.success('Lead status updated successfully')
     },
     onError: (error: Error) => {
@@ -259,7 +279,7 @@ export const useExportLeads = () => {
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
-      
+
       toast.success('Leads exported successfully')
     },
     onError: (error: Error) => {

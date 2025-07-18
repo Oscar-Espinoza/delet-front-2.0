@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import LongText from '@/components/long-text'
 import { Kit, KitState, getKitStateColor } from '../types'
@@ -47,9 +47,7 @@ export const columns: ColumnDef<Kit>[] = [
       const name = row.getValue('name') as string
       return (
         <div className='flex items-center space-x-2'>
-          <LongText className='max-w-48 font-medium'>
-            {name}
-          </LongText>
+          <LongText className='max-w-48 font-medium'>{name}</LongText>
         </div>
       )
     },
@@ -111,9 +109,7 @@ export const columns: ColumnDef<Kit>[] = [
               ? `${user.firstName} ${user.lastName}`
               : user.email}
           </div>
-          <div className='text-xs text-muted-foreground'>
-            {user.email}
-          </div>
+          <div className='text-muted-foreground text-xs'>{user.email}</div>
         </div>
       )
     },
@@ -136,7 +132,7 @@ export const columns: ColumnDef<Kit>[] = [
             {property.unit && ` Unit ${property.unit}`}
           </div>
           {property.city && property.state && (
-            <div className='text-xs text-muted-foreground'>
+            <div className='text-muted-foreground text-xs'>
               {property.city}, {property.state}
             </div>
           )}
@@ -154,9 +150,7 @@ export const columns: ColumnDef<Kit>[] = [
       const count = row.original.hardware?.length || 0
       return (
         <div className='text-center'>
-          <Badge variant='secondary'>
-            {count}
-          </Badge>
+          <Badge variant='secondary'>{count}</Badge>
         </div>
       )
     },
@@ -199,4 +193,4 @@ export const columns: ColumnDef<Kit>[] = [
       ),
     },
   },
-];
+]

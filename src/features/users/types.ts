@@ -1,4 +1,4 @@
-export type UserRole = 
+export type UserRole =
   | 'agent'
   | 'admin'
   | 'org'
@@ -7,12 +7,7 @@ export type UserRole =
   | 'leasingAgent'
   | 'manager'
 
-export type AdminPanelRole = 
-  | 'superadmin'
-  | 'leasingAgent'
-  | 'admin'
-  | null
-  | ''
+export type AdminPanelRole = 'superadmin' | 'leasingAgent' | 'admin' | null | ''
 
 export interface Company {
   _id: string

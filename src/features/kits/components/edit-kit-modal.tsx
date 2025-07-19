@@ -298,11 +298,13 @@ export function EditKitModal() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Company</FormLabel>
-                      <CompanySelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder='Select company'
-                      />
+                      <FormControl>
+                        <CompanySelect
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder='Select company'
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

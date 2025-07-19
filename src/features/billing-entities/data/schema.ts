@@ -37,9 +37,7 @@ export const updateBillingEntitySchema = billingEntitySchema.partial().extend({
 })
 
 // Form schema for create/edit dialogs
-export const billingEntityFormSchema = billingEntitySchema.omit({
-  taxId: true,
-})
+export const billingEntityFormSchema = billingEntitySchema
 
 // Type exports
 export type BillingEntityFormData = z.infer<typeof billingEntityFormSchema>

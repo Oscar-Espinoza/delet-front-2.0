@@ -131,12 +131,14 @@ export function CreateBillingEntityModal() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Company *</FormLabel>
-                    <CompanySelect
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder='Select company'
-                      includeNone={false}
-                    />
+                    <FormControl>
+                      <CompanySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Select company'
+                        includeNone={false}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

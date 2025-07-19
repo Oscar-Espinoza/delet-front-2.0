@@ -6,7 +6,7 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { Order } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 
-const KIT_PRICE = 50
+const KIT_PRICE = 200
 
 export const columns: ColumnDef<Order>[] = [
   {

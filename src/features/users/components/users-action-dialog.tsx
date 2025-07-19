@@ -384,11 +384,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                       Company
                     </FormLabel>
                     <div className='col-span-4'>
-                      <CompanySelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder='Company...'
-                      />
+                      <FormControl>
+                        <CompanySelect
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder='Company...'
+                        />
+                      </FormControl>
                     </div>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>

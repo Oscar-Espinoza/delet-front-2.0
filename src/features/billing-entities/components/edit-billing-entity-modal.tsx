@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -29,6 +30,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { AddressAutocomplete } from '@/components/AddressAutocomplete'
+import { CompanySelect } from '@/components/form/company-select'
 import { useBillingEntitiesContext } from '../context/use-billing-entities-context'
 import { billingEntityFormSchema, BillingEntityFormData } from '../data/schema'
 import { useUpdateBillingEntity } from '../hooks/use-billing-entities'
@@ -58,6 +60,7 @@ export function EditBillingEntityModal() {
       },
       taxId: '',
       notes: '',
+      company: '',
     },
   })
 
@@ -77,12 +80,18 @@ export function EditBillingEntityModal() {
         },
         taxId: editingEntity.taxId || '',
         notes: editingEntity.notes || '',
+        company: editingEntity.company || '',
       })
     }
   }, [editingEntity, form])
 
   const handleSubmit = async (data: BillingEntityFormData) => {
     if (!editingEntity) return
+
+    if (!data.company) {
+      toast.error('Please select a company')
+      return
+    }
 
     try {
       await updateBillingEntity.mutateAsync({
@@ -151,6 +160,25 @@ export function EditBillingEntityModal() {
                         <SelectItem value='business'>Business</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='company'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company *</FormLabel>
+                    <FormControl>
+                      <CompanySelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Select company'
+                        includeNone={false}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -63,6 +63,16 @@ export interface KitHardware {
   name: string
   category?: string
   notes?: string
+  operationalStatus?: 'online' | 'offline'
+  lock?: {
+    status?: 'locked' | 'unlocked'
+  }
+  sensor?: {
+    status?: 'open' | 'closed'
+  }
+  camera?: {
+    name: string
+  }
 }
 
 // Main Kit interface
